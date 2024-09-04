@@ -25,7 +25,10 @@ function LoanForm() {
 	const params = useParams()
 	const [loading, setLoading] = useState(false)
 	const navigate = useNavigate()
-	const [count, setCount] = useState(0)
+
+	const [count, setCount] = useState(() => 0)
+	const [branches, setBranches] = useState(() => [])
+	const [loanTypes, setLoanTypes] = useState(() => [])
 
 	console.log(params, "params")
 
@@ -100,19 +103,60 @@ function LoanForm() {
 		console.log("Calls when onSubmit api axios success changes...")
 	}, [count])
 
+	const fetchBranches = async () => {
+		await axios
+			.get(`${url}/sql/branch_dtls`)
+			.then((res) => {
+				if (res?.data?.suc === 1) {
+					setBranches(res?.data?.msg)
+				} else {
+					Message("error", "Data not found!")
+				}
+			})
+			.catch((err) => {
+				Message("error", "Some error occurred while fetching Branches.")
+			})
+	}
+
+	const fetchLoanTypes = async () => {
+		await axios
+			.get(`${url}/sql/loan_type_dtls`)
+			.then((res) => {
+				if (res?.data?.suc === 1) {
+					setLoanTypes(res?.data?.msg)
+				} else {
+					Message("error", "Data not found!")
+				}
+			})
+			.catch((err) => {
+				Message("error", "Some error occurred while fetching Loan Types.")
+			})
+	}
+
+	useEffect(() => {
+		fetchBranches()
+		fetchLoanTypes()
+	}, [])
+
 	const onSubmit = (values) => {
 		console.log("onsubmit called")
 		console.log(values, "onsubmit vendor")
 		setLoading(true)
 
 		navigate(`${routePaths.LOAN_VIEW}`, {
-			state: { loanFormValues: values },
+			state: {
+				loanFormValues: values,
+				loanType: loanTypes?.filter(
+					(loantype) => +values?.l_applied_for === +loantype?.sl_no
+				)[0]?.loan_type,
+			},
 		})
+
 		setLoading(false)
 	}
 
 	const formik = useFormik({
-		initialValues,
+		initialValues: formValues,
 		onSubmit,
 		validationSchema,
 		validateOnChange: true,
@@ -121,29 +165,50 @@ function LoanForm() {
 		validateOnMount: true,
 	})
 
-	const handleMemberIdBlur = (event) => {
+	const handleMemberIdBlur = async (event) => {
+		setLoading(true)
 		console.log("Member ID blurred:", event.target.value)
 
 		formik.handleBlur(event)
 
-		const creds = { cust_id: 1014050 }
-		axios.post(`${url}/oracle/select_cust_dtls`, creds).then((res) => {
-			if (res?.data?.suc === 1) {
-			}
-		})
+		const creds = { cust_id: +formik.values.l_member_id }
+		await axios
+			.post(`${url}/oracle/select_cust_dtls`, creds)
+			.then((res) => {
+				if (res?.data?.suc === 1) {
+					const fetchedValues = {
+						l_member_id: formik.values.l_member_id || formValues.l_member_id,
+						l_membership_date:
+							new Date(res?.data?.msg?.CUST_DT)?.toISOString()?.split("T")[0] ||
+							"",
+						l_name: res?.data?.msg?.CUST_NAME || "",
+						l_father_husband_name: res?.data?.msg?.GUARDIAN_NAME || "",
+						l_gender: res?.data?.msg?.SEX || "",
+						l_dob:
+							new Date(res?.data?.msg?.DT_OF_BIRTH)
+								?.toISOString()
+								?.split("T")[0] || "",
+						l_email: res?.data?.msg?.EMAIL || "",
+						l_mobile_no: res?.data?.msg?.PHONE || "",
+						l_address: res?.data?.msg?.PRESENT_ADDRESS || "",
+					}
+
+					// Merge the fetched values with the existing form values
+					setValues((prevValues) => ({
+						...prevValues,
+						...fetchedValues,
+					}))
+				} else {
+					Message("error", "Data not found!")
+					// Reset all form values if data not found
+					setValues(initialValues)
+				}
+			})
+			.catch((err) => {
+				Message("error", "Some error occurred while fetching customer details.")
+			})
+		setLoading(false)
 	}
-
-	// useEffect(() => {
-	// 	console.log("MEM ID", formik.values.l_member_id)
-
-	// 	// values,
-	// 	// handleReset,
-	// 	// handleChange,
-	// 	// handleBlur,
-	// 	// handleSubmit,
-	// 	// errors,
-	// 	// touched,
-	// }, [formik.handleBlur])
 
 	return (
 		<section className="bg-red-50 dark:bg-[#001529] flex justify-center align-middle p-5">
@@ -322,11 +387,10 @@ function LoanForm() {
 										formControlName={formik.values.l_loan_through_branch}
 										handleChange={formik.handleChange}
 										handleBlur={formik.handleBlur}
-										data={[
-											{ code: "KB", name: "Kasba" },
-											{ code: "NB", name: "Nabagram" },
-											{ code: "KG", name: "Konnagar" },
-										]}
+										data={branches?.map((branch) => ({
+											code: branch?.sl_no,
+											name: branch?.branch_name,
+										}))}
 										mode={2}
 									/>
 									{formik.errors.l_loan_through_branch &&
@@ -343,11 +407,10 @@ function LoanForm() {
 										formControlName={formik.values.l_applied_for}
 										handleChange={formik.handleChange}
 										handleBlur={formik.handleBlur}
-										data={[
-											{ code: "H", name: "Home Loan" },
-											{ code: "C", name: "Car Loan" },
-											{ code: "P", name: "Personal Loan" },
-										]}
+										data={loanTypes?.map((loan) => ({
+											code: loan?.sl_no,
+											name: loan?.loan_type,
+										}))}
 										mode={2}
 									/>
 									{formik.errors.l_applied_for &&

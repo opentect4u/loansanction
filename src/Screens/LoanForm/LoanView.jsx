@@ -13,7 +13,7 @@ import axios from "axios"
 import { Message } from "../../Components/Message"
 import { url } from "../../Address/BaseUrl"
 import { Spin } from "antd"
-import { LoadingOutlined } from "@ant-design/icons"
+import { LoadingOutlined, DownloadOutlined } from "@ant-design/icons"
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons"
 import { Button, Radio } from "antd"
 import AuditTrail from "../../Components/AuditTrail"
@@ -30,7 +30,7 @@ function LoanView() {
 	const navigate = useNavigate()
 
 	const location = useLocation()
-	const { loanFormValues } = location.state || {}
+	const { loanFormValues, loanType } = location.state || {}
 
 	const [count, setCount] = useState(0)
 
@@ -51,10 +51,10 @@ function LoanView() {
 
 	const data = [
 		{ name: "Date", value: new Date().toLocaleDateString("en-GB") },
-		{ name: "Application Number", value: "543654" },
+		{ name: "Application Number", value: "543654_dynamic" },
 		{ name: "Member ID", value: loanFormValues?.l_member_id },
 		{ name: "Member Name", value: loanFormValues?.l_name },
-		{ name: "Loan Type", value: loanFormValues?.l_applied_for },
+		{ name: "Loan Type", value: loanType },
 	]
 
 	const generatePDF = () => {
@@ -133,8 +133,11 @@ function LoanView() {
 								</tr>
 							</thead> */}
 								<tbody>
-									{data?.map((item) => (
-										<tr className="border-b border-gray-200 dark:border-gray-700">
+									{data?.map((item, i) => (
+										<tr
+											className="border-b border-gray-200 dark:border-gray-700"
+											key={i}
+										>
 											<th
 												scope="row"
 												className="px-6 py-4 w-1/4 font-bold text-nowrap text-red-950 whitespace-nowrap bg-red-50 dark:text-white dark:bg-gray-800"
@@ -154,9 +157,25 @@ function LoanView() {
 						</div>
 
 						{/* Footer */}
-						<div className="grid grid-cols-2 place-items-center gap-5 mt-10">
-							<div>About Us</div>
-							<div>Find Us</div>
+						<div className="grid grid-cols-2 place-items-start gap-5 mt-40">
+							<div>
+								<div className="text-xl mb-2 text-[#6457A6]">About Us</div>
+								<hr className="mb-4" />
+								<div>
+									The Puri Urban and Rural Development Cooperative Society Ltd.
+									was initially registered under OSHC Act, 2001 in the year 2007
+									bearing registration No. 193/PU dated 23.03.2007 as Puri Urban
+									and Rural Development Cooperative Ltd.
+								</div>
+							</div>
+							<div>
+								<div className="text-xl mb-2 text-[#6457A6]">Find Us</div>
+								<hr className="mb-4" />
+								<div>
+									Puri Urban And Rural Development Cooperative Society Ltd. Near
+									Jyoti Hotel, Grand Road Puri- 752001, Odisha, India
+								</div>
+							</div>
 						</div>
 					</div>
 				</Spin>
@@ -164,24 +183,10 @@ function LoanView() {
 				<div className="flex justify-end mr-12 mt-8">
 					<button
 						type="button"
-						className="text-gray-900 bg-yellow-300 hover:bg-[#F7BE38]/90 focus:ring-4 focus:outline-none focus:ring-[#F7BE38]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#F7BE38]/50 me-2 mb-2"
+						className="text-gray-900 bg-yellow-300 hover:bg-[#F7BE38]/90 focus:ring-4 focus:outline-none focus:ring-[#F7BE38]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex gap-2 items-center dark:focus:ring-[#F7BE38]/50 me-2 mb-2"
 						onClick={generatePDF}
 					>
-						<svg
-							className="w-4 h-4 me-2 -ms-1"
-							aria-hidden="true"
-							focusable="false"
-							data-prefix="fab"
-							data-icon="paypal"
-							role="img"
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 384 512"
-						>
-							<path
-								fill="currentColor"
-								d="M111.4 295.9c-3.5 19.2-17.4 108.7-21.5 134-.3 1.8-1 2.5-3 2.5H12.3c-7.6 0-13.1-6.6-12.1-13.9L58.8 46.6c1.5-9.6 10.1-16.9 20-16.9 152.3 0 165.1-3.7 204 11.4 60.1 23.3 65.6 79.5 44 140.3-21.5 62.6-72.5 89.5-140.1 90.3-43.4 .7-69.5-7-75.3 24.2zM357.1 152c-1.8-1.3-2.5-1.8-3 1.3-2 11.4-5.1 22.5-8.8 33.6-39.9 113.8-150.5 103.9-204.5 103.9-6.1 0-10.1 3.3-10.9 9.4-22.6 140.4-27.1 169.7-27.1 169.7-1 7.1 3.5 12.9 10.6 12.9h63.5c8.6 0 15.7-6.3 17.4-14.9 .7-5.4-1.1 6.1 14.4-91.3 4.6-22 14.3-19.7 29.3-19.7 71 0 126.4-28.8 142.9-112.3 6.5-34.8 4.6-71.4-23.8-92.6z"
-							></path>
-						</svg>
+						<DownloadOutlined />
 						Download PDF
 					</button>
 				</div>
