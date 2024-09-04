@@ -1,0 +1,9 @@
+*.zip
+node_modules/
+instantclient/
+App_Data
+.user.ini
+web.config
+package-lock.json
+.env
+*.pdf
