@@ -2,6 +2,7 @@ const express = require('express'),
 app = express(),
 port = process.env.PORT || 3000;
 
+const cors = require('cors')
 // const options = {
 //     key: fs.readFileSync(path.join(__dirname, 'ssl_credential/Privatekey.pem')),
 //     cert: fs.readFileSync(path.join(__dirname, 'ssl_credential/app_synergicbanking_in.pem')),
@@ -9,11 +10,12 @@ port = process.env.PORT || 3000;
 //         fs.readFileSync(path.join(__dirname, 'ssl_credential/DigiCertCA.crt')),
 //         fs.readFileSync(path.join(__dirname, 'ssl_credential/My_CA_Bundle.crt'))
 //     ]
-//   };
+//   };()
 
   // TO ACCEPT ALL DATA FROM CLIENT SIDE USING GET/POST REQUEST
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors())
 // END
 
 // ROUTERS INITIALIZATION
