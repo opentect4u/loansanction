@@ -29,7 +29,7 @@ app.use("/sql", sqlRouter);
 // END
 
 app.get('/', (req, res) => {
-  res.send('Welcome to api template')
+  res.send('Welcome to api template.PURDCS Loan Module')
 })
 
 app.listen(port, (err) => {
