@@ -7,6 +7,7 @@ import VError from "../../Components/VError"
 import TDInputTemplate from "../../Components/TDInputTemplate"
 
 import { useNavigate } from "react-router-dom"
+import html2pdf from "html2pdf.js"
 import { Formik, FieldArray } from "formik"
 import * as Yup from "yup"
 import axios from "axios"
@@ -30,7 +31,7 @@ function LoanView() {
 	const navigate = useNavigate()
 
 	const location = useLocation()
-	const { loanFormValues, loanType } = location.state || {}
+	const { loanFormValues, loanType, loanBranch, gender } = location.state || {}
 
 	const [count, setCount] = useState(0)
 
@@ -54,7 +55,22 @@ function LoanView() {
 		{ name: "Application Number", value: "543654_dynamic" },
 		{ name: "Member ID", value: loanFormValues?.l_member_id },
 		{ name: "Member Name", value: loanFormValues?.l_name },
+		{
+			name: "Father's/Husband's Name",
+			value: loanFormValues?.l_father_husband_name,
+		},
+		{ name: "Gender", value: gender },
+		{ name: "Date of Birth", value: loanFormValues?.l_dob },
+		{ name: "Email", value: loanFormValues?.l_email || "Nil." },
+		{ name: "Mobile Number", value: loanFormValues?.l_mobile_no },
+		{ name: "Address", value: loanFormValues?.l_address },
+
+		{
+			name: "Loan Through Branch",
+			value: loanBranch,
+		},
 		{ name: "Loan Type", value: loanType },
+		{ name: "Loan Amount", value: loanFormValues?.l_loan_amount },
 	]
 
 	const generatePDF = () => {
@@ -70,6 +86,21 @@ function LoanView() {
 			pdf.save("loan_aapplication_form.pdf")
 		})
 	}
+
+	// const generatePDF = () => {
+	// 	const element = document.getElementById("tableDiv")
+
+	// 	// Configuration options for html2pdf
+	// 	const opt = {
+	// 		margin: 0,
+	// 		filename: "loan_application_form.pdf",
+	// 		image: { type: "jpeg", quality: 0.98 },
+	// 		html2canvas: { scale: 2 },
+	// 		jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+	// 	}
+
+	// 	html2pdf().from(element).set(opt).save()
+	// }
 
 	return (
 		<section
@@ -114,6 +145,10 @@ function LoanView() {
 						<div className="mx-auto text-[#6457A6] text-center text-3xl mt-5 font-semibold">
 							PURDCS Loan Application Form
 						</div>
+						<div className="mx-auto text-[#6457A6] text-center text-xl mt-5 font-semibold">
+							Member Details
+						</div>
+						<div className="border-2 border-b-0 w-2/4 mx-auto mt-5 border-yellow-300"></div>
 						<div className="relative overflow-x-auto shadow-md sm:rounded-2xl w-5/6 mx-auto mt-8">
 							<table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
 								{/* <thead className="text-xs text-gray-700 uppercase dark:text-gray-400">
@@ -133,20 +168,49 @@ function LoanView() {
 								</tr>
 							</thead> */}
 								<tbody>
-									{data?.map((item, i) => (
+									{data?.slice(0, 10)?.map((item, i) => (
 										<tr
 											className="border-b border-gray-200 dark:border-gray-700"
 											key={i}
 										>
 											<th
 												scope="row"
-												className="px-6 py-4 w-1/4 font-bold text-nowrap text-red-950 whitespace-nowrap bg-red-50 dark:text-white dark:bg-gray-800"
+												className="px-6 py-4 w-1/4 font-bold text-wrap text-red-950 whitespace-nowrap bg-red-50 dark:text-white dark:bg-gray-800"
 											>
 												{item?.name}
 											</th>
 											<th
 												scope="row"
-												className="px-6 py-4 font-medium w-3/4 text-gray-900 whitespace-nowrap bg-white dark:text-white dark:bg-gray-800"
+												className="px-6 py-4 font-medium w-3/4 text-gray-900 text-wrap whitespace-nowrap bg-white dark:text-white dark:bg-gray-800"
+											>
+												{item?.value}
+											</th>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+						<div className="mx-auto text-[#6457A6] text-center text-xl mt-5 font-semibold">
+							Loan Details
+						</div>
+						<div className="border-b-0 border-2 w-2/4 mx-auto mt-5 border-yellow-300"></div>
+						<div className="relative overflow-x-auto shadow-md sm:rounded-2xl w-5/6 mx-auto mt-8">
+							<table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+								<tbody>
+									{data?.slice(10)?.map((item, i) => (
+										<tr
+											className="border-b border-gray-200 dark:border-gray-700"
+											key={i}
+										>
+											<th
+												scope="row"
+												className="px-6 py-4 w-1/4 font-bold text-wrap text-red-950 whitespace-nowrap bg-red-50 dark:text-white dark:bg-gray-800"
+											>
+												{item?.name}
+											</th>
+											<th
+												scope="row"
+												className="px-6 py-4 font-medium w-3/4 text-gray-900 text-wrap whitespace-nowrap bg-white dark:text-white dark:bg-gray-800"
 											>
 												{item?.value}
 											</th>
@@ -157,7 +221,7 @@ function LoanView() {
 						</div>
 
 						{/* Footer */}
-						<div className="grid grid-cols-2 place-items-start gap-5 mt-40">
+						<div className="grid grid-cols-2 place-items-start gap-5 mt-10 px-20">
 							<div>
 								<div className="text-xl mb-2 text-[#6457A6]">About Us</div>
 								<hr className="mb-4" />

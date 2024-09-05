@@ -75,9 +75,7 @@ function LoanForm() {
 			.required("Father/Husband is required"),
 		l_gender: Yup.string().required("Gender is required"),
 		l_dob: Yup.string().required("DOB is required"),
-		l_email: Yup.string()
-			.email("Enter valid email")
-			.required("Email is required"),
+		l_email: Yup.string().email("Enter valid email").optional(),
 		l_mobile_no: Yup.string()
 			.matches(/^[0-9]+$/, "Must be only digits")
 			.max(10, "Number should exactly be 10 digits")
@@ -92,7 +90,7 @@ function LoanForm() {
 		l_loan_amount: Yup.number()
 			.integer("Only integers are allowed")
 			.min(1, "Loan Amount should always be greater than 0")
-			.max(100000000, "Max loan amount is 100000000")
+			.max(1000000000, "Max loan amount is 1000000000")
 			.required("Loan Amount is required"),
 		l_duration: Yup.number()
 			.min(0, "Duration should always be greater than equal 0")
@@ -149,6 +147,17 @@ function LoanForm() {
 				loanType: loanTypes?.filter(
 					(loantype) => +values?.l_applied_for === +loantype?.sl_no
 				)[0]?.loan_type,
+				loanBranch: branches?.filter(
+					(loanBr) => +values?.l_loan_through_branch === +loanBr?.sl_no
+				)[0]?.branch_name,
+				gender:
+					values.l_gender === "M"
+						? "Male"
+						: values.l_gender === "F"
+						? "Female"
+						: values.l_gender === "L"
+						? "LGBTQA+"
+						: "Error occurred!",
 			},
 		})
 
