@@ -1,17 +1,11 @@
-import React, { useState } from "react"
+import React from "react"
 import { Link } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
 import IMG from "../../Assets/Images/puri_flyer.jpg"
 import LOGO from "../../Assets/Images/purdcs.png"
 import { motion } from "framer-motion"
 import { routePaths } from "../../Assets/Data/Routes"
-import {
-	SaveOutlined,
-	DeleteOutlined,
-	ReloadOutlined,
-	DollarOutlined,
-	UserOutlined,
-} from "@ant-design/icons"
+import { DollarOutlined, UserOutlined } from "@ant-design/icons"
 
 function UserChoose() {
 	const navigate = useNavigate()
@@ -31,7 +25,6 @@ function UserChoose() {
 				transition={{ delay: 0.5, type: "spring" }}
 				className="grid grid-cols-2 gap-0 h-auto w-4/5"
 			>
-				{/* <div className="sm:p-5 sm:block rounded-l-3xl bg-gradient-to-r from-white from-60% via-sky-500 via-30% to-[#ffffff8c] to-10%"> */}
 				<div className="sm:p-5 sm:block rounded-l-3xl border-white border--0 bg-gradient-to-r from-yellow-50 from-10% via-gray-50 via-70% to-[#ffffff8c] to-90%">
 					<div className="h-auto w-auto mx-auto bg-transparent rounded-lg p-1">
 						<img src={LOGO} className="h-40 w-40" />

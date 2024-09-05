@@ -1,25 +1,19 @@
-import React, { useEffect, useState, useRef } from "react"
+import React, { useEffect, useState } from "react"
 import "./LoanForm.css"
 import { useParams } from "react-router"
 import BtnComp from "../../Components/BtnComp"
-import HeadingTemplate from "../../Components/HeadingTemplate"
 import VError from "../../Components/VError"
 import TDInputTemplate from "../../Components/TDInputTemplate"
-
 import { useNavigate } from "react-router-dom"
-import { Formik, useFormik } from "formik"
+import { useFormik } from "formik"
 import * as Yup from "yup"
 import axios from "axios"
 import { Message } from "../../Components/Message"
 import { url } from "../../Address/BaseUrl"
 import { Spin } from "antd"
 import { LoadingOutlined } from "@ant-design/icons"
-import { MinusOutlined, PlusOutlined } from "@ant-design/icons"
-import { Button, Radio } from "antd"
-import AuditTrail from "../../Components/AuditTrail"
 import FormHeader from "../../Components/FormHeader"
 import { routePaths } from "../../Assets/Data/Routes"
-// import { Button } from 'primereact/button';
 
 function LoanForm() {
 	const params = useParams()
@@ -78,6 +72,7 @@ function LoanForm() {
 		l_email: Yup.string().email("Enter valid email").optional(),
 		l_mobile_no: Yup.string()
 			.matches(/^[0-9]+$/, "Must be only digits")
+			.min(10, "Number should exactly be 10 digits")
 			.max(10, "Number should exactly be 10 digits")
 			.required("Mobile Numeber is required"),
 		l_address: Yup.string()
