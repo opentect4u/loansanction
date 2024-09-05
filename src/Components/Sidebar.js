@@ -26,6 +26,7 @@ function Sidebar() {
 		setOpen(false)
 	}
 	const drawerWidth = 257
+
 	return (
 		<div className="bg-gray-200 dark:bg-gray-800 ">
 			<button
@@ -69,7 +70,6 @@ function Sidebar() {
 				className="fixed top-0 z-10 left-0 w-full h-auto transition-transform -translate-x-full sm:translate-x-0 p-4 justify-center bg-red-800"
 				aria-label="Sidebar"
 			>
-				
 				<div className="flex items-center w-full justify-center">
 					{/* <div className="flex items-center justify-center p-3 rounded-full">
 						<motion.img

@@ -4,7 +4,7 @@ import "./index.css"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-// import Auth from "./Screens/Auth/Auth"
+import Auth from "./Screens/Appraiser/Auth"
 import Notfound from "./Screens/Notfound/Notfound"
 // import Details from "./Screens/Homescreen/Details"
 import { Democontext } from "./Context/Democontext"
@@ -12,18 +12,21 @@ import Loader from "./Components/Loader"
 
 import CircularProgress from "@mui/material/CircularProgress"
 import CatchError from "./Screens/CatchError"
+import HomeScreen from "./Screens/AppraiserHome/HomeScreen"
+import Home from "./Screens/AppraiserHome/Home"
+import EditLoanForm from "./Screens/AppraiserHome/EditLoanForm"
 const ChooseComp = lazy(() => import("./Screens/Choose/ChooseComp"))
 const UserChoose = lazy(() => import("./Screens/Choose/UserChoose"))
 const LoanComp = lazy(() => import("./Screens/LoanForm/LoanComp"))
 const LoanView = lazy(() => import("./Screens/LoanForm/LoanView"))
 const LoanForm = lazy(() => import("./Screens/LoanForm/LoanForm"))
+const ForgotPass = lazy(() => import("./Screens/Appraiser/ForgotPass"))
+const Signup = lazy(() => import("./Screens/Appraiser/Signup"))
+const Signin = lazy(() => import("./Screens/Appraiser/Signin"))
 
 const root = ReactDOM.createRoot(document.getElementById("root"))
 // const Home = lazy(() => import("./Screens/Homescreen/Home"))
 // const HomeScreen = lazy(() => import("./Screens/Homescreen/HomeScreen"))
-// const ForgotPass = lazy(() => import("./Screens/Auth/ForgotPass"))
-// const Signup = lazy(() => import("./Screens/Auth/Signup"))
-// const Signin = lazy(() => import("./Screens/Auth/Signin"))
 // const NotificationComp = lazy(() =>
 // 	import("./Screens/Notifications/NotificationComp")
 // )
@@ -214,6 +217,35 @@ const router = createBrowserRouter([
 							},
 						],
 					},
+					{
+						path: "appraiser",
+						element: <Auth />,
+						children: [
+							{
+								path: "",
+								element: <Signin />,
+							},
+							{
+								path: "signup",
+								element: <Signup />,
+							},
+							{
+								path: "forgotpassword",
+								element: <ForgotPass />,
+							},
+						],
+					},
+					{
+						path: "home",
+						element: <HomeScreen />,
+						children: [
+							{
+								path: "editloanform/:id",
+								element: <EditLoanForm />,
+							},
+						],
+					},
+
 					// {
 					// 	path: "forgotpassword",
 					// 	element: <ForgotPass />,

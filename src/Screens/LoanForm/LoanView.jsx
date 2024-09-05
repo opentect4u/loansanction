@@ -7,6 +7,7 @@ import { LoadingOutlined, DownloadOutlined } from "@ant-design/icons"
 import FormHeader from "../../Components/FormHeader"
 import jsPDF from "jspdf"
 import html2canvas from "html2canvas"
+import html2pdf from "html2pdf.js"
 import IMG from "../../Assets/Images/puri_flyer.jpg"
 import logo from "../../Assets/Images/purdcs.png"
 
@@ -16,7 +17,8 @@ function LoanView() {
 	const navigate = useNavigate()
 
 	const location = useLocation()
-	const { loanFormValues, loanType, loanBranch, gender } = location.state || {}
+	const { loanFormValues, loanType, loanBranch, gender, applicationId } =
+		location.state || {}
 
 	const [count, setCount] = useState(0)
 
@@ -37,7 +39,7 @@ function LoanView() {
 
 	const data = [
 		{ name: "Date", value: new Date().toLocaleDateString("en-GB") },
-		{ name: "Application Number", value: "543654_dynamic" },
+		{ name: "Application Number", value: applicationId },
 		{ name: "Member ID", value: loanFormValues?.l_member_id },
 		{ name: "Member Name", value: loanFormValues?.l_name },
 		{
@@ -77,10 +79,10 @@ function LoanView() {
 
 	// 	// Configuration options for html2pdf
 	// 	const opt = {
-	// 		margin: 0,
+	// 		margin: 0.5,
 	// 		filename: "loan_application_form.pdf",
-	// 		image: { type: "jpeg", quality: 0.98 },
-	// 		html2canvas: { scale: 2 },
+	// 		image: { type: "png", quality: 1 },
+	// 		html2canvas: { scale: 1 },
 	// 		jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
 	// 	}
 
@@ -115,7 +117,7 @@ function LoanView() {
 				</div>
 				<div className="mx-auto bg-yellow-300 w-4/5 mb-5 rounded-xl flex justify-center align-middle p-3">
 					<marquee className="text-blue-800 animate-pulse text-lg text-center">
-						Remember to DOWNLOAD the Application Form or else you will loose it!
+						Remember to DOWNLOAD the Application Form or else you will lose it!
 					</marquee>
 				</div>
 				<Spin
@@ -211,7 +213,7 @@ function LoanView() {
 						</div>
 
 						{/* Footer */}
-						<div className="grid grid-cols-2 place-items-start gap-5 mt-28 px-20">
+						<div className="grid grid-cols-2 place-items-start gap-5 mt-10 px-20">
 							<div>
 								<div className="text-xl mb-2 text-[#6457A6]">About Us</div>
 								<hr className="mb-4" />

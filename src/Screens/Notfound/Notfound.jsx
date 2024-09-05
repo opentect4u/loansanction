@@ -1,23 +1,23 @@
 import React from "react"
 import { Button, Result } from "antd"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
-function CatchError() {
+function Notfound() {
+	console.log("notfound")
 	const navigate = useNavigate()
-	const params = useParams()
 
 	return (
 		<Result
-			status="500"
-			title={params.code}
-			subTitle={"Sorry, " + params.message}
+			status="404"
+			title="404"
+			subTitle="Sorry, the page you visited does not exist."
 			extra={
 				<Button className="bg-red-800 text-white" onClick={() => navigate(-1)}>
-					Back{" "}
+					Back
 				</Button>
 			}
 		/>
 	)
 }
 
-export default CatchError
+export default Notfound

@@ -52,4 +52,7 @@ export const routePaths = {
 	// REQUISITIONRCVDFORM:'/home/stockComp/requisitionsrcvdform/',
 	LOAN_FORM: "/loan/loanform/",
 	LOAN_VIEW: "/loan/loanview/",
+	APPRAISER_LOGIN: "/appraiser/",
+	HOME_SCREEN: "/home/",
+	EDIT_APPLICATION: "/home/editloanform/",
 }

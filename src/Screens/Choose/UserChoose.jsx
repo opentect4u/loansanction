@@ -75,7 +75,7 @@ function UserChoose() {
 						</Link>
 					</div>
 					<div>
-						<Link>
+						<Link to={routePaths.APPRAISER_LOGIN}>
 							<div
 								className="h-48 w-48 self-center bg-[#586BA4] rounded-full p-1 text-white text-wrap text-xl"
 								style={{

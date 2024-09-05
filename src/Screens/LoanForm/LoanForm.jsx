@@ -23,6 +23,7 @@ function LoanForm() {
 	const [count, setCount] = useState(() => 0)
 	const [branches, setBranches] = useState(() => [])
 	const [loanTypes, setLoanTypes] = useState(() => [])
+	const [applicationId, setApplicationId] = useState(() => "")
 
 	console.log(params, "params")
 
@@ -76,7 +77,7 @@ function LoanForm() {
 			.max(10, "Number should exactly be 10 digits")
 			.required("Mobile Numeber is required"),
 		l_address: Yup.string()
-			.max(1000, "Address length should always be less than 1000 characters")
+			.max(500, "Address length should always be less than 500 characters")
 			.required("Address is required"),
 		l_loan_through_branch: Yup.string().required(
 			"Loan Through Branch is required"
@@ -131,30 +132,61 @@ function LoanForm() {
 		fetchLoanTypes()
 	}, [])
 
-	const onSubmit = (values) => {
+	const onSubmit = async (values) => {
 		console.log("onsubmit called")
 		console.log(values, "onsubmit vendor")
 		setLoading(true)
 
-		navigate(`${routePaths.LOAN_VIEW}`, {
-			state: {
-				loanFormValues: values,
-				loanType: loanTypes?.filter(
-					(loantype) => +values?.l_applied_for === +loantype?.sl_no
-				)[0]?.loan_type,
-				loanBranch: branches?.filter(
-					(loanBr) => +values?.l_loan_through_branch === +loanBr?.sl_no
-				)[0]?.branch_name,
-				gender:
-					values.l_gender === "M"
-						? "Male"
-						: values.l_gender === "F"
-						? "Female"
-						: values.l_gender === "L"
-						? "LGBTQA+"
-						: "Error occurred!",
-			},
-		})
+		const creds = {
+			member_id: +values?.l_member_id,
+			member_name: values?.l_name,
+			father_name: values?.l_father_husband_name,
+			gender: values?.l_gender,
+			dob: values?.l_dob,
+			member_dt: values?.l_membership_date,
+			email: values?.l_email,
+			mobile_no: values?.l_mobile_no,
+			memb_address: values?.l_address,
+			branch_code: values?.l_loan_through_branch,
+			loan_type: values?.l_applied_for,
+			loan_amt: values?.l_loan_amount,
+			loan_period: values?.l_duration,
+			created_by: values?.l_name,
+		}
+
+		await axios
+			.post(`${url}/sql/insert_loan_dtls`, creds)
+			.then((res) => {
+				if (res?.data?.suc === 1) {
+					setApplicationId(res?.data?.app_id)
+
+					navigate(`${routePaths.LOAN_VIEW}`, {
+						state: {
+							loanFormValues: values,
+							loanType: loanTypes?.filter(
+								(loantype) => +values?.l_applied_for === +loantype?.sl_no
+							)[0]?.loan_type,
+							loanBranch: branches?.filter(
+								(loanBr) => +values?.l_loan_through_branch === +loanBr?.sl_no
+							)[0]?.branch_name,
+							gender:
+								values.l_gender === "M"
+									? "Male"
+									: values.l_gender === "F"
+									? "Female"
+									: values.l_gender === "L"
+									? "LGBTQA+"
+									: "Error occurred!",
+							applicationId: res?.data?.app_id,
+						},
+					})
+				} else {
+					Message("error", "Data not found!")
+				}
+			})
+			.catch((err) => {
+				Message("error", "Some error occurred while submitting loan details!")
+			})
 
 		setLoading(false)
 	}
@@ -264,7 +296,7 @@ function LoanForm() {
 										formControlName={formik.values.l_membership_date}
 										handleChange={formik.handleChange}
 										handleBlur={formik.handleBlur}
-										min={"1850-12-31"}
+										min={"1900-12-31"}
 										mode={1}
 									/>
 									{formik.errors.l_membership_date &&
@@ -335,6 +367,7 @@ function LoanForm() {
 										formControlName={formik.values.l_dob}
 										handleChange={formik.handleChange}
 										handleBlur={formik.handleBlur}
+										max={formik.values.l_membership_date}
 										mode={1}
 									/>
 									{formik.errors.l_dob && formik.touched.l_dob ? (
@@ -360,7 +393,7 @@ function LoanForm() {
 									<TDInputTemplate
 										placeholder="Type Address..."
 										type="text"
-										label="Address"
+										label={`Address`}
 										name="l_address"
 										formControlName={formik.values.l_address}
 										handleChange={formik.handleChange}
