@@ -175,6 +175,10 @@ function LoanForm() {
 	})
 
 	const handleMemberIdBlur = async (event) => {
+		if (!formik.values.l_member_id || +formik.values.l_member_id === 0) {
+			Message("warning", "Please fill the Member ID.")
+			return
+		}
 		setLoading(true)
 		console.log("Member ID blurred:", event.target.value)
 

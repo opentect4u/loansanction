@@ -128,6 +128,11 @@ function LoanView() {
 				<div className="w-auto mx-14 my-4">
 					<FormHeader text="Loan Application Download" />
 				</div>
+				<div className="mx-auto bg-yellow-300 w-4/5 mb-5 rounded-xl flex justify-center align-middle p-3">
+					<marquee className="text-blue-800 animate-pulse text-lg text-center">
+						Remember to DOWNLOAD the Application Form or else you will loose it!
+					</marquee>
+				</div>
 				<Spin
 					indicator={<LoadingOutlined spin />}
 					size="large"
@@ -221,7 +226,7 @@ function LoanView() {
 						</div>
 
 						{/* Footer */}
-						<div className="grid grid-cols-2 place-items-start gap-5 mt-10 px-20">
+						<div className="grid grid-cols-2 place-items-start gap-5 mt-28 px-20">
 							<div>
 								<div className="text-xl mb-2 text-[#6457A6]">About Us</div>
 								<hr className="mb-4" />
@@ -242,18 +247,17 @@ function LoanView() {
 							</div>
 						</div>
 					</div>
+					<div className="flex justify-end mr-12 mt-8">
+						<button
+							type="button"
+							className="text-gray-900 bg-yellow-300 hover:bg-[#F7BE38]/90 focus:ring-4 focus:outline-none focus:ring-[#F7BE38]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex gap-2 items-center dark:focus:ring-[#F7BE38]/50 me-2 mb-2"
+							onClick={generatePDF}
+						>
+							<DownloadOutlined />
+							Download PDF
+						</button>
+					</div>
 				</Spin>
-
-				<div className="flex justify-end mr-12 mt-8">
-					<button
-						type="button"
-						className="text-gray-900 bg-yellow-300 hover:bg-[#F7BE38]/90 focus:ring-4 focus:outline-none focus:ring-[#F7BE38]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex gap-2 items-center dark:focus:ring-[#F7BE38]/50 me-2 mb-2"
-						onClick={generatePDF}
-					>
-						<DownloadOutlined />
-						Download PDF
-					</button>
-				</div>
 			</div>
 		</section>
 	)
