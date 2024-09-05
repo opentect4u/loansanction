@@ -25,10 +25,26 @@ function UserChoose() {
 				transition={{ delay: 0.5, type: "spring" }}
 				className="grid grid-cols-2 gap-0 h-auto w-4/5"
 			>
-				<div className="sm:p-5 sm:block rounded-l-3xl border-white border--0 bg-gradient-to-r from-yellow-50 from-10% via-gray-50 via-70% to-[#ffffff8c] to-90%">
-					<div className="h-auto w-auto mx-auto bg-transparent rounded-lg p-1">
-						<img src={LOGO} className="h-40 w-40" />
+				<div className="sm:p-5 rounded-l-3xl border-white border--0 bg-gradient-to-r from-red-50 from-10% via-gray-50 via-70% to-[#ffffff8c] to-90% flex flex-col justify-around align-middle">
+					<div className="h-auto w-auto rounded-3xl p-10 flex flex-col justify-center align-middle items-center bg-transparent">
+						<div
+							className="p-10 mx-auto mt-6 flex flex-col justify-center align-middle items-center rounded-3xl shadow-md"
+							style={{
+								backgroundColor: "rgba(255, 255, 255, 0.25)",
+								backdropFilter: "blur(8px)",
+							}}
+						>
+							<img src={LOGO} className="h-40 w-40 mb-14" />
+							<div className="text-4xl font-bold text-red-700">P U R D C S</div>
+							<div className="text-xl font-semibold text-blue-500">
+								Puri Urban and Rural Development Credit Society
+							</div>
+						</div>
 					</div>
+					{/* <div className="h-auto w-auto bg-transparent rounded-3xl p-10 flex flex-col justify-center align-middle items-center bg-red-400">
+						<img src={LOGO} className="h-40 w-40" />
+						<div>PURDCS - Puri Urban and Rural Development Credit Society</div>
+					</div> */}
 				</div>
 				<div
 					className={`sm:p-5 sm:rounded-r-3xl border-white border-l-0 border-2 w-auto h-auto`}
@@ -61,7 +77,7 @@ function UserChoose() {
 					<div>
 						<Link>
 							<div
-								className="h-48 w-48 self-center bg-[#586BA4] rounded-full p-1 text-white text-xl"
+								className="h-48 w-48 self-center bg-[#586BA4] rounded-full p-1 text-white text-wrap text-xl"
 								style={{
 									display: "flex",
 									justifyContent: "center",
@@ -71,7 +87,7 @@ function UserChoose() {
 								}}
 							>
 								<UserOutlined className="text-3xl" />
-								<div>Admin Login</div>
+								<div>Appraiser Login</div>
 							</div>
 						</Link>
 					</div>
