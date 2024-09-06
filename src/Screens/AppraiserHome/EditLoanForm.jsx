@@ -11,11 +11,13 @@ import axios from "axios"
 import { Message } from "../../Components/Message"
 import { url } from "../../Address/BaseUrl"
 import { Spin } from "antd"
-import { LoadingOutlined } from "@ant-design/icons"
+import { LoadingOutlined, DeleteOutlined } from "@ant-design/icons"
 import FormHeader from "../../Components/FormHeader"
 import { routePaths } from "../../Assets/Data/Routes"
 import { useLocation } from "react-router"
 import Sidebar from "../../Components/Sidebar"
+
+const MAX_FILE_SIZE = 200000
 
 function EditLoanForm() {
 	const params = useParams()
@@ -29,6 +31,7 @@ function EditLoanForm() {
 	const [branches, setBranches] = useState(() => [])
 	const [loanTypes, setLoanTypes] = useState(() => [])
 	const [applicationId, setApplicationId] = useState(() => "")
+	const [pdfFiles, setPdfFiles] = useState(() => [])
 
 	console.log(params, "params")
 
@@ -46,6 +49,7 @@ function EditLoanForm() {
 		l_applied_for: "",
 		l_loan_amount: "",
 		l_duration: "",
+		l_documents: "",
 	})
 
 	const initialValues = {
@@ -62,6 +66,15 @@ function EditLoanForm() {
 		l_applied_for: "",
 		l_loan_amount: "",
 		l_duration: "",
+		l_documents: "",
+	}
+
+	const getExtension = (fileName) => {
+		if (!fileName) return ""
+		const lastDotIndex = fileName.lastIndexOf(".")
+		return lastDotIndex !== -1
+			? fileName.slice(lastDotIndex + 1).toLowerCase()
+			: ""
 	}
 
 	const validationSchema = Yup.object({
@@ -96,7 +109,42 @@ function EditLoanForm() {
 		l_duration: Yup.number()
 			.min(0, "Duration should always be greater than equal 0")
 			.required("Duration is required"),
+		l_documents: Yup.mixed()
+			.test("fileSize", "File too large", (files) =>
+				files ? Array.from(files).every((file) => file.size <= 2000000) : true
+			)
+			.test("fileType", "Unsupported File Format", (files) =>
+				files
+					? Array.from(files).every((file) => file.type === "application/pdf")
+					: true
+			),
+		// .test(
+		// 	"fileSize",
+		// 	"Only documents up to 2MB are permitted.",
+		// 	(files) =>
+		// 		!files || // Check if `files` is defined
+		// 		files.length === 0 || // Check if `files` is not an empty list
+		// 		Array.from(files).every((file) => file.size <= 2_000_000_00)
+		// )
 	})
+
+	const handleFilesChange = (event, setFieldValue) => {
+		const files = event.target.files
+
+		const pdfFilteredFiles = Array.from(files)?.filter(
+			(file) => getExtension(file?.name) === "pdf"
+		)
+
+		console.log("iurhgbvfvfrr", event.target.files)
+		setPdfFiles(pdfFilteredFiles) // Store the selected files in state
+		// setFieldValue("files", files) // Set Formik value
+	}
+
+	const handleRemove = (index, setFieldValue) => {
+		const updatedFiles = pdfFiles.filter((_, i) => i !== index) // Remove file by index
+		setPdfFiles(updatedFiles)
+		// setFieldValue('files', updatedFiles);  // Update Formik field value after removal
+	}
 
 	useEffect(() => {
 		console.log("Calls when onSubmit api axios success changes...")
@@ -140,60 +188,64 @@ function EditLoanForm() {
 	const onSubmit = async (values) => {
 		console.log("onsubmit called")
 		console.log(values, "onsubmit vendor")
+
+		// const creds = {
+		// 	member_id: +values?.l_member_id,
+		// 	member_name: values?.l_name,
+		// 	father_name: values?.l_father_husband_name,
+		// 	gender: values?.l_gender,
+		// 	dob: values?.l_dob,
+		// 	member_dt: values?.l_membership_date,
+		// 	email: values?.l_email,
+		// 	mobile_no: values?.l_mobile_no,
+		// 	memb_address: values?.l_address,
+		// 	branch_code: values?.l_loan_through_branch,
+		// 	loan_type: values?.l_applied_for,
+		// 	loan_amt: values?.l_loan_amount,
+		// 	loan_period: values?.l_duration,
+		// 	created_by: values?.l_name,
+		// }
 		setLoading(true)
 
-		const creds = {
-			member_id: +values?.l_member_id,
-			member_name: values?.l_name,
-			father_name: values?.l_father_husband_name,
-			gender: values?.l_gender,
-			dob: values?.l_dob,
-			member_dt: values?.l_membership_date,
-			email: values?.l_email,
-			mobile_no: values?.l_mobile_no,
-			memb_address: values?.l_address,
-			branch_code: values?.l_loan_through_branch,
-			loan_type: values?.l_applied_for,
-			loan_amt: values?.l_loan_amount,
-			loan_period: values?.l_duration,
-			created_by: values?.l_name,
-		}
-
-		await axios
-			.post(`${url}/sql/insert_loan_dtls`, creds)
-			.then((res) => {
-				if (res?.data?.suc === 1) {
-					setApplicationId(res?.data?.app_id)
-
-					navigate(`${routePaths.LOAN_VIEW}`, {
-						state: {
-							loanFormValues: values,
-							loanType: loanTypes?.filter(
-								(loantype) => +values?.l_applied_for === +loantype?.sl_no
-							)[0]?.loan_type,
-							loanBranch: branches?.filter(
-								(loanBr) => +values?.l_loan_through_branch === +loanBr?.sl_no
-							)[0]?.branch_name,
-							gender:
-								values.l_gender === "M"
-									? "Male"
-									: values.l_gender === "F"
-									? "Female"
-									: values.l_gender === "L"
-									? "LGBTQA+"
-									: "Error occurred!",
-							applicationId: res?.data?.app_id,
-						},
-					})
-				} else {
-					Message("error", "Data not found!")
-				}
-			})
-			.catch((err) => {
-				Message("error", "Some error occurred while submitting loan details!")
-			})
+		setTimeout(() => {
+			Message("success", "Submitted!")
+			navigate(routePaths.HOME_SCREEN)
+		}, 2000)
 
 		setLoading(false)
+		// await axios
+		// 	.post(`${url}/sql/insert_loan_dtls`, creds)
+		// 	.then((res) => {
+		// 		if (res?.data?.suc === 1) {
+		// 			setApplicationId(res?.data?.app_id)
+
+		// 			navigate(`${routePaths.LOAN_VIEW}`, {
+		// 				state: {
+		// 					loanFormValues: values,
+		// 					loanType: loanTypes?.filter(
+		// 						(loantype) => +values?.l_applied_for === +loantype?.sl_no
+		// 					)[0]?.loan_type,
+		// 					loanBranch: branches?.filter(
+		// 						(loanBr) => +values?.l_loan_through_branch === +loanBr?.sl_no
+		// 					)[0]?.branch_name,
+		// 					gender:
+		// 						values.l_gender === "M"
+		// 							? "Male"
+		// 							: values.l_gender === "F"
+		// 							? "Female"
+		// 							: values.l_gender === "L"
+		// 							? "LGBTQA+"
+		// 							: "Error occurred!",
+		// 					applicationId: res?.data?.app_id,
+		// 				},
+		// 			})
+		// 		} else {
+		// 			Message("error", "Data not found!")
+		// 		}
+		// 	})
+		// 	.catch((err) => {
+		// 		Message("error", "Some error occurred while submitting loan details!")
+		// 	})
 	}
 
 	const fetchApplicationDetails = async () => {
@@ -490,6 +542,53 @@ function EditLoanForm() {
 											<VError title={formik.errors.l_duration} />
 										) : null}
 									</div>
+									<div>
+										<TDInputTemplate
+											placeholder="Upload Documents"
+											type="file"
+											multiple={true}
+											accept="application/pdf"
+											label="Upload Documents"
+											name="l_documents"
+											formControlName={formik.values.l_documents}
+											handleChange={(event) =>
+												handleFilesChange(event, formik.values.l_documents)
+											}
+											handleBlur={formik.handleBlur}
+											mode={1}
+										/>
+										{formik.errors.l_documents && formik.touched.l_documents ? (
+											<VError title={formik.errors.l_documents} />
+										) : null}
+									</div>
+								</div>
+								<div className="grid gap-4 sm:grid-cols-2 sm:gap-6 place-items-center p-5">
+									{pdfFiles &&
+										Array.from(pdfFiles).map((file, index) => (
+											<div key={index}>
+												{/* <p>{file.name}</p>
+													<a
+														href={URL.createObjectURL(file)}
+														download={file.name}
+													>
+														Download PDF
+													</a> */}
+												<embed
+													src={URL.createObjectURL(file)}
+													className="rounded-lg"
+													width="400"
+													height="500"
+													type="application/pdf"
+												/>
+												<button
+													type="button"
+													onClick={() => handleRemove(index)}
+													className="w-8 h-2 p-5 bg-red-800 text-white text-lg mt-3 flex justify-center items-center rounded-lg"
+												>
+													<DeleteOutlined />
+												</button>
+											</div>
+										))}
 								</div>
 
 								<div className="mt-20">
