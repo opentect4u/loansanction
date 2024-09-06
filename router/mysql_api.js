@@ -1,6 +1,12 @@
 const { query } = require("express");
 const { db_Insert, db_Select, db_Delete } = require("../model/mysqlModel");
 const bcrypt = require("bcrypt");
+const fs = require('fs');
+const path = require('path');
+const { saveFile } = require("../module/upload");
+const multer = require('multer');
+
+const upload = multer().array('files');
 
 // function generateAppId(lastAppId) {
 //   const year = new Date().getFullYear(); // Get the current year
@@ -80,7 +86,8 @@ const Max_appNo = () => {
 }
 
 sqlRouter.post("/insert_loan_dtls", async (req, res) => {
-  var data = req.body;
+  var data = req.body,
+  files = req.files ? req.files.file_path : null;
   // console.log(data,'data');
   var max_app = Max_appNo()
   console.log(max_app, "kkkkkkkkkk");
@@ -111,6 +118,17 @@ sqlRouter.post("/insert_loan_dtls", async (req, res) => {
     whr = null,
     flag = 0;
   var res_dt = await db_Insert(table_name, fields, values, whr, flag);
+
+  if(res_dt.suc > 0 && files){
+    if(Array.isArray(files)){
+      for(let fdt of files){
+        var file_dt = await saveFile(fdt, newId, data.member_id)
+        console.log(file_dt);
+      }
+    }else{
+      var file_dt = await saveFile(files, newId, data.member_id)
+    }
+  }
   const app_id = "app_id"
   res_dt[app_id] = newId
   }
@@ -161,21 +179,59 @@ sqlRouter.post("/user_login", async (req, res) => {
 
 sqlRouter.get("/fetch_loan_dtls", async (req, res) => {
     var data = req.query;
-    console.log(data,'dt');
-    // let sl_no = ""
-    // for (let i = 1; i < data.length; i++) {
-    //   sl_no += "sl_no :" + i + "<br>";
-    // }
-
-    console.log(sl_no,"uuuuu");
   
-    var select = 'a.application_dt,a.application_no,a.member_id,a.member_name,a.father_name,a.gender,a.dob,a.member_dt,a.email,a.mobile_no,a.memb_address,b.branch_name,c.loan_type loan_type_name,a.loan_amt,a.loan_period,a.created_by,a.created_at,a.modified_by,a.modified_at',
-      table_name = 'td_loan_application a, md_branch b, md_loan_type c',
+    var select = '@d:=@d+1 sl_no, a.application_dt,a.application_no,a.member_id,a.member_name,a.father_name,a.gender,a.dob,a.member_dt,a.email,a.mobile_no,a.memb_address,a.branch_code,b.branch_name,a.loan_type,c.loan_type loan_type_name,a.loan_amt,a.loan_period,a.created_by,a.created_at,a.modified_by,a.modified_at',
+      table_name = '(SELECT @d:= 0) AS d,td_loan_application a, md_branch b, md_loan_type c',
       whr = data.application_no > 0 ? `b.sl_no=a.branch_code and c.sl_no=a.loan_type and a.application_no = '${data.application_no}'` : `b.sl_no=a.branch_code and c.sl_no=a.loan_type`,
       order = null;
     var res_dt = await db_Select(select, table_name, whr, order)
     res.send(res_dt)
 });
 
+// ******************************************************************************************************
+// sqlRouter.post("/upload_file", async (req, res) => {
+//  var data = req.body
+//  var file = req.files
+// console.log(file,'ss');
+// var res_dt = await saveFile(file.file,data)
+// console.log(data,'pppp');
+// var file_name = "file_name"
+// // res_dt['file_name'] = file
+// res.send(res_dt)
+// });
+// ************************************************************************************************************
 
-module.exports = { sqlRouter }
+
+// sqlRouter.post("/upload_file", upload, async (req, res) => {
+//   try{
+//     var data = req.body;
+//     var files = req.files;
+//   console.log(files,'ss');
+
+//   if (!files || files.length === 0) {
+//     return res.status(400).send({ suc: 0, msg: 'No files uploaded' });
+//   }
+
+//   var res_dt = await saveFile(files.file,data)
+//   console.log(data,'pppp');  
+//   var file_name = "file_name"
+//   // res_dt['file_name'] = file
+//   res.send(res_dt);
+// } catch (err) {
+//   res.status(500).send({ suc: 0, msg: 'Error uploading files', error: err.message });
+// }
+//   });
+
+
+// sqlRouter.post("/upload_file", async (req, res) => {
+//   var data = req.body
+//   var file = req.files
+//  console.log(file,'ss');
+//  var res_dt = await saveFile(file.file,data)
+//  console.log(data,'pppp');
+//  var file_name = "file_name"
+//  // res_dt['file_name'] = file
+//  res.send(res_dt)
+//  });
+
+module.exports = {sqlRouter}

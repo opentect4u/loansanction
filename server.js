@@ -1,5 +1,7 @@
 const express = require('express'),
 app = express(),
+fs = require("fs"),
+path = require("path"),
 port = process.env.PORT || 3000;
 
 const cors = require('cors')
@@ -17,6 +19,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors())
 // END
+
+app.use(express.static(path.join(__dirname, "assets/")));
+
+const fileUpload = require("express-fileupload");
+
+app.use(fileUpload());
+
 
 // ROUTERS INITIALIZATION
 const { appApiRouter } = require('./router/oracle_api');
