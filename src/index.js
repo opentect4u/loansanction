@@ -237,8 +237,12 @@ const router = createBrowserRouter([
 					},
 					{
 						path: "home",
-						element: <HomeScreen />,
+						element: <Home />,
 						children: [
+							{
+								path: "",
+								element: <HomeScreen />,
+							},
 							{
 								path: "editloanform/:id",
 								element: <EditLoanForm />,

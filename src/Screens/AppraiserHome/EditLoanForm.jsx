@@ -196,6 +196,47 @@ function EditLoanForm() {
 		setLoading(false)
 	}
 
+	const fetchApplicationDetails = async () => {
+		setLoading(true)
+		await axios
+			.get(`${url}/sql/fetch_loan_dtls?application_no=${params?.id}`)
+			.then((res) => {
+				if (res?.data?.suc === 1) {
+					setValues({
+						l_member_id: res?.data?.msg[0]?.member_id,
+						l_membership_date:
+							new Date(res?.data?.msg[0]?.member_dt)
+								?.toISOString()
+								?.split("T")[0] || "",
+						l_name: res?.data?.msg[0]?.member_name,
+						l_father_husband_name: res?.data?.msg[0]?.father_name,
+						l_gender: res?.data?.msg[0]?.gender,
+						l_dob:
+							new Date(res?.data?.msg[0]?.dob)?.toISOString()?.split("T")[0] ||
+							"",
+						l_email: res?.data?.msg[0]?.email,
+						l_mobile_no: res?.data?.msg[0]?.mobile_no,
+						l_address: res?.data?.msg[0]?.memb_address,
+						l_loan_through_branch: res?.data?.msg[0]?.branch_code,
+						l_applied_for: res?.data?.msg[0]?.loan_type,
+						l_loan_amount: res?.data?.msg[0]?.loan_amt,
+						l_duration: res?.data?.msg[0]?.loan_period,
+					})
+				} else {
+					Message("warning", "No data found!")
+				}
+			})
+			.catch((err) => {
+				console.log("Error loan", err)
+				Message("error", "Some error occurred while fetching loan details.")
+			})
+		setLoading(false)
+	}
+
+	useEffect(() => {
+		fetchApplicationDetails()
+	}, [])
+
 	const formik = useFormik({
 		initialValues: formValues,
 		onSubmit,
@@ -205,55 +246,6 @@ function EditLoanForm() {
 		enableReinitialize: true,
 		validateOnMount: true,
 	})
-
-	const handleMemberIdBlur = async (event) => {
-		if (!formik.values.l_member_id || +formik.values.l_member_id === 0) {
-			Message("warning", "Please fill the Member ID.")
-			return
-		}
-		setLoading(true)
-		console.log("Member ID blurred:", event.target.value)
-
-		formik.handleBlur(event)
-
-		const creds = { cust_id: +formik.values.l_member_id }
-		await axios
-			.post(`${url}/oracle/select_cust_dtls`, creds)
-			.then((res) => {
-				if (res?.data?.suc === 1) {
-					const fetchedValues = {
-						l_member_id: formik.values.l_member_id || formValues.l_member_id,
-						l_membership_date:
-							new Date(res?.data?.msg?.CUST_DT)?.toISOString()?.split("T")[0] ||
-							"",
-						l_name: res?.data?.msg?.CUST_NAME || "",
-						l_father_husband_name: res?.data?.msg?.GUARDIAN_NAME || "",
-						l_gender: res?.data?.msg?.SEX || "",
-						l_dob:
-							new Date(res?.data?.msg?.DT_OF_BIRTH)
-								?.toISOString()
-								?.split("T")[0] || "",
-						l_email: res?.data?.msg?.EMAIL || "",
-						l_mobile_no: res?.data?.msg?.PHONE || "",
-						l_address: res?.data?.msg?.PRESENT_ADDRESS || "",
-					}
-
-					// Merge the fetched values with the existing form values
-					setValues((prevValues) => ({
-						...prevValues,
-						...fetchedValues,
-					}))
-				} else {
-					Message("error", "Data not found!")
-					// Reset all form values if data not found
-					setValues(initialValues)
-				}
-			})
-			.catch((err) => {
-				Message("error", "Some error occurred while fetching customer details.")
-			})
-		setLoading(false)
-	}
 
 	return (
 		<>
@@ -269,7 +261,7 @@ function EditLoanForm() {
 				{/* {JSON.stringify(loanAppData)} */}
 				<div className=" bg-white p-5 w-4/5 min-h-screen rounded-3xl">
 					<div className="w-auto mx-14 my-4">
-						<FormHeader text="Loan Application Form" />
+						<FormHeader text="Loan Application Preview & Edit" />
 					</div>
 					<Spin
 						indicator={<LoadingOutlined spin />}
@@ -288,7 +280,7 @@ function EditLoanForm() {
 											name="l_member_id"
 											formControlName={formik.values.l_member_id}
 											handleChange={formik.handleChange}
-											handleBlur={handleMemberIdBlur}
+											handleBlur={formik.handleBlur}
 											mode={1}
 										/>
 										{formik.errors.l_member_id && formik.touched.l_member_id ? (

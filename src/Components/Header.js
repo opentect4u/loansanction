@@ -270,10 +270,10 @@ function Header() {
 							style={{ backgroundColor: "#014737", verticalAlign: "middle" }}
 							size="small"
 						>
-							{localStorage.getItem("user_name").indexOf(" ") > 0
+							{/* {localStorage.getItem("user_name").indexOf(" ") > 0
 								? localStorage.getItem("user_name").split(" ")[0] +
 								  localStorage.getItem("user_name").split(" ")[1]
-								: localStorage.getItem("user_name").charAt(0)}
+								: localStorage.getItem("user_name").charAt(0)} */}
 						</Avatar>
 						<span className="text-sm text-nowrap text-yellow-300 font-bold">
 							Hi, {localStorage.getItem("user_name")}

@@ -10,15 +10,15 @@ import Error from "../../Components/Error"
 function Home() {
 	const location = useLocation()
 	const paths = location.pathname.split("/")
-	const [theme, setTheme] = useState(localStorage.getItem("col"))
-	console.log(paths)
-	useState(() => {
-		setTheme(localStorage.getItem("col"))
-	}, [localStorage.getItem("col")])
+	// const [theme, setTheme] = useState(localStorage.getItem("col"))
+	// console.log(paths)
+	// useState(() => {
+	// 	setTheme(localStorage.getItem("col"))
+	// }, [localStorage.getItem("col")])
 
 	return (
 		<div>
-			<Header />
+			{/* <Header /> */}
 			<Sidebar />
 			<div className="px-6 w-auto bg-[#eee9db] dark:bg-gray-800 min-h-screen ">
 				<div
