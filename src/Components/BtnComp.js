@@ -1,6 +1,12 @@
 import React from "react"
-import { SaveOutlined, DeleteOutlined, ReloadOutlined } from "@ant-design/icons"
-function BtnComp({ onReset, mode, onDelete }) {
+import {
+	SaveOutlined,
+	DeleteOutlined,
+	ReloadOutlined,
+	CloseOutlined,
+} from "@ant-design/icons"
+
+function BtnComp({ onReset, mode, onDelete, rejectBtn, onReject }) {
 	return (
 		<div className="flex justify-center">
 			{mode == "A" && (
@@ -30,6 +36,16 @@ function BtnComp({ onReset, mode, onDelete }) {
 				<SaveOutlined className="mr-2" />
 				Submit
 			</button>
+			{rejectBtn && (
+				<button
+					type="button"
+					className="inline-flex items-center px-5 py-2.5 mt-4 ml-2 sm:mt-6 text-sm font-medium text-center text-white border border-[#92140C] bg-[#92140C] transition ease-in-out hover:bg-[#a73b34] duration-300 rounded-full  dark:focus:ring-primary-900"
+					onClick={onReject}
+				>
+					<CloseOutlined className="mr-2" />
+					Reject
+				</button>
+			)}
 		</div>
 	)
 }

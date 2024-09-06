@@ -53,114 +53,114 @@ function Menus({ theme }) {
 			icon: <BarChartOutlined />,
 			label: <Link to={""}>Dashboard </Link>,
 		},
-		{
-			label: "Loan",
-			key: "sub2",
-			icon: <DatabaseOutlined />,
-			children: [
-				{
-					key: "masters:dept",
-					icon: <BankOutlined />,
-					label: <Link to={routePaths.DEPARTMENTS}>Department</Link>,
-				},
-				// {
-				//   key: "masters:desig",
-				//   icon: <IdcardOutlined />,
-				//   label: <Link to={routePaths.DESIGNATIONS}>Designation</Link>,
-				// },
-				{
-					key: "masters:cat",
-					icon: <BlockOutlined />,
-					label: <Link to={routePaths.CATEGORIES}>Product Category</Link>,
-				},
-				// {
-				//   key: "masters:3",
-				//   icon: <ProjectOutlined />,
-				//   label: <Link to={routePaths.PROJECTS}>Projects</Link>,
-				// },
+		// {
+		// 	label: "Loan",
+		// 	key: "sub2",
+		// 	icon: <DatabaseOutlined />,
+		// 	children: [
+		// 		{
+		// 			key: "masters:dept",
+		// 			icon: <BankOutlined />,
+		// 			label: <Link to={routePaths.DEPARTMENTS}>Department</Link>,
+		// 		},
+		// 		// {
+		// 		//   key: "masters:desig",
+		// 		//   icon: <IdcardOutlined />,
+		// 		//   label: <Link to={routePaths.DESIGNATIONS}>Designation</Link>,
+		// 		// },
+		// 		{
+		// 			key: "masters:cat",
+		// 			icon: <BlockOutlined />,
+		// 			label: <Link to={routePaths.CATEGORIES}>Product Category</Link>,
+		// 		},
+		// 		// {
+		// 		//   key: "masters:3",
+		// 		//   icon: <ProjectOutlined />,
+		// 		//   label: <Link to={routePaths.PROJECTS}>Projects</Link>,
+		// 		// },
 
-				{
-					key: "masters:unit",
-					icon: <PayCircleOutlined />,
-					label: <Link to={routePaths.UNITS}>Unit</Link>,
-				},
-				{
-					key: "masters:product",
-					icon: <ToolOutlined />,
-					label: <Link to={routePaths.PRODUCTS}>Product</Link>,
-				},
-				{
-					key: "masters:vendor",
-					icon: <ShopOutlined />,
-					label: <Link to={routePaths.VENDORS}>Vendor</Link>,
-				},
-				{
-					key: "masters:client",
-					icon: <UserSwitchOutlined />,
-					label: <Link to={routePaths.CLIENTS}>Client </Link>,
-				},
-				{
-					key: "masters:gst",
-					icon: <PercentageOutlined />,
-					label: <Link to={routePaths.GST}>GST </Link>,
-				},
-				// {
-				//   key: "masters:user",
-				//   icon: <UserAddOutlined />,
-				//   label: <Link to={routePaths.USERS}>Company User </Link>,
-				// },
-			],
-		},
+		// 		{
+		// 			key: "masters:unit",
+		// 			icon: <PayCircleOutlined />,
+		// 			label: <Link to={routePaths.UNITS}>Unit</Link>,
+		// 		},
+		// 		{
+		// 			key: "masters:product",
+		// 			icon: <ToolOutlined />,
+		// 			label: <Link to={routePaths.PRODUCTS}>Product</Link>,
+		// 		},
+		// 		{
+		// 			key: "masters:vendor",
+		// 			icon: <ShopOutlined />,
+		// 			label: <Link to={routePaths.VENDORS}>Vendor</Link>,
+		// 		},
+		// 		{
+		// 			key: "masters:client",
+		// 			icon: <UserSwitchOutlined />,
+		// 			label: <Link to={routePaths.CLIENTS}>Client </Link>,
+		// 		},
+		// 		{
+		// 			key: "masters:gst",
+		// 			icon: <PercentageOutlined />,
+		// 			label: <Link to={routePaths.GST}>GST </Link>,
+		// 		},
+		// 		// {
+		// 		//   key: "masters:user",
+		// 		//   icon: <UserAddOutlined />,
+		// 		//   label: <Link to={routePaths.USERS}>Company User </Link>,
+		// 		// },
+		// 	],
+		// },
 
-		{
-			label: "Orders",
-			key: "sub4",
-			icon: <AuditOutlined />,
-			children: [
-				{
-					// key: "client-order",
-					// icon: <UserOutlined />,
-					// label: <Link to={routePaths.CLIENTORDER}>Client Orders</Link>,
-					key: "master:projects",
-					icon: <UserSwitchOutlined />,
-					label: <Link to={routePaths.PROJECTS}>Client Orders</Link>,
-				},
-				{
-					label: (
-						<Link to={routePaths.PURCHASEORDER + "/P"}>Vendor Orders</Link>
-					),
-					key: "purchase-order",
-					icon: <SolutionOutlined />,
-				},
+		// {
+		// 	label: "Orders",
+		// 	key: "sub4",
+		// 	icon: <AuditOutlined />,
+		// 	children: [
+		// 		{
+		// 			// key: "client-order",
+		// 			// icon: <UserOutlined />,
+		// 			// label: <Link to={routePaths.CLIENTORDER}>Client Orders</Link>,
+		// 			key: "master:projects",
+		// 			icon: <UserSwitchOutlined />,
+		// 			label: <Link to={routePaths.PROJECTS}>Client Orders</Link>,
+		// 		},
+		// 		{
+		// 			label: (
+		// 				<Link to={routePaths.PURCHASEORDER + "/P"}>Vendor Orders</Link>
+		// 			),
+		// 			key: "purchase-order",
+		// 			icon: <SolutionOutlined />,
+		// 		},
 
-				{
-					label: (
-						<Link to={routePaths.EXISTINGORDER}>Existing Purchase Orders</Link>
-					),
-					key: "existing-order",
-					icon: <CheckCircleOutlined />,
-				},
-				{
-					label: <Link to={routePaths.AMENDORDER}>Amend Purchase Orders</Link>,
-					key: "amend-order",
-					icon: <SignatureOutlined />,
-				},
-				{
-					// label: <Link to={routePaths.PURCHASEORDER+'/A'}>Approve Vendor Orders</Link>,
-					label: (
-						<Link to={routePaths.APPROVEORDER}>Approve Vendor Orders</Link>
-					),
-					key: "approve-purchase-order",
-					icon: <CheckOutlined />,
-				},
+		// 		{
+		// 			label: (
+		// 				<Link to={routePaths.EXISTINGORDER}>Existing Purchase Orders</Link>
+		// 			),
+		// 			key: "existing-order",
+		// 			icon: <CheckCircleOutlined />,
+		// 		},
+		// 		{
+		// 			label: <Link to={routePaths.AMENDORDER}>Amend Purchase Orders</Link>,
+		// 			key: "amend-order",
+		// 			icon: <SignatureOutlined />,
+		// 		},
+		// 		{
+		// 			// label: <Link to={routePaths.PURCHASEORDER+'/A'}>Approve Vendor Orders</Link>,
+		// 			label: (
+		// 				<Link to={routePaths.APPROVEORDER}>Approve Vendor Orders</Link>
+		// 			),
+		// 			key: "approve-purchase-order",
+		// 			icon: <CheckOutlined />,
+		// 		},
 
-				// {
-				//   label: <Link to={routePaths.CANCELHOME}>Cancel Purchase Orders</Link>,
-				//   key: "cancel-purchase-order",
-				//   icon: <CloseCircleOutlined />,
-				// }
-			],
-		},
+		// 		// {
+		// 		//   label: <Link to={routePaths.CANCELHOME}>Cancel Purchase Orders</Link>,
+		// 		//   key: "cancel-purchase-order",
+		// 		//   icon: <CloseCircleOutlined />,
+		// 		// }
+		// 	],
+		// },
 		// {
 		// 	label: <Link to={routePaths.TESTCERTHOME}>Upload Test Certificate</Link>,
 		// 	key: "uploadtc-purchase-order",

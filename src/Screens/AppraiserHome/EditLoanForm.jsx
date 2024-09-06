@@ -185,6 +185,11 @@ function EditLoanForm() {
 		fetchLoanTypes()
 	}, [])
 
+	const handleReset = () => {
+		setPdfFiles(() => [])
+		setValues(initialValues)
+	}
+
 	const onSubmit = async (values) => {
 		console.log("onsubmit called")
 		console.log(values, "onsubmit vendor")
@@ -602,8 +607,13 @@ function EditLoanForm() {
 										))}
 								</div>
 
-								<div className="mt-20">
-									<BtnComp mode="A" onReset={formik.handleReset} />
+								<div className="mt-10">
+									<BtnComp
+										mode="A"
+										rejectBtn={true}
+										onReject={() => Message("error", "Rejected Application!")}
+										onReset={handleReset}
+									/>
 								</div>
 							</div>
 						</form>

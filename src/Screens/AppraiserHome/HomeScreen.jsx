@@ -34,6 +34,7 @@ import { LoadingOutlined } from "@ant-design/icons"
 function HomeScreen() {
 	const [loading, setLoading] = useState(false)
 	const [loanApplications, setLoanApplications] = useState(() => [])
+	const [copyLoanApplications, setCopyLoanApplications] = useState(() => [])
 
 	const fetchLoanApplications = async () => {
 		setLoading(true)
@@ -42,6 +43,7 @@ function HomeScreen() {
 			.then((res) => {
 				if (res?.data?.suc === 1) {
 					setLoanApplications(res?.data?.msg)
+					setCopyLoanApplications(res?.data?.msg)
 				} else {
 					Message("error", "No incoming loan applications found.")
 				}
@@ -58,13 +60,25 @@ function HomeScreen() {
 
 	const setSearch = (word) => {
 		setLoanApplications(
-			loanApplications?.filter(
+			copyLoanApplications?.filter(
 				(e) =>
-					e?.sl_no?.toLowerCase().includes(word?.toLowerCase()) ||
-					e?.application_no?.toLowerCase().includes(word?.toLowerCase()) ||
-					e?.member_name?.toLowerCase().includes(word?.toLowerCase()) ||
-					e?.branch_name?.toLowerCase().includes(word?.toLowerCase()) ||
-					e?.loan_type_name?.toLowerCase().includes(word?.toLowerCase())
+					e?.sl_no?.toString()?.toLowerCase().includes(word?.toLowerCase()) ||
+					e?.application_no
+						?.toString()
+						?.toLowerCase()
+						?.includes(word?.toLowerCase()) ||
+					e?.member_name
+						?.toString()
+						?.toLowerCase()
+						?.includes(word?.toLowerCase()) ||
+					e?.branch_name
+						?.toString()
+						?.toLowerCase()
+						?.includes(word?.toLowerCase()) ||
+					e?.loan_type_name
+						?.toString()
+						?.toLowerCase()
+						?.includes(word?.toLowerCase())
 			)
 		)
 	}
@@ -78,7 +92,7 @@ function HomeScreen() {
 				className="text-red-800 dark:text-gray-400"
 				spinning={loading}
 			>
-				<main className="px-4 h-auto my-32 mx-32">
+				<main className="px-4 h-auto my-10 mx-32">
 					<LoanApplicationsTableView
 						loanAppData={loanApplications}
 						title="Loan Applications"
