@@ -323,6 +323,17 @@ function EditLoanForm() {
 					>
 						<form onSubmit={formik.handleSubmit}>
 							<div className="card flex flex-col justify-center px-16 py-5">
+								<div className="mb-4">
+									<TDInputTemplate
+										placeholder="Application Number"
+										type="text"
+										label="Application Number"
+										name="app_no"
+										formControlName={params.id}
+										mode={1}
+										disabled
+									/>
+								</div>
 								<div className="grid gap-4 sm:grid-cols-6 sm:gap-6">
 									<div className="sm:col-span-2">
 										<TDInputTemplate
