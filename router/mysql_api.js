@@ -88,6 +88,9 @@ const Max_appNo = () => {
 sqlRouter.post("/insert_loan_dtls", async (req, res) => {
   var data = req.body,
   files = req.files ? req.files.file_path : null;
+  console.log(files,'sssssssss');
+  
+  // docs = req.docs ? req.docs.file_name : null;
   // console.log(data,'data');
   var max_app = Max_appNo()
   console.log(max_app, "kkkkkkkkkk");
@@ -118,15 +121,17 @@ sqlRouter.post("/insert_loan_dtls", async (req, res) => {
     whr = null,
     flag = 0;
   var res_dt = await db_Insert(table_name, fields, values, whr, flag);
-
+  var fileData = JSON.parse(data.file_name)
   if(res_dt.suc > 0 && files){
     if(Array.isArray(files)){
+      var i = 0
       for(let fdt of files){
-        var file_dt = await saveFile(fdt, newId, data.member_id)
+        var file_dt = await saveFile(fdt, newId, data.member_id, fileData[i].l_file_name)
         console.log(file_dt);
+        i++
       }
     }else{
-      var file_dt = await saveFile(files, newId, data.member_id)
+      var file_dt = await saveFile(files, newId, data.member_id, fileData[0].l_file_name)
     }
   }
   const app_id = "app_id"
@@ -177,6 +182,32 @@ sqlRouter.post("/user_login", async (req, res) => {
       }
   });
 
+
+  sqlRouter.get("/select_br_manager", async (req, res) => {
+    var data = req.query;
+  
+    var select = 'a.id, a.first_name, a.last_name, b.branch_code, c.branch_name',
+      table_name = 'md_users a, td_loan_application b, md_branch c',
+      whr = `b.branch_code=c.sl_no and c.sl_no=a.branch_code and b.application_no=${data.application_no}`,
+      order = null;
+    var res_dt = await db_Select(select, table_name, whr, order)
+    res.send(res_dt)
+});
+
+
+
+// sqlRouter.post("/approve_application", async (req, res) => {
+//       var data = req.body;
+//       var table_name = "md_users",
+//         fields = "user_approve='1'",
+//         values = null,
+//         whr = "user_type",
+//         flag = data.id > 0 ? 1 : 0;
+//       var res_dt = await db_Insert(table_name, fields, values, whr, flag);
+//       res.send(res_dt)
+//   });
+
+
 sqlRouter.get("/fetch_loan_dtls", async (req, res) => {
     var data = req.query;
   
@@ -223,15 +254,15 @@ sqlRouter.get("/fetch_loan_dtls", async (req, res) => {
 //   });
 
 
-// sqlRouter.post("/upload_file", async (req, res) => {
-//   var data = req.body
-//   var file = req.files
+sqlRouter.post("/upload_file", async (req, res) => {
+  var data = req.body
+  var file = req.files
 //  console.log(file,'ss');
-//  var res_dt = await saveFile(file.file,data)
-//  console.log(data,'pppp');
-//  var file_name = "file_name"
-//  // res_dt['file_name'] = file
-//  res.send(res_dt)
-//  });
+ var res_dt = await saveFile(file.file_path,data.application_no,data.member_id,data.file_name)
+//  console.log(res_dt,'pppp');
+ var file_name = "file_name"
+ // res_dt['file_name'] = file
+ res.send(res_dt)
+ });
 
 module.exports = {sqlRouter}
