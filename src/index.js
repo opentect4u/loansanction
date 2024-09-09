@@ -233,19 +233,19 @@ const router = createBrowserRouter([
 								path: "forgotpassword",
 								element: <ForgotPass />,
 							},
-						],
-					},
-					{
-						path: "home",
-						element: <Home />,
-						children: [
 							{
-								path: "",
-								element: <HomeScreen />,
-							},
-							{
-								path: "editloanform/:id",
-								element: <EditLoanForm />,
+								path: "home",
+								element: <Home />,
+								children: [
+									{
+										path: "",
+										element: <HomeScreen />,
+									},
+									{
+										path: "editloanform/:id",
+										element: <EditLoanForm />,
+									},
+								],
 							},
 						],
 					},

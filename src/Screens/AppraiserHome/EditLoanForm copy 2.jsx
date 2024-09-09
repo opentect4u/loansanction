@@ -27,7 +27,7 @@ const MAX_FILE_SIZE = 200000
 function EditLoanForm() {
 	const params = useParams()
 	const [loading, setLoading] = useState(false)
-	const [selectedFiles, setSelectedFile] = useState([])
+
 	const location = useLocation()
 	const { loanAppData } = location.state || {}
 	const navigate = useNavigate()
@@ -38,7 +38,6 @@ function EditLoanForm() {
 	const [applicationId, setApplicationId] = useState(() => "")
 	const [pdfFiles, setPdfFiles] = useState(() => [])
 	const [singlePdfFile, setSinglePdfFile] = useState(() => null)
-	const [fileArray, setFileArray] = useState(() => [])
 
 	console.log(params, "params")
 	const initialValues = {
@@ -55,7 +54,7 @@ function EditLoanForm() {
 		l_applied_for: "",
 		l_loan_amount: "",
 		l_duration: "",
-		l_documents: [{ l_file_name: "", l_file: "" }],
+		l_documents: [{ sl_no: 0, l_file_name: "", l_file: "" }],
 	}
 	const [formValues, setValues] = useState({
 		l_member_id: "",
@@ -71,8 +70,10 @@ function EditLoanForm() {
 		l_applied_for: "",
 		l_loan_amount: "",
 		l_duration: "",
-		l_documents: [{ l_file_name: "", l_file: "" }],
+		l_documents: [{ sl_no: 0, l_file_name: "", l_file: "" }],
 	})
+
+	
 
 	const getExtension = (fileName) => {
 		if (!fileName) return ""
@@ -140,26 +141,10 @@ function EditLoanForm() {
 		// )
 	})
 
-	var fileList = []
-
-	const handleFilesChange = (event, index) => {
-		console.log("HHHHHHHHHHHHHHHHHHHHHHHHHH", fileList.length)
+	const handleFilesChange = (event) => {
 		formik.handleChange(event)
 		console.log(event)
-		console.log(event.target.files[0])
-		// selectedFiles.push({
-		// 	name: formik.values.l_documents[index].l_file_name,
-		// 	file: event.target.files[0],
-		// })
-		// setSelectedFile(selectedFiles)
-		setSelectedFile(...selectedFiles, {
-			name: formik.values.l_documents[index].l_file_name,
-			file: event.target.files[0],
-		})
-
-		console.log(selectedFiles)
-		// const files = event.currentTarget.files
-		const files = event.target.files[0]
+		const files = event.currentTarget.files
 
 		const pdfFilteredFiles = Array.from(files)?.filter(
 			(file) => getExtension(file?.name) === "pdf"
@@ -171,54 +156,9 @@ function EditLoanForm() {
 		setSinglePdfFile(event.currentTarget.files[0])
 		// const newFiles = Array.from(pdfFilteredFiles)
 		// setPdfFiles([...pdfFiles, ...newFiles])
-
-		fileList.push({ file: event.currentTarget.files }) // Store the selected files in state
-		setPdfFiles(fileList)
-
-		console.log("+===========================++++++++", fileList)
-		// setPdfFiles(event.currentTarget.files) // Store the selected files in state
+		setPdfFiles(pdfFilteredFiles) // Store the selected files in state
 		// setFieldValue("files", files) // Set Formik value
-
-		console.log("iurhgbvfvfrr================++++", pdfFiles)
-		// setValues({...prev, l_documents: [
-		// 	{ sl_no: 0, l_file_name: "", l_file:  }
-		// ]})
-
-		// setValues({
-		// 	...formValues,
-		// 	l_documents: [
-		// 		{
-		// 			sl_no: 0,
-		// 			l_file_name: event.currentTarget.files[0].name,
-		// 			l_file: event.currentTarget.files[0],
-		// 		},
-		// 	],
-		// })
-
-		console.log("LLLLL", formValues.l_documents)
 	}
-
-	// const handleFilesChange = (event) => {
-	// 	formik.handleChange(event) // Handle formik change if needed
-
-	// 	const files = event.currentTarget.files
-	// 	const pdfFilteredFiles = Array.from(files)?.filter(
-	// 		(file) => getExtension(file?.name) === "pdf" // Filter only PDF files
-	// 	)
-
-	// 	// Log selected files
-	// 	console.log("All Files:", files)
-	// 	console.log("Filtered PDF Files:", pdfFilteredFiles)
-
-	// 	// Handle single file selection (if required)
-	// 	setSinglePdfFile(files[0]) // Set the first file for single selection
-
-	// 	// Update the list of files in state (appending new files to the existing list)
-	// 	setPdfFiles((prevFiles) => [...prevFiles, ...pdfFilteredFiles])
-
-	// 	// Optionally, you can set Formik field value if needed
-	// 	// formik.setFieldValue("files", [...prevFiles, ...pdfFilteredFiles]);
-	// }
 
 	const handleRemove = (index, setFieldValue) => {
 		const updatedFiles = pdfFiles.filter((_, i) => i !== index) // Remove file by index
@@ -295,18 +235,10 @@ function EditLoanForm() {
 		// data.append("application_no", params.id)
 		// data.append("member_id", values?.l_member_id)
 
-		data.append("file_name", JSON.stringify(values?.l_documents))
-
-		// pdfFiles?.forEach((pdf, i) => {
-		// 	let file = new File([pdf], `File_Application_${i}` + ".pdf")
-		// 	data.append("file_path", file)
-		// })
-
-		fileArray?.forEach((item, i) => {
-			let file = new File([item], `File_Application_${i}` + ".pdf")
-			data.append("file_path", item)
+		pdfFiles?.forEach((pdf, i) => {
+			let file = new File([pdf], `File_Application_${i}` + ".pdf")
+			data.append("file_path", file)
 		})
-
 		// data.append("file_path", file)
 
 		console.log("FORM DATA", data)
@@ -353,7 +285,8 @@ function EditLoanForm() {
 						l_applied_for: res?.data?.msg[0]?.loan_type,
 						l_loan_amount: res?.data?.msg[0]?.loan_amt,
 						l_duration: res?.data?.msg[0]?.loan_period,
-						l_documents: [{ l_file_name: "", l_file: "" }],
+						l_documents: [{ sl_no: 0, l_file_name: "", l_file: "" }],
+
 					})
 				} else {
 					Message("warning", "No data found!")
@@ -379,14 +312,6 @@ function EditLoanForm() {
 		enableReinitialize: true,
 		validateOnMount: true,
 	})
-
-	const filePush = (file) => {
-		setFileArray((prev) => [...prev, file])
-	}
-
-	const removeFile = (index) => {
-		setFileArray(fileArray.filter((_, i) => i !== index))
-	}
 
 	return (
 		<>
@@ -426,7 +351,7 @@ function EditLoanForm() {
 								errors,
 								touched,
 							}) => (
-								<form onSubmit={handleSubmit}>
+								<form>
 									<div className="card flex flex-col justify-center px-16 py-5">
 										<div className="mb-4">
 											<TDInputTemplate
@@ -657,14 +582,14 @@ function EditLoanForm() {
 												) : null}
 											</div>
 										</div>
-
+                                        
 										<FieldArray name="l_documents">
 											{({ push, remove, insert, unshift }) => (
 												<>
+
 													{values.l_documents?.map((item, index) => (
 														<React.Fragment key={index}>
-															<div className="flex flex-col my-8 border-t-2 border-yellow-200 border-dashed">
-																<div className="mt-4">
+																<div>
 																	<TDInputTemplate
 																		placeholder="Type File Name..."
 																		type="text"
@@ -680,95 +605,92 @@ function EditLoanForm() {
 																<VError title={errors.l_file_name} />
 															) : null} */}
 																</div>
-																<div className="mt-2">
+																<div>
 																	<TDInputTemplate
 																		placeholder="Upload Documents"
 																		type="file"
-																		// multiple={true}
+																		multiple={true}
 																		accept="application/pdf"
 																		label="Upload Documents"
 																		name={`l_documents[${index}].l_file`}
-																		// formControlName={item.l_file}
+																		formControlName={item.l_file}
 																		// handleChange={(e) => {
-																		// 	formik.handleChange(e)
 																		// 	console.log("SINGLE FILE", e.target.files)
-																		// 	// setSelectedFile(e.target.files[0])
+																		// 	setSelectedFile(e.target.files[0])
 																		// }}
-																		handleChange={(event) => {
-																			const files = event.target.files
-																			if (files) {
-																				Array.from(files).forEach((file) => {
-																					filePush(file)
-																				})
-																			}
-																		}}
-																		// handleChange={handleChange}
+																		handleChange={handleFilesChange}
 																		handleBlur={handleBlur}
 																		mode={1}
 																	/>
-																	{errors.l_file && touched.l_file ? (
-																		<VError title={errors.l_file} />
-																	) : null}
+																	{/* {errors.l_file && touched.l_file ? (
+																<VError title={errors.l_file} />
+															) : null} */}
 																</div>
-															</div>
-
-															<div className="flex flex-row gap-2 justify-end align-middle">
-																{values?.l_documents?.length > 1 && (
-																	<div>
-																		<Button
-																			className="rounded-full text-white bg-red-800 border-red-800"
-																			onClick={() => {
-																				remove(index)
-																				removeFile(index)
-																			}}
-																			icon={<MinusOutlined />}
-																		></Button>
-																	</div>
-																)}
 																<div>
 																	<Button
-																		className="rounded-full bg-yellow-400 text-white"
-																		onClick={() => {
-																			push({
-																				// sl_no: 0,
-																				l_file_name: "",
-																				l_file: "",
-																			})
-																			console.log(values.l_documents)
-																		}}
-																		icon={<PlusOutlined />}
+																		className="rounded-full text-white bg-red-800 border-red-800"
+																		onClick={() => remove(index)}
+																		icon={<MinusOutlined />}
 																	></Button>
 																</div>
-															</div>
-
-															{/* <div>
-																{pdfFiles &&
-																	Array.from(pdfFiles).map((file, index) => (
-																		<div key={index}>
-																			<embed
-																				src={URL.createObjectURL(file)}
-																				className="rounded-lg"
-																				width="200"
-																				height="200"
-																				type="application/pdf"
-																			/>
-																			<button
-																				type="button"
-																				onClick={() => handleRemove(index)}
-																				className="w-8 h-2 p-5 bg-red-800 text-white text-lg mt-3 flex justify-center items-center rounded-lg"
-																			>
-																				<DeleteOutlined />
-																			</button>
-																		</div>
-																	))}
-															</div> */}
 														</React.Fragment>
 													))}
 
-													{/* <div className="sm:col-span-1"></div> */}
+													<div className="sm:col-span-1"></div>
+													<div className="sm:col-span-1 flex gap-2 justify-end item-center mt-5">
+														{/* {values.l_documents?.length > 1 && (
+														<Button
+															className="rounded-full text-white bg-red-800 border-red-800"
+																										<>oooooooooooooooooooooooooooooooooooooooooooooo
+			onClick={() => arrayHelpers.remove(index)}
+															icon={<MinusOutlined />}
+														></Button>
+													)} */}
+
+														<Button
+															className="rounded-full bg-yellow-400 text-white"
+															onClick={() =>
+																push({
+																	sl_no: 0,
+																	l_file_name: "",
+																	l_file: "",
+																})
+															}
+															icon={<PlusOutlined />}
+														></Button>
+													</div>
 												</>
 											)}
 										</FieldArray>
+
+										<div className="grid gap-4 sm:grid-cols-2 sm:gap-6 place-items-center p-5">
+											{pdfFiles &&
+												Array.from(pdfFiles).map((file, index) => (
+													<div key={index}>
+														{/* <p>{file.name}</p>
+													<a
+														href={URL.createObjectURL(file)}
+														download={file.name}
+													>
+														Download PDF
+													</a> */}
+														<embed
+															src={URL.createObjectURL(file)}
+															className="rounded-lg"
+															width="400"
+															height="500"
+															type="application/pdf"
+														/>
+														<button
+															type="button"
+															onClick={() => handleRemove(index)}
+															className="w-8 h-2 p-5 bg-red-800 text-white text-lg mt-3 flex justify-center items-center rounded-lg"
+														>
+															<DeleteOutlined />
+														</button>
+													</div>
+												))}
+										</div>
 
 										<div className="mt-10">
 											<BtnComp

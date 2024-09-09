@@ -27,7 +27,7 @@ const MAX_FILE_SIZE = 200000
 function EditLoanForm() {
 	const params = useParams()
 	const [loading, setLoading] = useState(false)
-	const [selectedFiles, setSelectedFile] = useState([])
+
 	const location = useLocation()
 	const { loanAppData } = location.state || {}
 	const navigate = useNavigate()
@@ -38,25 +38,9 @@ function EditLoanForm() {
 	const [applicationId, setApplicationId] = useState(() => "")
 	const [pdfFiles, setPdfFiles] = useState(() => [])
 	const [singlePdfFile, setSinglePdfFile] = useState(() => null)
-	const [fileArray, setFileArray] = useState(() => [])
 
 	console.log(params, "params")
-	const initialValues = {
-		l_member_id: "",
-		l_membership_date: "",
-		l_name: "",
-		l_father_husband_name: "",
-		l_gender: "",
-		l_dob: "",
-		l_email: "",
-		l_mobile_no: "",
-		l_address: "",
-		l_loan_through_branch: "",
-		l_applied_for: "",
-		l_loan_amount: "",
-		l_duration: "",
-		l_documents: [{ l_file_name: "", l_file: "" }],
-	}
+
 	const [formValues, setValues] = useState({
 		l_member_id: "",
 		l_membership_date: "",
@@ -71,8 +55,26 @@ function EditLoanForm() {
 		l_applied_for: "",
 		l_loan_amount: "",
 		l_duration: "",
-		l_documents: [{ l_file_name: "", l_file: "" }],
+		// l_documents: "",
+		l_documents: [{ sl_no: 0, l_file_name: "", l_file: "" }],
 	})
+
+	const initialValues = {
+		l_member_id: "",
+		l_membership_date: "",
+		l_name: "",
+		l_father_husband_name: "",
+		l_gender: "",
+		l_dob: "",
+		l_email: "",
+		l_mobile_no: "",
+		l_address: "",
+		l_loan_through_branch: "",
+		l_applied_for: "",
+		l_loan_amount: "",
+		l_duration: "",
+		l_documents: [{ sl_no: 0, l_file_name: "", l_file: "" }],
+	}
 
 	const getExtension = (fileName) => {
 		if (!fileName) return ""
@@ -140,26 +142,10 @@ function EditLoanForm() {
 		// )
 	})
 
-	var fileList = []
-
-	const handleFilesChange = (event, index) => {
-		console.log("HHHHHHHHHHHHHHHHHHHHHHHHHH", fileList.length)
+	const handleFilesChange = (event) => {
 		formik.handleChange(event)
 		console.log(event)
-		console.log(event.target.files[0])
-		// selectedFiles.push({
-		// 	name: formik.values.l_documents[index].l_file_name,
-		// 	file: event.target.files[0],
-		// })
-		// setSelectedFile(selectedFiles)
-		setSelectedFile(...selectedFiles, {
-			name: formik.values.l_documents[index].l_file_name,
-			file: event.target.files[0],
-		})
-
-		console.log(selectedFiles)
-		// const files = event.currentTarget.files
-		const files = event.target.files[0]
+		const files = event.currentTarget.files
 
 		const pdfFilteredFiles = Array.from(files)?.filter(
 			(file) => getExtension(file?.name) === "pdf"
@@ -171,54 +157,9 @@ function EditLoanForm() {
 		setSinglePdfFile(event.currentTarget.files[0])
 		// const newFiles = Array.from(pdfFilteredFiles)
 		// setPdfFiles([...pdfFiles, ...newFiles])
-
-		fileList.push({ file: event.currentTarget.files }) // Store the selected files in state
-		setPdfFiles(fileList)
-
-		console.log("+===========================++++++++", fileList)
-		// setPdfFiles(event.currentTarget.files) // Store the selected files in state
+		setPdfFiles(pdfFilteredFiles) // Store the selected files in state
 		// setFieldValue("files", files) // Set Formik value
-
-		console.log("iurhgbvfvfrr================++++", pdfFiles)
-		// setValues({...prev, l_documents: [
-		// 	{ sl_no: 0, l_file_name: "", l_file:  }
-		// ]})
-
-		// setValues({
-		// 	...formValues,
-		// 	l_documents: [
-		// 		{
-		// 			sl_no: 0,
-		// 			l_file_name: event.currentTarget.files[0].name,
-		// 			l_file: event.currentTarget.files[0],
-		// 		},
-		// 	],
-		// })
-
-		console.log("LLLLL", formValues.l_documents)
 	}
-
-	// const handleFilesChange = (event) => {
-	// 	formik.handleChange(event) // Handle formik change if needed
-
-	// 	const files = event.currentTarget.files
-	// 	const pdfFilteredFiles = Array.from(files)?.filter(
-	// 		(file) => getExtension(file?.name) === "pdf" // Filter only PDF files
-	// 	)
-
-	// 	// Log selected files
-	// 	console.log("All Files:", files)
-	// 	console.log("Filtered PDF Files:", pdfFilteredFiles)
-
-	// 	// Handle single file selection (if required)
-	// 	setSinglePdfFile(files[0]) // Set the first file for single selection
-
-	// 	// Update the list of files in state (appending new files to the existing list)
-	// 	setPdfFiles((prevFiles) => [...prevFiles, ...pdfFilteredFiles])
-
-	// 	// Optionally, you can set Formik field value if needed
-	// 	// formik.setFieldValue("files", [...prevFiles, ...pdfFilteredFiles]);
-	// }
 
 	const handleRemove = (index, setFieldValue) => {
 		const updatedFiles = pdfFiles.filter((_, i) => i !== index) // Remove file by index
@@ -295,18 +236,10 @@ function EditLoanForm() {
 		// data.append("application_no", params.id)
 		// data.append("member_id", values?.l_member_id)
 
-		data.append("file_name", JSON.stringify(values?.l_documents))
-
-		// pdfFiles?.forEach((pdf, i) => {
-		// 	let file = new File([pdf], `File_Application_${i}` + ".pdf")
-		// 	data.append("file_path", file)
-		// })
-
-		fileArray?.forEach((item, i) => {
-			let file = new File([item], `File_Application_${i}` + ".pdf")
-			data.append("file_path", item)
+		pdfFiles?.forEach((pdf, i) => {
+			let file = new File([pdf], `File_Application_${i}` + ".pdf")
+			data.append("file_path", file)
 		})
-
 		// data.append("file_path", file)
 
 		console.log("FORM DATA", data)
@@ -353,7 +286,6 @@ function EditLoanForm() {
 						l_applied_for: res?.data?.msg[0]?.loan_type,
 						l_loan_amount: res?.data?.msg[0]?.loan_amt,
 						l_duration: res?.data?.msg[0]?.loan_period,
-						l_documents: [{ l_file_name: "", l_file: "" }],
 					})
 				} else {
 					Message("warning", "No data found!")
@@ -380,14 +312,6 @@ function EditLoanForm() {
 		validateOnMount: true,
 	})
 
-	const filePush = (file) => {
-		setFileArray((prev) => [...prev, file])
-	}
-
-	const removeFile = (index) => {
-		setFileArray(fileArray.filter((_, i) => i !== index))
-	}
-
 	return (
 		<>
 			<Sidebar />
@@ -411,7 +335,7 @@ function EditLoanForm() {
 						spinning={loading}
 					>
 						<Formik
-							initialValues={formValues}
+							initialValues={+params.id > 0 ? formValues : initialValues}
 							validationSchema={validationSchema}
 							onSubmit={onSubmit}
 							validateOnMount={true}
@@ -446,13 +370,14 @@ function EditLoanForm() {
 													type="text"
 													label="Member ID"
 													name="l_member_id"
-													formControlName={values.l_member_id}
-													handleChange={handleChange}
-													handleBlur={handleBlur}
+													formControlName={formik.values.l_member_id}
+													handleChange={formik.handleChange}
+													handleBlur={formik.handleBlur}
 													mode={1}
 												/>
-												{errors.l_member_id && touched.l_member_id ? (
-													<VError title={errors.l_member_id} />
+												{formik.errors.l_member_id &&
+												formik.touched.l_member_id ? (
+													<VError title={formik.errors.l_member_id} />
 												) : null}
 											</div>
 											<div className="sm:col-span-2">
@@ -461,15 +386,15 @@ function EditLoanForm() {
 													type="date"
 													label="Membership Date"
 													name="l_membership_date"
-													formControlName={values.l_membership_date}
-													handleChange={handleChange}
-													handleBlur={handleBlur}
+													formControlName={formik.values.l_membership_date}
+													handleChange={formik.handleChange}
+													handleBlur={formik.handleBlur}
 													min={"1900-12-31"}
 													mode={1}
 												/>
-												{errors.l_membership_date &&
-												touched.l_membership_date ? (
-													<VError title={errors.l_membership_date} />
+												{formik.errors.l_membership_date &&
+												formik.touched.l_membership_date ? (
+													<VError title={formik.errors.l_membership_date} />
 												) : null}
 											</div>
 											<div className="sm:col-span-2">
@@ -478,13 +403,13 @@ function EditLoanForm() {
 													type="text"
 													label="Name"
 													name="l_name"
-													formControlName={values.l_name}
-													handleChange={handleChange}
-													handleBlur={handleBlur}
+													formControlName={formik.values.l_name}
+													handleChange={formik.handleChange}
+													handleBlur={formik.handleBlur}
 													mode={1}
 												/>
-												{errors.l_name && touched.l_name ? (
-													<VError title={errors.l_name} />
+												{formik.errors.l_name && formik.touched.l_name ? (
+													<VError title={formik.errors.l_name} />
 												) : null}
 											</div>
 										</div>
@@ -496,14 +421,14 @@ function EditLoanForm() {
 													type="text"
 													label="Father's/Husband's Name"
 													name="l_father_husband_name"
-													formControlName={values.l_father_husband_name}
-													handleChange={handleChange}
-													handleBlur={handleBlur}
+													formControlName={formik.values.l_father_husband_name}
+													handleChange={formik.handleChange}
+													handleBlur={formik.handleBlur}
 													mode={1}
 												/>
-												{errors.l_father_husband_name &&
-												touched.l_father_husband_name ? (
-													<VError title={errors.l_father_husband_name} />
+												{formik.errors.l_father_husband_name &&
+												formik.touched.l_father_husband_name ? (
+													<VError title={formik.errors.l_father_husband_name} />
 												) : null}
 											</div>
 											<div>
@@ -512,9 +437,9 @@ function EditLoanForm() {
 													type="text"
 													label="Gender"
 													name="l_gender"
-													formControlName={values.l_gender}
-													handleChange={handleChange}
-													handleBlur={handleBlur}
+													formControlName={formik.values.l_gender}
+													handleChange={formik.handleChange}
+													handleBlur={formik.handleBlur}
 													data={[
 														{ code: "M", name: "Male" },
 														{ code: "F", name: "Female" },
@@ -522,8 +447,8 @@ function EditLoanForm() {
 													]}
 													mode={2}
 												/>
-												{errors.l_gender && touched.l_gender ? (
-													<VError title={errors.l_gender} />
+												{formik.errors.l_gender && formik.touched.l_gender ? (
+													<VError title={formik.errors.l_gender} />
 												) : null}
 											</div>
 											<div>
@@ -532,14 +457,14 @@ function EditLoanForm() {
 													type="date"
 													label="Date of Birth (DOB)"
 													name="l_dob"
-													formControlName={values.l_dob}
-													handleChange={handleChange}
-													handleBlur={handleBlur}
-													max={values.l_membership_date}
+													formControlName={formik.values.l_dob}
+													handleChange={formik.handleChange}
+													handleBlur={formik.handleBlur}
+													max={formik.values.l_membership_date}
 													mode={1}
 												/>
-												{errors.l_dob && touched.l_dob ? (
-													<VError title={errors.l_dob} />
+												{formik.errors.l_dob && formik.touched.l_dob ? (
+													<VError title={formik.errors.l_dob} />
 												) : null}
 											</div>
 											<div>
@@ -548,13 +473,13 @@ function EditLoanForm() {
 													type="email"
 													label="Email"
 													name="l_email"
-													formControlName={values.l_email}
-													handleChange={handleChange}
-													handleBlur={handleBlur}
+													formControlName={formik.values.l_email}
+													handleChange={formik.handleChange}
+													handleBlur={formik.handleBlur}
 													mode={1}
 												/>
-												{errors.l_email && touched.l_email ? (
-													<VError title={errors.l_email} />
+												{formik.errors.l_email && formik.touched.l_email ? (
+													<VError title={formik.errors.l_email} />
 												) : null}
 											</div>
 											<div>
@@ -563,13 +488,13 @@ function EditLoanForm() {
 													type="text"
 													label={`Address`}
 													name="l_address"
-													formControlName={values.l_address}
-													handleChange={handleChange}
-													handleBlur={handleBlur}
+													formControlName={formik.values.l_address}
+													handleChange={formik.handleChange}
+													handleBlur={formik.handleBlur}
 													mode={3}
 												/>
-												{errors.l_address && touched.l_address ? (
-													<VError title={errors.l_address} />
+												{formik.errors.l_address && formik.touched.l_address ? (
+													<VError title={formik.errors.l_address} />
 												) : null}
 											</div>
 											<div>
@@ -578,13 +503,14 @@ function EditLoanForm() {
 													type="number"
 													label="Mobile Number"
 													name="l_mobile_no"
-													formControlName={values.l_mobile_no}
-													handleChange={handleChange}
-													handleBlur={handleBlur}
+													formControlName={formik.values.l_mobile_no}
+													handleChange={formik.handleChange}
+													handleBlur={formik.handleBlur}
 													mode={1}
 												/>
-												{errors.l_mobile_no && touched.l_mobile_no ? (
-													<VError title={errors.l_mobile_no} />
+												{formik.errors.l_mobile_no &&
+												formik.touched.l_mobile_no ? (
+													<VError title={formik.errors.l_mobile_no} />
 												) : null}
 											</div>
 											<div>
@@ -593,18 +519,18 @@ function EditLoanForm() {
 													type="text"
 													label="Loan Through Branch"
 													name="l_loan_through_branch"
-													formControlName={values.l_loan_through_branch}
-													handleChange={handleChange}
-													handleBlur={handleBlur}
+													formControlName={formik.values.l_loan_through_branch}
+													handleChange={formik.handleChange}
+													handleBlur={formik.handleBlur}
 													data={branches?.map((branch) => ({
 														code: branch?.sl_no,
 														name: branch?.branch_name,
 													}))}
 													mode={2}
 												/>
-												{errors.l_loan_through_branch &&
-												touched.l_loan_through_branch ? (
-													<VError title={errors.l_loan_through_branch} />
+												{formik.errors.l_loan_through_branch &&
+												formik.touched.l_loan_through_branch ? (
+													<VError title={formik.errors.l_loan_through_branch} />
 												) : null}
 											</div>
 											<div>
@@ -613,17 +539,18 @@ function EditLoanForm() {
 													type="text"
 													label="Applied For"
 													name="l_applied_for"
-													formControlName={values.l_applied_for}
-													handleChange={handleChange}
-													handleBlur={handleBlur}
+													formControlName={formik.values.l_applied_for}
+													handleChange={formik.handleChange}
+													handleBlur={formik.handleBlur}
 													data={loanTypes?.map((loan) => ({
 														code: loan?.sl_no,
 														name: loan?.loan_type,
 													}))}
 													mode={2}
 												/>
-												{errors.l_applied_for && touched.l_applied_for ? (
-													<VError title={errors.l_applied_for} />
+												{formik.errors.l_applied_for &&
+												formik.touched.l_applied_for ? (
+													<VError title={formik.errors.l_applied_for} />
 												) : null}
 											</div>
 											<div>
@@ -632,13 +559,14 @@ function EditLoanForm() {
 													type="number"
 													label="Loan Amount"
 													name="l_loan_amount"
-													formControlName={values.l_loan_amount}
-													handleChange={handleChange}
-													handleBlur={handleBlur}
+													formControlName={formik.values.l_loan_amount}
+													handleChange={formik.handleChange}
+													handleBlur={formik.handleBlur}
 													mode={1}
 												/>
-												{errors.l_loan_amount && touched.l_loan_amount ? (
-													<VError title={errors.l_loan_amount} />
+												{formik.errors.l_loan_amount &&
+												formik.touched.l_loan_amount ? (
+													<VError title={formik.errors.l_loan_amount} />
 												) : null}
 											</div>
 											<div>
@@ -647,128 +575,124 @@ function EditLoanForm() {
 													type="number"
 													label="Duration (In Months)"
 													name="l_duration"
-													formControlName={values.l_duration}
-													handleChange={handleChange}
-													handleBlur={handleBlur}
+													formControlName={formik.values.l_duration}
+													handleChange={formik.handleChange}
+													handleBlur={formik.handleBlur}
 													mode={1}
 												/>
-												{errors.l_duration && touched.l_duration ? (
-													<VError title={errors.l_duration} />
+												{formik.errors.l_duration &&
+												formik.touched.l_duration ? (
+													<VError title={formik.errors.l_duration} />
 												) : null}
 											</div>
 										</div>
 
-										<FieldArray name="l_documents">
+										<FieldArray validateOnChange={false} name="l_documents">
 											{({ push, remove, insert, unshift }) => (
 												<>
-													{values.l_documents?.map((item, index) => (
+													{formik.values.l_documents?.map((item, index) => (
 														<React.Fragment key={index}>
-															<div className="flex flex-col my-8 border-t-2 border-yellow-200 border-dashed">
-																<div className="mt-4">
-																	<TDInputTemplate
-																		placeholder="Type File Name..."
-																		type="text"
-																		label="File Name"
-																		name={`l_documents[${index}].l_file_name`}
-																		formControlName={item.l_file_name}
-																		handleChange={handleChange}
-																		handleBlur={handleBlur}
-																		mode={1}
-																	/>
-																	{/* {errors.l_file_name &&
-															touched.l_file_name ? (
-																<VError title={errors.l_file_name} />
+															<div>
+																<TDInputTemplate
+																	placeholder="Type File Name..."
+																	type="text"
+																	label="File Name"
+																	name={`l_documents[${index}].l_file_name`}
+																	formControlName={item.l_file_name}
+																	handleChange={formik.handleChange}
+																	handleBlur={formik.handleBlur}
+																	mode={1}
+																/>
+																{/* {formik.errors.l_file_name &&
+															formik.touched.l_file_name ? (
+																<VError title={formik.errors.l_file_name} />
 															) : null} */}
-																</div>
-																<div className="mt-2">
-																	<TDInputTemplate
-																		placeholder="Upload Documents"
-																		type="file"
-																		// multiple={true}
-																		accept="application/pdf"
-																		label="Upload Documents"
-																		name={`l_documents[${index}].l_file`}
-																		// formControlName={item.l_file}
-																		// handleChange={(e) => {
-																		// 	formik.handleChange(e)
-																		// 	console.log("SINGLE FILE", e.target.files)
-																		// 	// setSelectedFile(e.target.files[0])
-																		// }}
-																		handleChange={(event) => {
-																			const files = event.target.files
-																			if (files) {
-																				Array.from(files).forEach((file) => {
-																					filePush(file)
-																				})
-																			}
-																		}}
-																		// handleChange={handleChange}
-																		handleBlur={handleBlur}
-																		mode={1}
-																	/>
-																	{errors.l_file && touched.l_file ? (
-																		<VError title={errors.l_file} />
-																	) : null}
-																</div>
 															</div>
-
-															<div className="flex flex-row gap-2 justify-end align-middle">
-																{values?.l_documents?.length > 1 && (
-																	<div>
-																		<Button
-																			className="rounded-full text-white bg-red-800 border-red-800"
-																			onClick={() => {
-																				remove(index)
-																				removeFile(index)
-																			}}
-																			icon={<MinusOutlined />}
-																		></Button>
-																	</div>
-																)}
-																<div>
-																	<Button
-																		className="rounded-full bg-yellow-400 text-white"
-																		onClick={() => {
-																			push({
-																				// sl_no: 0,
-																				l_file_name: "",
-																				l_file: "",
-																			})
-																			console.log(values.l_documents)
-																		}}
-																		icon={<PlusOutlined />}
-																	></Button>
-																</div>
+															<div>
+																<TDInputTemplate
+																	placeholder="Upload Documents"
+																	type="file"
+																	multiple={true}
+																	accept="application/pdf"
+																	label="Upload Documents"
+																	name={`l_documents[${index}].l_file`}
+																	formControlName={item.l_file}
+																	// handleChange={(e) => {
+																	// 	console.log("SINGLE FILE", e.target.files)
+																	// 	setSelectedFile(e.target.files[0])
+																	// }}
+																	handleChange={handleFilesChange}
+																	handleBlur={formik.handleBlur}
+																	mode={1}
+																/>
+																{/* {formik.errors.l_file && formik.touched.l_file ? (
+																<VError title={formik.errors.l_file} />
+															) : null} */}
 															</div>
-
-															{/* <div>
-																{pdfFiles &&
-																	Array.from(pdfFiles).map((file, index) => (
-																		<div key={index}>
-																			<embed
-																				src={URL.createObjectURL(file)}
-																				className="rounded-lg"
-																				width="200"
-																				height="200"
-																				type="application/pdf"
-																			/>
-																			<button
-																				type="button"
-																				onClick={() => handleRemove(index)}
-																				className="w-8 h-2 p-5 bg-red-800 text-white text-lg mt-3 flex justify-center items-center rounded-lg"
-																			>
-																				<DeleteOutlined />
-																			</button>
-																		</div>
-																	))}
-															</div> */}
+															<div>
+																<Button
+																	className="rounded-full text-white bg-red-800 border-red-800"
+																	onClick={() => remove(index)}
+																	icon={<MinusOutlined />}
+																></Button>
+															</div>
 														</React.Fragment>
 													))}
 
-													{/* <div className="sm:col-span-1"></div> */}
+													<div className="sm:col-span-1"></div>
+													<div className="sm:col-span-1 flex gap-2 justify-end item-center mt-5">
+														{/* {values.l_documents?.length > 1 && (
+														<Button
+															className="rounded-full text-white bg-red-800 border-red-800"
+															onClick={() => arrayHelpers.remove(index)}
+															icon={<MinusOutlined />}
+														></Button>
+													)} */}
+
+														<Button
+															className="rounded-full bg-yellow-400 text-white"
+															onClick={() =>
+																push({
+																	sl_no: 0,
+																	l_file_name: "",
+																	l_file: "",
+																})
+															}
+															icon={<PlusOutlined />}
+														></Button>
+													</div>
 												</>
 											)}
 										</FieldArray>
+
+										<div className="grid gap-4 sm:grid-cols-2 sm:gap-6 place-items-center p-5">
+											{pdfFiles &&
+												Array.from(pdfFiles).map((file, index) => (
+													<div key={index}>
+														{/* <p>{file.name}</p>
+													<a
+														href={URL.createObjectURL(file)}
+														download={file.name}
+													>
+														Download PDF
+													</a> */}
+														<embed
+															src={URL.createObjectURL(file)}
+															className="rounded-lg"
+															width="400"
+															height="500"
+															type="application/pdf"
+														/>
+														<button
+															type="button"
+															onClick={() => handleRemove(index)}
+															className="w-8 h-2 p-5 bg-red-800 text-white text-lg mt-3 flex justify-center items-center rounded-lg"
+														>
+															<DeleteOutlined />
+														</button>
+													</div>
+												))}
+										</div>
 
 										<div className="mt-10">
 											<BtnComp
