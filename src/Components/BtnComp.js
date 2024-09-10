@@ -4,9 +4,18 @@ import {
 	DeleteOutlined,
 	ReloadOutlined,
 	CloseOutlined,
+	ArrowRightOutlined,
 } from "@ant-design/icons"
 
-function BtnComp({ onReset, mode, onDelete, rejectBtn, onReject }) {
+function BtnComp({
+	onReset,
+	mode,
+	onDelete,
+	rejectBtn,
+	onReject,
+	sendToText,
+	onSendTo,
+}) {
 	return (
 		<div className="flex justify-center">
 			{mode == "A" && (
@@ -46,6 +55,16 @@ function BtnComp({ onReset, mode, onDelete, rejectBtn, onReject }) {
 				<SaveOutlined className="mr-2" />
 				Submit
 			</button>
+			{mode === "S" && (
+				<button
+					type="button"
+					className=" disabled:bg-gray-400 disabled:dark:bg-gray-400 inline-flex items-center px-5 ml-2 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-green-600 transition ease-in-out hover:bg-green-800 duration-300  rounded-full focus:ring-gray-600  dark:focus:ring-primary-900 dark:bg-[#92140C] dark:hover:bg-gray-600"
+					onClick={onSendTo}
+				>
+					<ArrowRightOutlined className="mr-2" />
+					Send to {sendToText}
+				</button>
+			)}
 		</div>
 	)
 }

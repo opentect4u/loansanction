@@ -70,7 +70,7 @@ function LoanView() {
 			const imgHeight = (canvas.height * imgWidth) / canvas.width
 
 			pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight)
-			pdf.save("loan_aapplication_form.pdf")
+			pdf.save("loan_application_form.pdf")
 		})
 	}
 

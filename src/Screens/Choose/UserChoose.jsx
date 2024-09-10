@@ -58,9 +58,9 @@ function UserChoose() {
 					}}
 				>
 					<div>
-						<Link to={routePaths.LOAN_FORM}>
+						<Link to={routePaths.LOAN_FORM + "0"}>
 							<div
-								className="h-48 w-48 self-center bg-[#6457A6] rounded-full p-1 text-white text-xl"
+								className="h-48 w-48 self-center bg-[#6457A6] rounded-3xl p-1 text-white text-xl"
 								style={{
 									display: "flex",
 									justifyContent: "center",
@@ -77,7 +77,7 @@ function UserChoose() {
 					<div>
 						<Link to={routePaths.APPRAISER_LOGIN}>
 							<div
-								className="h-48 w-48 self-center bg-[#586BA4] rounded-full p-1 text-white text-wrap text-xl"
+								className="h-48 w-48 self-center bg-[#586BA4] rounded-3xl p-1 text-white text-wrap text-xl"
 								style={{
 									display: "flex",
 									justifyContent: "center",

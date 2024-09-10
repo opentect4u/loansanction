@@ -21,6 +21,7 @@ import FormHeader from "../../Components/FormHeader"
 import { routePaths } from "../../Assets/Data/Routes"
 import { useLocation } from "react-router"
 import Sidebar from "../../Components/Sidebar"
+import DialogBox from "../../Components/DialogBox"
 
 const MAX_FILE_SIZE = 200000
 
@@ -39,6 +40,9 @@ function EditLoanForm() {
 	const [pdfFiles, setPdfFiles] = useState(() => [])
 	const [singlePdfFile, setSinglePdfFile] = useState(() => null)
 	const [fileArray, setFileArray] = useState(() => [])
+	const [loanApproveStatus, setLoanApproveStatus] = useState(() => "")
+	// const [branchIdForForwarding, setBranchIdForForwarding] = useState(() => "")
+	const [visibleModal, setVisibleModal] = useState(() => false)
 
 	console.log(params, "params")
 	const initialValues = {
@@ -277,6 +281,7 @@ function EditLoanForm() {
 
 		var data = new FormData()
 
+		data.append("application_no", +params?.id)
 		data.append("member_id", +values?.l_member_id)
 		data.append("member_name", values?.l_name)
 		data.append("father_name", values?.l_father_husband_name)
@@ -290,7 +295,10 @@ function EditLoanForm() {
 		data.append("loan_type", values?.l_applied_for)
 		data.append("loan_amt", values?.l_loan_amount)
 		data.append("loan_period", values?.l_duration)
-		data.append("created_by", values?.l_name)
+		data.append(
+			"created_by",
+			JSON.parse(localStorage.getItem("user_details"))?.created_by
+		)
 
 		// data.append("application_no", params.id)
 		// data.append("member_id", values?.l_member_id)
@@ -355,6 +363,7 @@ function EditLoanForm() {
 						l_duration: res?.data?.msg[0]?.loan_period,
 						l_documents: [{ l_file_name: "", l_file: "" }],
 					})
+					setLoanApproveStatus(res?.data?.msg[0]?.approve_status)
 				} else {
 					Message("warning", "No data found!")
 				}
@@ -363,6 +372,36 @@ function EditLoanForm() {
 				console.log("Error loan", err)
 				Message("error", "Some error occurred while fetching loan details.")
 			})
+		setLoading(false)
+	}
+
+	const sendToBranchManager = () => {
+		setLoading(true)
+		const creds = {
+			application_no: +params.id,
+			// forwarded_by: +JSON.parse(localStorage.getItem("user_details"))
+			// 	?.user_type,
+		}
+
+		console.log(
+			"ooooooooooooooo------------------",
+			+JSON.parse(localStorage.getItem("user_details"))?.user_type
+		)
+
+		axios
+			.post(`${url}/sql/approve`, creds)
+			.then((res) => {
+				Message("success", "E-Files moved to Branch Manager.")
+				setVisibleModal(!visibleModal)
+				navigate(routePaths.HOME_SCREEN)
+			})
+			.catch((err) => {
+				Message(
+					"error",
+					"Something went wrong while sending to Branch Manager!"
+				)
+			})
+
 		setLoading(false)
 	}
 
@@ -387,6 +426,8 @@ function EditLoanForm() {
 	const removeFile = (index) => {
 		setFileArray(fileArray.filter((_, i) => i !== index))
 	}
+
+	// console.log("======================================", +branchIdForForwarding)
 
 	return (
 		<>
@@ -770,16 +811,58 @@ function EditLoanForm() {
 											)}
 										</FieldArray>
 
-										<div className="mt-10">
-											<BtnComp
-												mode="A"
-												rejectBtn={true}
-												onReject={() =>
-													Message("error", "Rejected Application!")
+										{/* <div>
+											<TDInputTemplate
+												placeholder="Select Branch"
+												type="text"
+												label="Select Branch"
+												name="br_fwd"
+												formControlName={branchIdForForwarding}
+												handleChange={(e) =>
+													setBranchIdForForwarding(e.target.value)
 												}
-												onReset={handleReset}
+												// handleBlur={handleBlur}
+												data={branches?.map((branch) => ({
+													code: branch?.sl_no,
+													name: branch?.branch_name,
+												}))}
+												mode={2}
 											/>
-										</div>
+											{errors.l_loan_through_branch &&
+											touched.l_loan_through_branch ? (
+												<VError title={errors.l_loan_through_branch} />
+											) : null}
+										</div> */}
+
+										{+JSON.parse(localStorage.getItem("user_details"))
+											.user_type === 4 && loanApproveStatus === "LA" ? (
+											<div className="mt-10">
+												<BtnComp
+													mode="S"
+													rejectBtn={true}
+													onReject={() =>
+														Message("error", "Application Rejected!")
+													}
+													// onReset={handleReset}
+													sendToText="Branch Manager"
+													// onSendTo={() =>
+													// 	window.confirm(
+													// 		"Are you sure? This action cannot be undone."
+													// 	)
+													// 		? sendToBranchManager()
+													// 		: Message(
+													// 				"warning",
+													// 				"User cancelled operation."
+													// 		  )
+													// }
+													onSendTo={() => setVisibleModal(true)}
+												/>
+											</div>
+										) : (
+											<div className="text-2xl text-blue-800 text-center">
+												Loan Application moved to Branch Manager
+											</div>
+										)}
 									</div>
 								</form>
 							)}
@@ -789,6 +872,17 @@ function EditLoanForm() {
 					</Spin>
 				</div>
 			</section>
+
+			<DialogBox
+				flag={4}
+				onPress={() => setVisibleModal(!visibleModal)}
+				visible={visibleModal}
+				onPressYes={sendToBranchManager}
+				onPressNo={() => {
+					setVisibleModal(!visibleModal)
+					Message("warning", "User cancelled operation.")
+				}}
+			/>
 		</>
 	)
 }

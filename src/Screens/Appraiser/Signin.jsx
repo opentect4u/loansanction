@@ -18,6 +18,8 @@ import { motion } from "framer-motion"
 function Signin() {
 	const navigate = useNavigate()
 	const [loading, setLoading] = useState(false)
+	// const [loginUserDetails, setLoginUserDetails] = useState(() => "")
+
 	const initialValues = {
 		email: "",
 		password: "",
@@ -36,6 +38,13 @@ function Signin() {
 			.then((res) => {
 				if (res?.data?.suc === 1) {
 					Message("success", res?.data?.msg)
+					// setLoginUserDetails()
+
+					localStorage.setItem(
+						"user_details",
+						JSON.stringify(res?.data?.user_dtls)
+					)
+
 					navigate(routePaths.HOME_SCREEN)
 				} else {
 					Message("error", "No user found!")

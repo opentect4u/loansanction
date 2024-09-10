@@ -51,7 +51,7 @@ function Menus({ theme }) {
 		{
 			key: "sub1",
 			icon: <BarChartOutlined />,
-			label: <Link to={""}>Dashboard </Link>,
+			label: <Link to={"/appraiser/home"}>Dashboard </Link>,
 		},
 		// {
 		// 	label: "Loan",
