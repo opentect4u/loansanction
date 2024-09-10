@@ -217,14 +217,6 @@ sqlRouter.post("/insert_loan_dtls", async (req, res) => {
 });
 // ##############################################################################################
 
-sqlRouter.get("/delete", async (req, res) => {
-  var id = req.query.id,
-    res_dt;
-  res_dt = await db_Delete('md_topic_catg', `id = ${id}`);
-  res.send(res_dt)
-});
-
-
 sqlRouter.post("/user_login", async (req, res) => {
   var data = req.body;
 // console.log(data,'dt');
@@ -271,19 +263,7 @@ sqlRouter.post("/user_login", async (req, res) => {
 });
 
 
-
-// sqlRouter.post("/approve_application", async (req, res) => {
-//       var data = req.body;
-//       var table_name = "md_users",
-//         fields = "user_approve='1'",
-//         values = null,
-//         whr = "user_type",
-//         flag = data.id > 0 ? 1 : 0;
-//       var res_dt = await db_Insert(table_name, fields, values, whr, flag);
-//       res.send(res_dt)
-//   });
-
-
+// ***************************************************************************************************
 sqlRouter.get("/fetch_loan_dtls", async (req, res) => {
     var data = req.query;
   
