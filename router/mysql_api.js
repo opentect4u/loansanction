@@ -24,7 +24,7 @@ const upload = multer().array('files');
 //     return `${year}000001`; // If the year changed, reset the counter
 //   }
 // }
-
+// ******************************************************************************************************************
 
 const sqlRouter = require("express").Router(),
   dateFormat = require("dateformat");
@@ -39,6 +39,7 @@ const sqlRouter = require("express").Router(),
 //         var res_dt = await db_Select(select, table_name, whr, order)
 //     res.send(res_dt)
 // });
+// ***************************************************************************************************
 
 sqlRouter.get("/branch_dtls", async (req, res) => {
   var data = req.query;
@@ -50,6 +51,7 @@ sqlRouter.get("/branch_dtls", async (req, res) => {
   var res_dt = await db_Select(select, table_name, whr, order)
   res.send(res_dt)
 });
+// ************************************************************************************************
 
 sqlRouter.get("/loan_type_dtls", async (req, res) => {
   var data = req.query;
@@ -61,6 +63,7 @@ sqlRouter.get("/loan_type_dtls", async (req, res) => {
   var res_dt = await db_Select(select, table_name, whr, order)
   res.send(res_dt)
 });
+// ***************************************************************************************************
 
 // sqlRouter.post("/insert_update", async (req, res) => {
 //     var data = req.body;
@@ -72,7 +75,7 @@ sqlRouter.get("/loan_type_dtls", async (req, res) => {
 //     var res_dt = await db_Insert(table_name, fields, values, whr, flag);
 //     res.send(res_dt)
 // });
-
+// ********************************************************************************************************
 
 const Max_appNo = () => {
   return new Promise(async (resolve, reject) => {
@@ -194,21 +197,21 @@ sqlRouter.post("/insert_loan_dtls", async (req, res) => {
         var file_dt = await data.application_no>0 ?  saveFile(files, data.application_no, data.member_id, fileData[0].l_file_name) :  saveFile(files, newId, data.member_id, fileData[0].l_file_name)
       }
     }}
-    else{
-      var fileData = null
-      if(res_dt.suc > 0 && files){
-        if(Array.isArray(files)){
-          var i = 0
-          for(let fdt of files){
-            var file_dt = await data.application_no > 0 ? saveFile(fdt, data.application_no, data.member_id, fileData) : saveFile(fdt, newId, data.member_id, fileData)
-            console.log(file_dt);
-            i++
-          }
-        }else{
-          var file_dt = await data.application_no>0 ?  saveFile(files, data.application_no, data.member_id, fileData) :  saveFile(files, newId, data.member_id, fileData)
-        }
-      }
-    }
+    // else{
+    //   var fileData = null
+    //   if(res_dt.suc > 0 && files){
+    //     if(Array.isArray(files)){
+    //       var i = 0
+    //       for(let fdt of files){
+    //         var file_dt = await data.application_no > 0 ? saveFile(fdt, data.application_no, data.member_id, fileData) : saveFile(fdt, newId, data.member_id, fileData)
+    //         console.log(file_dt);
+    //         i++
+    //       }
+    //     }else{
+    //       var file_dt = await data.application_no>0 ?  saveFile(files, data.application_no, data.member_id, fileData) :  saveFile(files, newId, data.member_id, fileData)
+    //     }
+    //   }
+    // }
   const app_id = "app_id"
   data.application_no>0 ? null : res_dt[app_id] = newId
   }
@@ -249,7 +252,7 @@ sqlRouter.post("/user_login", async (req, res) => {
         res.send(result)
       }
   });
-
+// *******************************************************************************************************
 
   sqlRouter.get("/select_br_manager", async (req, res) => {
     var data = req.query;
@@ -344,16 +347,57 @@ sqlRouter.post("/insert_fwd_dtls", async (req, res) => {
 
 sqlRouter.post("/approve", async (req, res) => {
   var data = req.body;
-
+  datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
   var approve_status = await db_Select('approve_status','td_loan_application', `application_no=${data.application_no}`,null);
   var status = approve_status.msg[0]["approve_status"]
-  // console.log(approve_status,"LLL");
 
-  var table_name = "td_loan_application",
-      fields = status=='LA'? `approve_status = 'BM'`: status=='BM'? `approve_status = 'CM'` : status=='CM'? `approve_status = 'CEO'` : `approve_status = 'CEO'`,
-      values = null,
-      whr = `application_no=${data.application_no}`,
-      flag = 1
-  var res_dt = await db_Insert(table_name, fields, values, whr, flag);
-  res.send(res_dt);
+  var select = "a.id",
+  table_name = "md_users a, td_loan_application b",
+  where = status == 'LM' ? `a.branch_code = b.branch_code AND b.application_no = '${data.application_no}' and a.user_type = '4'` : status == 'BM' ? `a.branch_code = b.branch_code AND b.application_no = '${data.application_no}' and a.user_type = '3'` : status == 'CM' ?  `a.branch_code = b.branch_code AND b.application_no = '${data.application_no}' and a.user_type = '2'` :   `a.branch_code = b.branch_code AND b.application_no = '${data.application_no}' and a.user_type = '2'`;
+  order = null;
+  var user_dt = await db_Select(select,table_name,where,order);
+  var fwd_to = user_dt.msg[0].id;
+  
+
+  console.log(approve_status,"LLL");
+  if (approve_status.suc > 0){
+    var table_name = "td_loan_application",
+        fields = status=='LA'? `approve_status = 'BM'`: status=='BM'? `approve_status = 'CM'` : status=='CM'? `approve_status = 'CEO'` : `approve_status = 'CEO'`,
+        values = null,
+        whr = `application_no=${data.application_no}`,
+        flag = 1
+    var res_dt = await db_Insert(table_name, fields, values, whr, flag);
+
+    if (res_dt.suc>0){
+      if (user_dt.suc > 0){
+      var table_name = "td_forward",
+      fields = "(application_no, forwarded_dt, forwarded_by, forwarded_to, created_by, created_dt)",
+      values = `(${data.application_no}, '${datetime}', '${data.forwarded_by}', '${fwd_to}', '${data.forwarded_by}', '${datetime}')`,
+      whr = null,
+      flag = 0;
+    var res_dt1 = await db_Insert(table_name, fields, values, whr, flag);
+      }
+    }
+  }
+  res.send(res_dt1);
 });
+// ********************************************************************************************************
+
+sqlRouter.post("/update_file", async (req, res) => {
+  var data = req.body;
+  var res_dt = await db_Delete("td_upload_file", `sl_no = ${data.sl_no} and application_no = '${data.application_no}'`);
+  
+  res.send(res_dt);
+})
+
+
+sqlRouter.post("/file_details", async (req, res) => {
+  var data = req.body;
+
+  var select = 'sl_no, application_no, file_name, file_path',
+      table_name = 'td_upload_file',
+      whr = data.application_no > 0 ? `application_no = ${data.application_no}` : "",
+      order = null;
+    var res_dt = await db_Select(select, table_name, whr, order)
+    res.send(res_dt)
+})
