@@ -16,6 +16,8 @@ import {
 	DeleteOutlined,
 	PlusOutlined,
 	MinusOutlined,
+	FilePdfOutlined,
+	MinusCircleOutlined,
 } from "@ant-design/icons"
 import FormHeader from "../../Components/FormHeader"
 import { routePaths } from "../../Assets/Data/Routes"
@@ -43,6 +45,8 @@ function EditLoanForm() {
 	const [loanApproveStatus, setLoanApproveStatus] = useState(() => "")
 	// const [branchIdForForwarding, setBranchIdForForwarding] = useState(() => "")
 	const [visibleModal, setVisibleModal] = useState(() => false)
+	const [visibleModal2, setVisibleModal2] = useState(() => false)
+	const [fetchedFileDetails, setFetchedFileDetails] = useState(() => [])
 
 	console.log(params, "params")
 	const initialValues = {
@@ -336,6 +340,37 @@ function EditLoanForm() {
 		setLoading(false)
 	}
 
+	const fetchUploadedFiles = async () => {
+		const creds = {
+			application_no: +params?.id,
+		}
+		await axios
+			.post(`${url}/sql/file_details`, creds)
+			.then((res) => {
+				if (res?.data?.suc === 1) {
+					setFetchedFileDetails(res?.data?.msg)
+				} else {
+					Message("error", "No Files Uploaded.")
+				}
+			})
+			.catch((err) => {
+				Message("error", "Error occurred while fetching uploaded files.")
+			})
+	}
+
+	const handleRemoveFile = async (e, id, slNo) => {
+		e.preventDefault()
+		setFetchedFileDetails((prev) => prev.filter((_, index) => index !== id))
+		// setVisibleModal2(!visibleModal2)
+		// const creds = {
+		// 	sl_no: slNo
+		// }
+
+		// axios.post(`${url}/sql/update_file`, creds).then(res => {
+
+		// })
+	}
+
 	const fetchApplicationDetails = async () => {
 		setLoading(true)
 		await axios
@@ -372,6 +407,7 @@ function EditLoanForm() {
 				console.log("Error loan", err)
 				Message("error", "Some error occurred while fetching loan details.")
 			})
+		await fetchUploadedFiles()
 		setLoading(false)
 	}
 
@@ -491,6 +527,7 @@ function EditLoanForm() {
 													handleChange={handleChange}
 													handleBlur={handleBlur}
 													mode={1}
+													disabled
 												/>
 												{errors.l_member_id && touched.l_member_id ? (
 													<VError title={errors.l_member_id} />
@@ -507,6 +544,7 @@ function EditLoanForm() {
 													handleBlur={handleBlur}
 													min={"1900-12-31"}
 													mode={1}
+													disabled
 												/>
 												{errors.l_membership_date &&
 												touched.l_membership_date ? (
@@ -523,6 +561,7 @@ function EditLoanForm() {
 													handleChange={handleChange}
 													handleBlur={handleBlur}
 													mode={1}
+													disabled
 												/>
 												{errors.l_name && touched.l_name ? (
 													<VError title={errors.l_name} />
@@ -541,6 +580,7 @@ function EditLoanForm() {
 													handleChange={handleChange}
 													handleBlur={handleBlur}
 													mode={1}
+													disabled
 												/>
 												{errors.l_father_husband_name &&
 												touched.l_father_husband_name ? (
@@ -562,6 +602,7 @@ function EditLoanForm() {
 														{ code: "L", name: "LGBTQA+" },
 													]}
 													mode={2}
+													disabled
 												/>
 												{errors.l_gender && touched.l_gender ? (
 													<VError title={errors.l_gender} />
@@ -578,6 +619,7 @@ function EditLoanForm() {
 													handleBlur={handleBlur}
 													max={values.l_membership_date}
 													mode={1}
+													disabled
 												/>
 												{errors.l_dob && touched.l_dob ? (
 													<VError title={errors.l_dob} />
@@ -593,6 +635,7 @@ function EditLoanForm() {
 													handleChange={handleChange}
 													handleBlur={handleBlur}
 													mode={1}
+													disabled
 												/>
 												{errors.l_email && touched.l_email ? (
 													<VError title={errors.l_email} />
@@ -608,6 +651,7 @@ function EditLoanForm() {
 													handleChange={handleChange}
 													handleBlur={handleBlur}
 													mode={3}
+													disabled
 												/>
 												{errors.l_address && touched.l_address ? (
 													<VError title={errors.l_address} />
@@ -623,6 +667,7 @@ function EditLoanForm() {
 													handleChange={handleChange}
 													handleBlur={handleBlur}
 													mode={1}
+													disabled
 												/>
 												{errors.l_mobile_no && touched.l_mobile_no ? (
 													<VError title={errors.l_mobile_no} />
@@ -696,6 +741,44 @@ function EditLoanForm() {
 												{errors.l_duration && touched.l_duration ? (
 													<VError title={errors.l_duration} />
 												) : null}
+											</div>
+										</div>
+
+										<div className="mt-10 text-red-800">
+											<div className="text-lg font-bold">Uploaded Files</div>
+											<div className="grid grid-cols-4 gap-4 place-items-start mt-3">
+												{fetchedFileDetails?.map((item, i) => (
+													<div>
+														<TDInputTemplate
+															placeholder="Entered File Name..."
+															type="text"
+															label="File Name"
+															formControlName={item?.file_name}
+															disabled
+															mode={1}
+														/>
+														<div className="mt-3 text-blue-500">
+															<a
+																href={url + "/" + item?.file_path}
+																target="__blank"
+															>
+																<FilePdfOutlined className="text-red-800 text-6xl" />
+															</a>
+														</div>
+														<div className="-mt-6">
+															<button
+																className="h-5 w-5"
+																onClick={(e) => {
+																	// e.preventDefault()
+																	// setVisibleModal2(!visibleModal2)
+																	handleRemoveFile(e, i, item?.sl_no)
+																}}
+															>
+																<DeleteOutlined className="text-[#5f49cc] text-xl ml-40 hover:animate-pulse hover:text-black delay-50 duration-50" />
+															</button>
+														</div>
+													</div>
+												))}
 											</div>
 										</div>
 
@@ -835,7 +918,7 @@ function EditLoanForm() {
 										</div> */}
 
 										{+JSON.parse(localStorage.getItem("user_details"))
-											.user_type === 4 && loanApproveStatus === "LA" ? (
+											.user_type === 5 && loanApproveStatus === "LA" ? (
 											<div className="mt-10">
 												<BtnComp
 													mode="S"
@@ -860,7 +943,7 @@ function EditLoanForm() {
 											</div>
 										) : (
 											<div className="text-2xl text-blue-800 text-center">
-												Loan Application moved to Branch Manager
+												Loan Application forwarded to Branch Manager.
 											</div>
 										)}
 									</div>
@@ -883,6 +966,17 @@ function EditLoanForm() {
 					Message("warning", "User cancelled operation.")
 				}}
 			/>
+			{/* <DialogBox
+				flag={4}
+				onPress={() => setVisibleModal2(!visibleModal2)}
+				visible={visibleModal2}
+				onPressYes={() => {
+					setVisibleModal2(!visibleModal2)
+				}}
+				onPressNo={() => {
+					setVisibleModal2(!visibleModal2)
+				}}
+			/> */}
 		</>
 	)
 }

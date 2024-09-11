@@ -42,7 +42,7 @@ function LoanApplicationsTableView({ loanAppData, setSearch, title }) {
 				animate={{ opacity: 1 }}
 				transition={{ delay: 0.5, type: "spring", stiffness: 30 }}
 			>
-				<div className="flex flex-col p-1 bg-red-800 rounded-2xl my-3 dark:bg-[#22543d] md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 ">
+				<div className="flex flex-col p-1 bg-red-800 rounded-2xl my-3 dark:bg-red-800 md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 ">
 					<div className="w-full">
 						<div className="flex items-center justify-between">
 							<motion.h2
@@ -115,9 +115,9 @@ function LoanApplicationsTableView({ loanAppData, setSearch, title }) {
 							<th scope="col" className="p-4">
 								Loan Type
 							</th>
-							<th scope="col" className="p-4">
+							{/* <th scope="col" className="p-4">
 								Created By
-							</th>
+							</th> */}
 							<th scope="col" className="p-4">
 								Action
 							</th>
@@ -150,7 +150,7 @@ function LoanApplicationsTableView({ loanAppData, setSearch, title }) {
 										{/* {item.fresh_flag} */}
 									</td>
 									<td className="px-6 py-4">{item.loan_type_name}</td>
-									<td className="px-6 py-4">{item.member_name}</td>
+									{/* <td className="px-6 py-4">{item.member_name}</td> */}
 									<td className="px-6 py-4">
 										<Link
 											to={routePaths.EDIT_APPLICATION + item?.application_no}
