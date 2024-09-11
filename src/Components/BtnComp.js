@@ -15,6 +15,7 @@ function BtnComp({
 	onReject,
 	sendToText,
 	onSendTo,
+	// condition,
 }) {
 	return (
 		<div className="flex justify-center">

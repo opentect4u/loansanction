@@ -14,6 +14,7 @@ import { Spin } from "antd"
 import { LoadingOutlined } from "@ant-design/icons"
 import FormHeader from "../../Components/FormHeader"
 import { routePaths } from "../../Assets/Data/Routes"
+import { numberToWords } from "../../Utils/numberToWords"
 
 function LoanForm() {
 	const params = useParams()
@@ -160,6 +161,8 @@ function LoanForm() {
 			.then((res) => {
 				if (res?.data?.suc === 1) {
 					setApplicationId(res?.data?.app_id)
+
+					console.log("IIIIIIIIIAAAAAAAAAAAAAAAAAA", res?.data)
 
 					navigate(`${routePaths.LOAN_VIEW}`, {
 						state: {
@@ -475,6 +478,10 @@ function LoanForm() {
 									formik.touched.l_loan_amount ? (
 										<VError title={formik.errors.l_loan_amount} />
 									) : null}
+									<VError
+										title={numberToWords(+formik.values.l_loan_amount)}
+										color="success"
+									/>
 								</div>
 								<div>
 									<TDInputTemplate

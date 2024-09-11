@@ -10,7 +10,7 @@ import * as Yup from "yup"
 import axios from "axios"
 import { Message } from "../../Components/Message"
 import { url } from "../../Address/BaseUrl"
-import { Spin, Button } from "antd"
+import { Spin, Button, Popconfirm } from "antd"
 import {
 	LoadingOutlined,
 	DeleteOutlined,
@@ -358,17 +358,39 @@ function EditLoanForm() {
 			})
 	}
 
+	// const handleRemoveFileModal = () => {
+	// 	setVisibleModal2(!visibleModal2)
+	// }
+
+	// const onPressYesRemoveFileModal = (e, i, slNo) => {
+	// 	handleRemoveFile(e, i, slNo)
+	// }
+
 	const handleRemoveFile = async (e, id, slNo) => {
+		setLoading(true)
 		e.preventDefault()
-		setFetchedFileDetails((prev) => prev.filter((_, index) => index !== id))
-		// setVisibleModal2(!visibleModal2)
-		// const creds = {
-		// 	sl_no: slNo
-		// }
 
-		// axios.post(`${url}/sql/update_file`, creds).then(res => {
+		const creds = {
+			application_no: +params?.id,
+			sl_no: +slNo,
+		}
 
-		// })
+		await axios
+			.post(`${url}/sql/update_file`, creds)
+			.then((res) => {
+				if (res?.data?.suc === 1) {
+					setFetchedFileDetails((prev) =>
+						prev.filter((_, index) => index !== id)
+					)
+					Message("success", res?.data?.msg)
+				} else {
+					Message("error", "Not deleted!")
+				}
+			})
+			.catch((err) => {
+				Message("error", "Some error occurred while deleting a file.")
+			})
+		setLoading(false)
 	}
 
 	const fetchApplicationDetails = async () => {
@@ -398,7 +420,7 @@ function EditLoanForm() {
 						l_duration: res?.data?.msg[0]?.loan_period,
 						l_documents: [{ l_file_name: "", l_file: "" }],
 					})
-					setLoanApproveStatus(res?.data?.msg[0]?.approve_status)
+					setLoanApproveStatus(res?.data?.msg[0]?.application_status)
 				} else {
 					Message("warning", "No data found!")
 				}
@@ -459,7 +481,7 @@ function EditLoanForm() {
 		setFileArray((prev) => [...prev, file])
 	}
 
-	const removeFile = (index) => {
+	const filePop = (index) => {
 		setFileArray(fileArray.filter((_, i) => i !== index))
 	}
 
@@ -744,43 +766,61 @@ function EditLoanForm() {
 											</div>
 										</div>
 
-										<div className="mt-10 text-red-800">
-											<div className="text-lg font-bold">Uploaded Files</div>
-											<div className="grid grid-cols-4 gap-4 place-items-start mt-3">
-												{fetchedFileDetails?.map((item, i) => (
-													<div>
-														<TDInputTemplate
-															placeholder="Entered File Name..."
-															type="text"
-															label="File Name"
-															formControlName={item?.file_name}
-															disabled
-															mode={1}
-														/>
-														<div className="mt-3 text-blue-500">
-															<a
-																href={url + "/" + item?.file_path}
-																target="__blank"
-															>
-																<FilePdfOutlined className="text-red-800 text-6xl" />
-															</a>
+										<Spin
+											indicator={<LoadingOutlined spin />}
+											size="large"
+											className="text-red-800 dark:text-gray-400"
+											spinning={loading}
+										>
+											<div className="mt-10 text-red-800">
+												<div className="text-lg font-bold">Uploaded Files</div>
+												<div className="grid grid-cols-4 gap-4 place-items-start mt-3">
+													{fetchedFileDetails?.map((item, i) => (
+														<div>
+															<TDInputTemplate
+																placeholder="Entered File Name..."
+																type="text"
+																label="File Name"
+																formControlName={item?.file_name}
+																disabled
+																mode={1}
+															/>
+															<div className="mt-3 text-blue-500">
+																<a
+																	href={url + "/" + item?.file_path}
+																	target="__blank"
+																>
+																	<FilePdfOutlined className="text-red-800 text-6xl" />
+																</a>
+															</div>
+															<div className="-mt-6">
+																{/* <button
+																	className="h-5 w-5"
+																	onClick={(e) => {
+																		handleRemoveFile(e, i, item?.sl_no)
+																	}}
+																>
+																	<DeleteOutlined className="text-[#5f49cc] text-xl ml-40 hover:animate-pulse hover:text-black delay-50 duration-50" />
+																</button> */}
+																<Popconfirm
+																	title="Delete file?"
+																	description="Are you sure to delete this file?"
+																	onConfirm={(e) => {
+																		handleRemoveFile(e, i, item?.sl_no)
+																	}}
+																	onCancel={() => null}
+																	okText="Yes"
+																	cancelText="No"
+																	okType="primary"
+																>
+																	<DeleteOutlined className="text-[#5f49cc] text-xl ml-40 hover:animate-pulse hover:text-black delay-50 duration-50" />
+																</Popconfirm>
+															</div>
 														</div>
-														<div className="-mt-6">
-															<button
-																className="h-5 w-5"
-																onClick={(e) => {
-																	// e.preventDefault()
-																	// setVisibleModal2(!visibleModal2)
-																	handleRemoveFile(e, i, item?.sl_no)
-																}}
-															>
-																<DeleteOutlined className="text-[#5f49cc] text-xl ml-40 hover:animate-pulse hover:text-black delay-50 duration-50" />
-															</button>
-														</div>
-													</div>
-												))}
+													))}
+												</div>
 											</div>
-										</div>
+										</Spin>
 
 										<FieldArray name="l_documents">
 											{({ push, remove, insert, unshift }) => (
@@ -843,7 +883,7 @@ function EditLoanForm() {
 																			className="rounded-full text-white bg-red-800 border-red-800"
 																			onClick={() => {
 																				remove(index)
-																				removeFile(index)
+																				filePop(index)
 																			}}
 																			icon={<MinusOutlined />}
 																		></Button>
@@ -918,7 +958,7 @@ function EditLoanForm() {
 										</div> */}
 
 										{+JSON.parse(localStorage.getItem("user_details"))
-											.user_type === 5 && loanApproveStatus === "LA" ? (
+											.user_type === 5 && loanApproveStatus === "P" ? (
 											<div className="mt-10">
 												<BtnComp
 													mode="S"
@@ -939,6 +979,7 @@ function EditLoanForm() {
 													// 		  )
 													// }
 													onSendTo={() => setVisibleModal(true)}
+													// condition={fetchedFileDetails?.length === 0}
 												/>
 											</div>
 										) : (

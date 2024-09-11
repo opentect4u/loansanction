@@ -39,11 +39,17 @@ function HomeScreen() {
 	const fetchLoanApplications = async () => {
 		setLoading(true)
 		await axios
-			.get(`${url}/sql/fetch_loan_dtls`)
+			.get(
+				`${url}/sql/fetch_loan_dtls?user_id=${+JSON.parse(
+					localStorage.getItem("user_details")
+				)?.id}`
+			)
 			.then((res) => {
 				if (res?.data?.suc === 1) {
 					setLoanApplications(res?.data?.msg)
 					setCopyLoanApplications(res?.data?.msg)
+
+					console.log("PPPPPPPPPPPPPPPPPPPP", res?.data)
 				} else {
 					Message("error", "No incoming loan applications found.")
 				}

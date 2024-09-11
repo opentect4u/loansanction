@@ -90,7 +90,7 @@ const DialogBox = ({ visible, flag, onPress, data, onPressNo, onPressYes }) => {
 								localStorage.clear()
 								navigate(routePaths.LANDING)
 							}}
-							className="inline-flex bg-green-900 items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white rounded-full focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800"
+							className="inline-flex bg-purple-900 items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white rounded-full focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800"
 						>
 							Yes
 						</button>

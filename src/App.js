@@ -102,6 +102,9 @@ function App() {
 							buttonColor: "#A31E21",
 							colorBorder: "#A31E21",
 						},
+						Popconfirm: {
+							colorWarning: "#A31E21",
+						},
 					},
 				}}
 			>
