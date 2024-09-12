@@ -60,6 +60,3 @@ export function numberToWords(num) {
 
 	return word.trim().toUpperCase()
 }
-
-// Example Usage:
-console.log(numberToWords(12345)) // Outputs: "twelve thousand three hundred forty five"

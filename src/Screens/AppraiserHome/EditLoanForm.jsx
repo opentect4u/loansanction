@@ -809,9 +809,15 @@ function EditLoanForm() {
 																		handleRemoveFile(e, i, item?.sl_no)
 																	}}
 																	onCancel={() => null}
-																	okText="Yes"
-																	cancelText="No"
-																	okType="primary"
+																	okText="Delete"
+																	cancelText="Cancel"
+																	okType="link"
+																	okButtonProps={{
+																		style: {
+																			backgroundColor: "#5f49cc",
+																			color: "#ffffff",
+																		},
+																	}}
 																>
 																	<DeleteOutlined className="text-[#5f49cc] text-xl ml-40 hover:animate-pulse hover:text-black delay-50 duration-50" />
 																</Popconfirm>

@@ -480,7 +480,7 @@ function LoanForm() {
 									) : null}
 									<VError
 										title={numberToWords(+formik.values.l_loan_amount)}
-										color="success"
+										color="purple"
 									/>
 								</div>
 								<div>
