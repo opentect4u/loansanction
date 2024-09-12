@@ -12,6 +12,8 @@ import Loader from "./Components/Loader"
 
 import CircularProgress from "@mui/material/CircularProgress"
 import CatchError from "./Screens/CatchError"
+import FwdLoanApplications from "./Screens/AppraiserHome/FwdLoanApplications"
+import EditLoanFormFwd from "./Screens/AppraiserHome/EditLoanFormFwd"
 const HomeScreen = lazy(() => import("./Screens/AppraiserHome/HomeScreen"))
 const Home = lazy(() => import("./Screens/AppraiserHome/Home"))
 const EditLoanForm = lazy(() => import("./Screens/AppraiserHome/EditLoanForm"))
@@ -80,6 +82,14 @@ const router = createBrowserRouter([
 									{
 										path: "editloanform/:id",
 										element: <EditLoanForm />,
+									},
+									{
+										path: "fwdapplication",
+										element: <FwdLoanApplications />,
+									},
+									{
+										path: "fwdapplication/editloanform/:id",
+										element: <EditLoanFormFwd />,
 									},
 								],
 							},

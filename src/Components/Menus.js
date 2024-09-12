@@ -29,9 +29,18 @@ function Menus({ theme }) {
 		{
 			key: "sub1",
 			icon: <BarChartOutlined />,
-			label: <Link to={"/appraiser/home"}>Dashboard </Link>,
+			label: <Link to={"/appraiser/home"}>Dashboard</Link>,
 		},
-
+		{
+			key: "sub2",
+			icon: <BarChartOutlined />,
+			label: <Link to={"/appraiser/home/fwdapplication"}>Forward</Link>,
+		},
+		{
+			key: "sub3",
+			icon: <BarChartOutlined />,
+			label: <Link to={"/appraiser/home/rejectapplication"}>Reject</Link>,
+		},
 		{
 			label: "Reports",
 			key: "sub6",

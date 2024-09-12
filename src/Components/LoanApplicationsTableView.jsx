@@ -14,7 +14,12 @@ import {
 import { useNavigate } from "react-router-dom"
 import { Tag } from "antd"
 
-function LoanApplicationsTableView({ loanAppData, setSearch, title }) {
+function LoanApplicationsTableView({
+	loanAppData,
+	setSearch,
+	title,
+	isForwardLoan = false,
+}) {
 	const navigate = useNavigate()
 
 	const [first, setFirst] = useState(0)
@@ -77,7 +82,7 @@ function LoanApplicationsTableView({ loanAppData, setSearch, title }) {
 									type="text"
 									id="simple-search"
 									initial={{ opacity: 0, width: 0 }}
-									animate={{ opacity: 1, width: "95%" }}
+									animate={{ opacity: 1, width: "91%" }}
 									transition={{ delay: 1.1, type: "just" }}
 									className="bg-white border rounded-2xl border-red-700 text-gray-800 block w-full h-12 pl-10 dark:bg-gray-800 md:ml-4 duration-300 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white text-lg focus:border-red-600"
 									placeholder="Search"
@@ -153,7 +158,12 @@ function LoanApplicationsTableView({ loanAppData, setSearch, title }) {
 									{/* <td className="px-6 py-4">{item.member_name}</td> */}
 									<td className="px-6 py-4">
 										<Link
-											to={routePaths.EDIT_APPLICATION + item?.application_no}
+											to={
+												isForwardLoan
+													? routePaths.EDIT_APPLICATION_FORWARD +
+													  item?.application_no
+													: routePaths.EDIT_APPLICATION + item?.application_no
+											}
 											// to={}
 										>
 											<EditOutlined className="text-md text-red-800" />

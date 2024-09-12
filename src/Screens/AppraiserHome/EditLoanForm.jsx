@@ -49,6 +49,8 @@ function EditLoanForm() {
 	const [fetchedFileDetails, setFetchedFileDetails] = useState(() => [])
 
 	console.log(params, "params")
+	console.log(location, "location")
+
 	const initialValues = {
 		l_member_id: "",
 		l_membership_date: "",
@@ -396,7 +398,11 @@ function EditLoanForm() {
 	const fetchApplicationDetails = async () => {
 		setLoading(true)
 		await axios
-			.get(`${url}/sql/fetch_loan_dtls?application_no=${params?.id}`)
+			.get(
+				`${url}/sql/fetch_loan_dtls?user_id=${+JSON.parse(
+					localStorage.getItem("user_details")
+				)?.id}&application_no=${params?.id}`
+			)
 			.then((res) => {
 				if (res?.data?.suc === 1) {
 					setValues({
@@ -985,8 +991,13 @@ function EditLoanForm() {
 													// 		  )
 													// }
 													onSendTo={() => setVisibleModal(true)}
-													// condition={fetchedFileDetails?.length === 0}
+													condition={fetchedFileDetails?.length > 0}
+													showSave={true}
 												/>
+												{/* {console.log(
+													"++++++++++++++++++++++++++++++++++",
+													fetchedFileDetails?.length
+												)} */}
 											</div>
 										) : (
 											<div className="text-2xl text-blue-800 text-center">
