@@ -9,7 +9,7 @@ import { Spin } from "antd";
 import { LeftOutlined, LoadingOutlined } from '@ant-design/icons';
 import VError from '../../Components/VError';
 
-const ForgotPass = () => {
+const ForgotPassBr = () => {
   const [loading, setLoading] = useState(false);
 
     const initialValues = {
@@ -83,4 +83,4 @@ const ForgotPass = () => {
     )
 }
 
-export default ForgotPass
+export default ForgotPassBr

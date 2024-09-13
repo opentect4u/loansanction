@@ -5,8 +5,9 @@ import Menus from "./Menus"
 import { Divider } from "@mui/material"
 import { Drawer } from "antd"
 import { motion } from "framer-motion"
+import MenusBr from "./MenusBr"
 
-function Sidebar() {
+function Sidebar({ mode = 0 }) {
 	const location = useLocation()
 	const [current, setCurrent] = React.useState("mail")
 	const [theme, setTheme] = useState(localStorage.getItem("col"))
@@ -67,7 +68,13 @@ function Sidebar() {
 			</Drawer>
 			<aside
 				id="sidebar-multi-level-sidebar"
-				className="fixed top-0 z-10 left-0 w-full h-auto transition-transform -translate-x-full sm:translate-x-0 p-4 justify-center bg-red-800"
+				className={
+					mode === 0
+						? "fixed top-0 z-10 left-0 w-full h-auto transition-transform -translate-x-full sm:translate-x-0 p-4 justify-center bg-red-800"
+						: mode === 1
+						? "fixed top-0 z-10 left-0 w-full h-auto transition-transform -translate-x-full sm:translate-x-0 p-4 justify-center bg-blue-800"
+						: "fixed top-0 z-10 left-0 w-full h-auto transition-transform -translate-x-full sm:translate-x-0 p-4 justify-center bg-purple-800"
+				}
 				aria-label="Sidebar"
 			>
 				<div className="flex items-center w-full justify-center">
@@ -81,7 +88,7 @@ function Sidebar() {
 							alt="Flowbite Logo"
 						/>
 					</div> */}
-					<Menus />
+					{mode === 0 ? <Menus /> : mode === 1 ? <MenusBr /> : ""}
 					{/* <img className='absolute bottom-0 h-40 blur-1' src={sidebar2} alt="Flowbite Logo" /> */}
 				</div>
 				{/* <motion.img initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.5, type:'spring'

@@ -47,20 +47,20 @@ function UserChoose() {
 					</div> */}
 				</div>
 				<div
-					className={`sm:p-5 sm:rounded-r-3xl border-white border-l-0 border-2 w-auto h-auto`}
+					className={`sm:p-5 sm:rounded-r-3xl border-white border-l-0 border-2 w-auto h-auto grid grid-cols-2 place-items-center`}
 					style={{
 						backgroundColor: "rgba(255, 255, 255, 0.55)",
 						backdropFilter: "blur(8px)",
-						display: "flex",
-						justifyContent: "space-evenly",
-						alignItems: "center",
-						flexDirection: "column",
+						// display: "flex",
+						// justifyContent: "space-evenly",
+						// alignItems: "center",
+						// flexDirection: "column",
 					}}
 				>
 					<div>
 						<Link to={routePaths.LOAN_FORM + "0"}>
 							<div
-								className="h-48 w-48 self-center bg-[#6457A6] rounded-3xl p-1 text-white text-xl"
+								className="h-48 w-48 self-center bg-[#6457A6] rounded-full p-1 text-white text-xl"
 								style={{
 									display: "flex",
 									justifyContent: "center",
@@ -77,7 +77,7 @@ function UserChoose() {
 					<div>
 						<Link to={routePaths.APPRAISER_LOGIN}>
 							<div
-								className="h-48 w-48 self-center bg-[#586BA4] rounded-3xl p-1 text-white text-wrap text-xl"
+								className="h-48 w-48 self-center bg-[#586BA4] rounded-full p-1 text-white text-wrap text-xl"
 								style={{
 									display: "flex",
 									justifyContent: "center",
@@ -88,6 +88,23 @@ function UserChoose() {
 							>
 								<UserOutlined className="text-3xl" />
 								<div>Appraiser Login</div>
+							</div>
+						</Link>
+					</div>
+					<div>
+						<Link to={routePaths.BRANCH_MANAGER_LOGIN}>
+							<div
+								className="h-48 w-48 self-center bg-[#1b3c96] rounded-full p-1 text-white text-center text-wrap text-xl"
+								style={{
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									flexDirection: "column",
+									gap: 10,
+								}}
+							>
+								<UserOutlined className="text-3xl self-center" />
+								<div>Branch Manager Login</div>
 							</div>
 						</Link>
 					</div>

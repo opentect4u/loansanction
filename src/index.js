@@ -14,6 +14,15 @@ import CircularProgress from "@mui/material/CircularProgress"
 import CatchError from "./Screens/CatchError"
 import FwdLoanApplications from "./Screens/AppraiserHome/FwdLoanApplications"
 import EditLoanFormFwd from "./Screens/AppraiserHome/EditLoanFormFwd"
+import AuthBr from "./Screens/BranchManager/AuthBr"
+import SigninBr from "./Screens/BranchManager/SigninBr"
+import SignupBr from "./Screens/BranchManager/SignupBr"
+import ForgotPassBr from "./Screens/BranchManager/ForgotPassBr"
+import HomeBr from "./Screens/BranchManagerHome/HomeBr"
+import HomeScreenBr from "./Screens/BranchManagerHome/HomeScreenBr"
+import EditLoanFormBr from "./Screens/BranchManagerHome/EditLoanFormBr"
+import FwdLoanApplicationsBr from "./Screens/BranchManagerHome/FwdLoanApplicationsBr"
+import EditLoanFormFwdBr from "./Screens/BranchManagerHome/EditLoanFormFwdBr"
 const HomeScreen = lazy(() => import("./Screens/AppraiserHome/HomeScreen"))
 const Home = lazy(() => import("./Screens/AppraiserHome/Home"))
 const EditLoanForm = lazy(() => import("./Screens/AppraiserHome/EditLoanForm"))
@@ -97,8 +106,43 @@ const router = createBrowserRouter([
 					},
 					{
 						path: "branchmanager",
-						element: <Auth />,
-						children: [{}],
+						element: <AuthBr />,
+						children: [
+							{
+								path: "",
+								element: <SigninBr />,
+							},
+							{
+								path: "signup",
+								element: <SignupBr />,
+							},
+							{
+								path: "forgotpassword",
+								element: <ForgotPassBr />,
+							},
+							{
+								path: "homebr",
+								element: <HomeBr />,
+								children: [
+									{
+										path: "",
+										element: <HomeScreenBr />,
+									},
+									{
+										path: "editloanform/:id",
+										element: <EditLoanFormBr />,
+									},
+									{
+										path: "fwdapplication",
+										element: <FwdLoanApplicationsBr />,
+									},
+									{
+										path: "fwdapplication/editloanform/:id",
+										element: <EditLoanFormFwdBr />,
+									},
+								],
+							},
+						],
 					},
 
 					// {

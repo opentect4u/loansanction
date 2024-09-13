@@ -1,7 +1,7 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
 
-function Auth() {
+function AuthBr() {
     console.log('auth')
 
   return (
@@ -11,4 +11,4 @@ function Auth() {
   )
 }
 
-export default Auth
+export default AuthBr

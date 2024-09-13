@@ -3,10 +3,18 @@ import Backbtn from "./Backbtn"
 import { motion } from "framer-motion"
 import PrintComp from "./PrintComp"
 
-function FormHeader({ text, mode, data, title }) {
+function FormHeader({ text, mode = 0, data, title }) {
 	return (
 		<div className="bg-transparent dark:bg-gray-800 relative overflow-hidden mb-5">
-			<div className="flex flex-col bg-red-800 dark:bg-red-800 w-full md:flex-row items-center align-middle justify-start gap-3 space-x-2 px-8 rounded-full py-3">
+			<div
+				className={
+					mode === 0
+						? "flex flex-col bg-red-800 dark:bg-red-800 w-full md:flex-row items-center align-middle justify-start gap-3 space-x-2 px-8 rounded-full py-3"
+						: mode === 1
+						? "flex flex-col bg-blue-800 dark:bg-blue-800 w-full md:flex-row items-center align-middle justify-start gap-3 space-x-2 px-8 rounded-full py-3"
+						: "flex flex-col bg-purple-800 dark:bg-purple-800 w-full md:flex-row items-center align-middle justify-start gap-3 space-x-2 px-8 rounded-full py-3"
+				}
+			>
 				<Backbtn />
 
 				<motion.h2

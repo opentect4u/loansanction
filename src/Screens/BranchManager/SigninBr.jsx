@@ -14,8 +14,9 @@ import { LoadingOutlined } from "@ant-design/icons"
 import { url } from "../../Address/BaseUrl"
 import { Message } from "../../Components/Message"
 import { motion } from "framer-motion"
+import TDInputTemplateBr from "../../Components/TDInputTemplateBr"
 
-function Signin() {
+function SigninBr() {
 	const navigate = useNavigate()
 	const [loading, setLoading] = useState(false)
 	// const [loginUserDetails, setLoginUserDetails] = useState(() => "")
@@ -30,22 +31,25 @@ function Signin() {
 		console.log(values)
 
 		const creds = {
-			email: values?.email,
-			password: values?.password,
+			mng_email: values?.email,
+			pass: values?.password,
 		}
+
 		await axios
-			.post(`${url}/sql/user_login`, creds)
+			.post(`${url}/brn/brn_manager_login`, creds)
 			.then((res) => {
 				if (res?.data?.suc === 1) {
 					Message("success", res?.data?.msg)
 					// setLoginUserDetails()
 
 					localStorage.setItem(
-						"user_details",
+						"br_mgr_details",
 						JSON.stringify(res?.data?.user_dtls)
 					)
 
-					navigate(routePaths.HOME_SCREEN)
+					navigate(routePaths.BRANCH_MANAGER_HOME)
+				} else if (res?.data?.suc === 0) {
+					Message("error", res?.data?.msg)
 				} else {
 					Message("error", "No user found!")
 				}
@@ -71,7 +75,7 @@ function Signin() {
 	})
 
 	return (
-		<div className="bg-red-800 p-20 flex justify-center min-h-screen min-w-screen">
+		<div className="bg-blue-800 p-20 flex justify-center min-h-screen min-w-screen">
 			<motion.div
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
@@ -94,12 +98,12 @@ function Signin() {
 					>
 						<div className="flex-col items-center justify-center ml-7 2xl:ml-36 2xl:mt-44">
 							<motion.h2
-								className="text-red-800 text-4xl mt-14 ml-24 font-bold"
+								className="text-blue-800 text-4xl mt-14 ml-24 font-bold"
 								initial={{ opacity: 1 }}
 								animate={{ opacity: 0, y: -20 }}
 								transition={{ delay: 4, type: "tween" }}
 							>
-								Welcome Appraiser!
+								Welcome Back Branch Manager!
 							</motion.h2>
 							<motion.img
 								initial={{ opacity: 0 }}
@@ -116,7 +120,7 @@ function Signin() {
 							className="w-full py-6 sm:ml-10 2xl:space-y-2 2xl:px-8"
 						>
 							<div className="pt-1 block ">
-								<TDInputTemplate
+								<TDInputTemplateBr
 									placeholder="youremail@gmail.com"
 									type="email"
 									label="Your email"
@@ -132,7 +136,7 @@ function Signin() {
 								) : null}
 							</div>
 							<div className="pt-6 block">
-								<TDInputTemplate
+								<TDInputTemplateBr
 									placeholder="*****"
 									type="password"
 									label="Your password"
@@ -149,7 +153,7 @@ function Signin() {
 							</div>
 							<div className="pt-2">
 								<Link to={routePaths.FORGOTPASS}>
-									<p className="text-xs text-red-800 hover:underline py-2 cursor-pointer">
+									<p className="text-xs text-blue-800 hover:underline py-2 cursor-pointer">
 										Forgot password?
 									</p>
 								</Link>
@@ -157,14 +161,14 @@ function Signin() {
 							<Spin
 								indicator={<LoadingOutlined spin />}
 								size={5}
-								className="text-red-800 w-52 dark:text-gray-400"
+								className="text-blue-800 w-52 dark:text-gray-400"
 								spinning={loading}
 							>
 								<div className="pt-4 pb-4 flex justify-center text-sm">
 									<button
 										disabled={!formik.isValid}
 										type="submit"
-										className="bg-red-800 hover:duration-500 w-full hover:scale-105  text-white p-3 rounded-full"
+										className="bg-blue-800 hover:duration-500 w-full hover:scale-105  text-white p-3 rounded-full"
 									>
 										Login to your account
 									</button>
@@ -270,4 +274,4 @@ function Signin() {
 	)
 }
 
-export default Signin
+export default SigninBr
