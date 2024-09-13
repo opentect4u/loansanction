@@ -55,5 +55,6 @@ export const routePaths = {
 	APPRAISER_LOGIN: "/appraiser/",
 	HOME_SCREEN: "/appraiser/home/",
 	EDIT_APPLICATION: "/appraiser/home/editloanform/",
+	APPLICATION_FORWARD: "/appraiser/home/fwdapplication/",
 	EDIT_APPLICATION_FORWARD: "/appraiser/home/fwdapplication/editloanform/",
 }

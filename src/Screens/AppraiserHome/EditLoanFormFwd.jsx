@@ -10,7 +10,7 @@ import * as Yup from "yup"
 import axios from "axios"
 import { Message } from "../../Components/Message"
 import { url } from "../../Address/BaseUrl"
-import { Spin, Button, Popconfirm } from "antd"
+import { Spin, Button, Popconfirm, Tag } from "antd"
 import {
 	LoadingOutlined,
 	DeleteOutlined,
@@ -496,7 +496,7 @@ function EditLoanFormFwd() {
 			.then((res) => {
 				Message("success", "E-Files moved to Branch Manager.")
 				setVisibleModal(!visibleModal)
-				navigate(routePaths.HOME_SCREEN)
+				navigate(routePaths.APPLICATION_FORWARD)
 			})
 			.catch((err) => {
 				Message(
@@ -937,9 +937,12 @@ function EditLoanFormFwd() {
 												/>
 											</div>
 										) : (
-											<div className="mt-10 text-violet-700 text-xl font-bold self-center">
-												E-Files forwarded to Branch Manager
-											</div>
+											<Tag
+												color="purple"
+												className="mt-10 p-5 rounded-lg text-xl font-bold self-center"
+											>
+												E-Files forwarded to Branch Manager.
+											</Tag>
 										)}
 									</div>
 								</form>

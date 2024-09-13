@@ -4,6 +4,8 @@ import {
 	BarChartOutlined,
 	BarsOutlined,
 	LogoutOutlined,
+	ArrowRightOutlined,
+	MinusCircleOutlined,
 } from "@ant-design/icons"
 import { Menu } from "antd"
 import { Link } from "react-router-dom"
@@ -33,12 +35,12 @@ function Menus({ theme }) {
 		},
 		{
 			key: "sub2",
-			icon: <BarChartOutlined />,
+			icon: <ArrowRightOutlined />,
 			label: <Link to={"/appraiser/home/fwdapplication"}>Forward</Link>,
 		},
 		{
 			key: "sub3",
-			icon: <BarChartOutlined />,
+			icon: <MinusCircleOutlined />,
 			label: <Link to={"/appraiser/home/rejectapplication"}>Reject</Link>,
 		},
 		{

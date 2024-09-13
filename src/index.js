@@ -95,6 +95,11 @@ const router = createBrowserRouter([
 							},
 						],
 					},
+					{
+						path: "branchmanager",
+						element: <Auth />,
+						children: [{}],
+					},
 
 					// {
 					// 	path: "forgotpassword",
