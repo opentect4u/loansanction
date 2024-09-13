@@ -10,7 +10,7 @@ import * as Yup from "yup"
 import axios from "axios"
 import { Message } from "../../Components/Message"
 import { url } from "../../Address/BaseUrl"
-import { Spin, Button, Popconfirm } from "antd"
+import { Spin, Button, Popconfirm, Tag } from "antd"
 import {
 	LoadingOutlined,
 	DeleteOutlined,
@@ -18,6 +18,8 @@ import {
 	MinusOutlined,
 	FilePdfOutlined,
 	MinusCircleOutlined,
+	ClockCircleOutlined,
+	ArrowRightOutlined,
 } from "@ant-design/icons"
 import FormHeader from "../../Components/FormHeader"
 import { routePaths } from "../../Assets/Data/Routes"
@@ -48,6 +50,9 @@ function EditLoanFormBr() {
 	const [visibleModal, setVisibleModal] = useState(() => false)
 	const [visibleModal2, setVisibleModal2] = useState(() => false)
 	const [fetchedFileDetails, setFetchedFileDetails] = useState(() => [])
+	const [appraiserForwardedDate, setAppraiserForwardedDate] = useState("")
+	const [forwardedByName, setForwardedByName] = useState("")
+	const [fetchedRemarks, setFetchedRemarks] = useState("")
 
 	console.log(params, "params")
 	console.log(location, "location")
@@ -404,7 +409,7 @@ function EditLoanFormBr() {
 		setLoading(true)
 		await axios
 			.get(
-				`${url}/sql/fetch_loan_dtls?user_id=${+JSON.parse(
+				`${url}/brn/fetch_brn_pen_dtls?user_id=${+JSON.parse(
 					localStorage.getItem("br_mgr_details")
 				)?.id}&application_no=${params?.id}`
 			)
@@ -431,6 +436,11 @@ function EditLoanFormBr() {
 						l_duration: res?.data?.msg[0]?.loan_period,
 						l_documents: [{ l_file_name: "", l_file: "" }],
 					})
+
+					console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", res?.data)
+					setAppraiserForwardedDate(res?.data?.msg[0]?.forwarded_dt)
+					setFetchedRemarks(res?.data?.msg[0]?.remarks)
+					setForwardedByName(res?.data?.msg[0]?.forward_appr_name)
 					setLoanApproveStatus(res?.data?.msg[0]?.application_status)
 				} else {
 					Message("warning", "No data found!")
@@ -511,6 +521,21 @@ function EditLoanFormBr() {
 			/> */}
 				{/* {JSON.stringify(loanAppData)} */}
 				<div className=" bg-white p-5 w-4/5 min-h-screen rounded-3xl">
+					<div className="flex justify-between ml-14 mr-12">
+						<Tag
+							color="purple"
+							className="p-1 px-2 text-sm rounded-full font-bold animate-pulse"
+						>
+							<ArrowRightOutlined /> From Appraiser: {forwardedByName}
+						</Tag>
+						<Tag
+							color="orange"
+							className="p-1 px-2 text-sm rounded-full font-bold animate-pulse"
+						>
+							<ClockCircleOutlined /> Forwarded on:{" "}
+							{new Date(appraiserForwardedDate)?.toLocaleString("en-GB")}
+						</Tag>
+					</div>
 					<div className="w-auto mx-14 my-4">
 						<FormHeader text="Pending Application Preview & Edit" mode={1} />
 					</div>
@@ -706,6 +731,24 @@ function EditLoanFormBr() {
 													<VError title={errors.l_mobile_no} />
 												) : null}
 											</div>
+
+											<div className="col-span-2">
+												<TDInputTemplateBr
+													placeholder="Remarks"
+													type="text"
+													label={`Remarks from ${forwardedByName}`}
+													// name="l_address"
+													formControlName={fetchedRemarks}
+													// handleChange={handleChange}
+													// handleBlur={handleBlur}
+													mode={3}
+													disabled
+												/>
+												{errors.l_address && touched.l_address ? (
+													<VError title={errors.l_address} />
+												) : null}
+											</div>
+
 											<div>
 												<TDInputTemplateBr
 													placeholder="Type Loan Through Branch..."

@@ -19,6 +19,7 @@ import {
 	FilePdfOutlined,
 	MinusCircleOutlined,
 	ClockCircleOutlined,
+	ArrowRightOutlined,
 } from "@ant-design/icons"
 import FormHeader from "../../Components/FormHeader"
 import { routePaths } from "../../Assets/Data/Routes"
@@ -51,9 +52,12 @@ function EditLoanFormFwdBr() {
 	const [fetchedFileDetails, setFetchedFileDetails] = useState(() => [])
 	const [branchManagers, setBranchManagers] = useState(() => [])
 	const [branchManagerId, setBranchManagerId] = useState()
-	const [remarks, setRemarks] = useState("")
-	const [fetchedBranchManagerName, setFetchedBranchManagerName] = useState("")
+	// const [fetchedBranchManagerName, setFetchedBranchManagerName] = useState("")
+	const [fetchedRemarks, setFetchedRemarks] = useState("")
 	const [appraiserForwardedDate, setAppraiserForwardedDate] = useState("")
+	const [forwardedByName, setForwardedByName] = useState("")
+	const [forwardedById, setForwardedById] = useState()
+	const [commentsBranchManager, setCommentsBranchManager] = useState("")
 
 	console.log(params, "params")
 	console.log(location, "location")
@@ -435,8 +439,10 @@ function EditLoanFormFwdBr() {
 					})
 					setAppraiserForwardedDate(res?.data?.msg[0]?.forwarded_dt)
 					setLoanApproveStatus(res?.data?.msg[0]?.application_status)
-					setRemarks(res?.data?.msg[0]?.forward_remarks)
-					setFetchedBranchManagerName(res?.data?.msg[0]?.forward_user_name)
+					setFetchedRemarks(res?.data?.msg[0]?.remarks)
+					setForwardedByName(res?.data?.msg[0]?.forward_appr_name)
+					setForwardedById(res?.data?.msg[0]?.forwarded_by)
+					// setFetchedBranchManagerName(res?.data?.msg[0]?.forward_user_name)
 					console.log(
 						"VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV",
 						res?.data?.msg[0]?.application_status
@@ -473,7 +479,7 @@ function EditLoanFormFwdBr() {
 			})
 	}
 
-	const sendToBranchManager = async (appStatus) => {
+	const handleReject = async (appStatus) => {
 		// AppStatus -> A/R
 		setLoading(true)
 		const creds = {
@@ -481,7 +487,8 @@ function EditLoanFormFwdBr() {
 			application_no: +params.id,
 			user_id: JSON.parse(localStorage.getItem("br_mgr_details")).id,
 			fwd_brn: JSON.parse(localStorage.getItem("br_mgr_details")).branch_code,
-			remarks: remarks,
+			loan_appr_id: forwardedById,
+			brn_remarks: commentsBranchManager,
 			application_status: appStatus,
 			brn_mgr_id: branchManagerId,
 			created_by:
@@ -496,18 +503,57 @@ function EditLoanFormFwdBr() {
 		)
 
 		await axios
-			.post(`${url}/sql/forward_brn_manager`, creds)
+			.post(`${url}/brn/brn_manager_reject`, creds)
 			.then((res) => {
-				Message("success", "E-Files moved to Branch Manager.")
-				setVisibleModal(!visibleModal)
-				navigate(routePaths.APPLICATION_FORWARD)
+				Message("error", "Application Rejected.")
+				setVisibleModal2(!visibleModal2)
+				navigate(routePaths.BR_APPLICATION_FORWARD)
 			})
 			.catch((err) => {
 				Message(
 					"error",
-					"Something went wrong while sending to Branch Manager!"
+					"Something went wrong while sending to Credit Manager!"
 				)
 			})
+
+		setLoading(false)
+	}
+
+	const sendToCreditManager = async (appStatus) => {
+		// AppStatus -> A/R
+		setLoading(true)
+		const creds = {
+			brn_code: formik.values.l_loan_through_branch,
+			application_no: +params.id,
+			user_id: JSON.parse(localStorage.getItem("br_mgr_details")).id,
+			fwd_brn: JSON.parse(localStorage.getItem("br_mgr_details")).branch_code,
+			remarks: fetchedRemarks,
+			application_status: appStatus,
+			brn_mgr_id: branchManagerId,
+			created_by:
+				JSON.parse(localStorage.getItem("br_mgr_details")).first_name +
+				" " +
+				JSON.parse(localStorage.getItem("br_mgr_details")).last_name,
+		}
+
+		console.log(
+			"ooooooooooooooo------------------",
+			+JSON.parse(localStorage.getItem("br_mgr_details"))?.user_type
+		)
+
+		// await axios
+		// 	.post(`${url}/sql/forward_brn_manager`, creds)
+		// 	.then((res) => {
+		// 		Message("success", "E-Files moved to Branch Manager.")
+		// 		setVisibleModal(!visibleModal)
+		// 		navigate(routePaths.APPLICATION_FORWARD)
+		// 	})
+		// 	.catch((err) => {
+		// 		Message(
+		// 			"error",
+		// 			"Something went wrong while sending to Branch Manager!"
+		// 		)
+		// 	})
 
 		setLoading(false)
 	}
@@ -549,10 +595,16 @@ function EditLoanFormFwdBr() {
 			/> */}
 				{/* {JSON.stringify(loanAppData)} */}
 				<div className=" bg-white p-5 w-4/5 min-h-screen rounded-3xl">
-					<div>
+					<div className="flex justify-between ml-14 mr-12">
+						<Tag
+							color="purple"
+							className="p-1 px-2 text-sm rounded-full font-bold animate-pulse"
+						>
+							<ArrowRightOutlined /> From Appraiser: {forwardedByName}
+						</Tag>
 						<Tag
 							color="orange"
-							className="p-1 text-sm rounded-full font-bold animate-pulse"
+							className="p-1 px-2 text-sm rounded-full font-bold animate-pulse"
 						>
 							<ClockCircleOutlined /> Forwarded on:{" "}
 							{new Date(appraiserForwardedDate)?.toLocaleString("en-GB")}
@@ -767,7 +819,7 @@ function EditLoanFormFwdBr() {
 														name: branch?.branch_name,
 													}))}
 													mode={2}
-													disabled={loanApproveStatus === "A"}
+													disabled
 												/>
 												{errors.l_loan_through_branch &&
 												touched.l_loan_through_branch ? (
@@ -788,7 +840,7 @@ function EditLoanFormFwdBr() {
 														name: loan?.loan_type,
 													}))}
 													mode={2}
-													disabled={loanApproveStatus === "A"}
+													disabled
 												/>
 												{errors.l_applied_for && touched.l_applied_for ? (
 													<VError title={errors.l_applied_for} />
@@ -804,7 +856,7 @@ function EditLoanFormFwdBr() {
 													handleChange={handleChange}
 													handleBlur={handleBlur}
 													mode={1}
-													disabled={loanApproveStatus === "A"}
+													disabled
 												/>
 												{errors.l_loan_amount && touched.l_loan_amount ? (
 													<VError title={errors.l_loan_amount} />
@@ -820,7 +872,7 @@ function EditLoanFormFwdBr() {
 													handleChange={handleChange}
 													handleBlur={handleBlur}
 													mode={1}
-													disabled={loanApproveStatus === "A"}
+													disabled
 												/>
 												{errors.l_duration && touched.l_duration ? (
 													<VError title={errors.l_duration} />
@@ -831,11 +883,13 @@ function EditLoanFormFwdBr() {
 										<Spin
 											indicator={<LoadingOutlined spin />}
 											size="large"
-											className="text-red-800 dark:text-gray-400"
+											className="text-blue-800 dark:text-gray-400"
 											spinning={loading}
 										>
-											<div className="mt-10 text-red-800">
-												<div className="text-lg font-bold">Uploaded Files</div>
+											<div className="mt-10 text-blue-800">
+												<div className="text-lg font-bold text-blue-800">
+													Uploaded Files
+												</div>
 												<div className="grid grid-cols-4 gap-4 place-items-start mt-3">
 													{fetchedFileDetails?.map((item, i) => (
 														<div>
@@ -883,57 +937,45 @@ function EditLoanFormFwdBr() {
 											</div>
 										</Spin>
 
-										<div className="mt-10 grid grid-cols-2 gap-6 border-t-2 border-yellow-200 border-dashed">
-											{loanApproveStatus !== "A" ? (
-												<div className="col-span-2 mt-2">
-													<TDInputTemplateBr
-														placeholder="Select Branch Manager"
-														type="text"
-														label="Select Branch Manager"
-														name="br_mgr"
-														formControlName={branchManagerId}
-														handleChange={(e) =>
-															setBranchManagerId(e.target.value)
-														}
-														data={branchManagers?.map((branch) => ({
-															code: branch?.id,
-															name:
-																branch?.first_name + " " + branch?.last_name,
-														}))}
-														mode={2}
-														disabled={loanApproveStatus === "A"}
-													/>
-													{!branchManagerId ? (
-														<VError title={"Please Select Branch Manager"} />
-													) : null}
-												</div>
-											) : (
-												<div className="col-span-2">
-													<TDInputTemplateBr
-														placeholder="Forwarded to..."
-														type="text"
-														label="Forwarded to..."
-														formControlName={fetchedBranchManagerName}
-														disabled
-														mode={1}
-													/>
-												</div>
-											)}
+										<div className="mt-4 grid grid-cols-2 gap-6 border-b-2 border-yellow-200 pb-3 border-dashed">
 											<div className="col-span-2">
 												<TDInputTemplateBr
 													placeholder="Remarks..."
 													type="text"
-													label={`Remarks`}
+													label={`Remarks from ${forwardedByName}`}
 													// name="remarks"
-													formControlName={remarks}
-													handleChange={(e) => setRemarks(e.target.value)}
+													formControlName={fetchedRemarks}
+													// handleChange={(e) =>
+													// 	setFetchedRemarks(e.target.value)
+													// }
 													mode={3}
-													disabled={loanApproveStatus === "A"}
+													disabled
 												/>
-												{!remarks ? (
+												{!fetchedRemarks ? (
 													<VError title={"Please Enter Remarks"} />
 												) : null}
 											</div>
+										</div>
+
+										<div className="mt-7">
+											<TDInputTemplateBr
+												placeholder="Write comments..."
+												type="text"
+												label={`Comments`}
+												name="comments"
+												formControlName={commentsBranchManager}
+												handleChange={(e) =>
+													setCommentsBranchManager(e.target.value)
+												}
+												mode={3}
+											/>
+											{!commentsBranchManager ? (
+												<VError
+													title={
+														"Please Enter Comments Before Forwarding or Rejecting"
+													}
+												/>
+											) : null}
 										</div>
 
 										{loanApproveStatus !== "A" ? (
@@ -942,9 +984,9 @@ function EditLoanFormFwdBr() {
 													mode="S"
 													rejectBtn={true}
 													onReject={() => {
-														sendToBranchManager("R")
+														setVisibleModal2(true)
 													}}
-													sendToText="Branch Manager"
+													sendToText="Credit Manager"
 													onSendTo={() => setVisibleModal(true)}
 													condition={fetchedFileDetails?.length > 0}
 												/>
@@ -972,14 +1014,30 @@ function EditLoanFormFwdBr() {
 				onPress={() => setVisibleModal(!visibleModal)}
 				visible={visibleModal}
 				onPressYes={() => {
-					if (branchManagerId && remarks) sendToBranchManager("A")
+					if (commentsBranchManager) sendToCreditManager("A")
 					else {
-						Message("error", "Choose Branch Manager and Write Remarks.")
+						Message("error", "Write Comments.")
 						setVisibleModal(!visibleModal)
 					}
 				}}
 				onPressNo={() => {
 					setVisibleModal(!visibleModal)
+					Message("warning", "User cancelled operation.")
+				}}
+			/>
+			<DialogBox
+				flag={4}
+				onPress={() => setVisibleModal2(!visibleModal2)}
+				visible={visibleModal2}
+				onPressYes={() => {
+					if (commentsBranchManager) handleReject("R")
+					else {
+						Message("error", "Write Comments.")
+						setVisibleModal2(!visibleModal2)
+					}
+				}}
+				onPressNo={() => {
+					setVisibleModal2(!visibleModal2)
 					Message("warning", "User cancelled operation.")
 				}}
 			/>
