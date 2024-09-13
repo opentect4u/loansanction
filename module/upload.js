@@ -25,7 +25,7 @@ const dynamicFileUpload = (filePath, fileName, file) => {
   }; 
 
   module.exports = {
-    saveFile: (file, app_id, memb_id, doc_name) => {
+    saveFile: (file, app_id, memb_id, doc_name,user_id) => {
         // console.log(file,'f');
         
         return new Promise(async (resolve, reject) => {
@@ -50,7 +50,7 @@ const dynamicFileUpload = (filePath, fileName, file) => {
                   "td_upload_file",
                   "(application_no,member_id,file_name,file_path,created_by,created_dt)",
                   // `file = 'uploads/${File_name}'`,
-                  `(${app_id},${memb_id},'${doc_name}','uploads/${File_name}','user','${datetime}')`,
+                  `(${app_id},${memb_id},'${doc_name}','uploads/${File_name}','${user_id}','${datetime}')`,
                   null,
                   0
                 );

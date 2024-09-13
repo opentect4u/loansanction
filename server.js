@@ -30,12 +30,14 @@ app.use(fileUpload());
 // ROUTERS INITIALIZATION
 const { appApiRouter } = require('./router/oracle_api');
 const { sqlRouter } = require('./router/mysql_api');
+const { brn_managerRouter } = require('./router/brn_manager_api');
 
 // END
 
 // USE ROUER FOR SPECIFIC URL
 app.use("/oracle", appApiRouter);
 app.use("/sql", sqlRouter);
+app.use("/brn",brn_managerRouter)
 
 // END
 

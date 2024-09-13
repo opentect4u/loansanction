@@ -29,7 +29,7 @@ appApiRouter.post('/select_cust_dtls', async (req, res) => {
     order = null,
     flag = 0;
   var resDt = await F_Select(pax_id, fields, table_name, where, order, flag)
-  // console.log(resDt);
+  console.log(resDt);
   res.send(resDt);
 })
 
