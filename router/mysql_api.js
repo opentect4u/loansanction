@@ -375,6 +375,7 @@ sqlRouter.get("/fetch_forward_dtls", async (req, res) => {
     AND a.application_no = c.application_no
     AND a.branch_code = d.sl_no
     AND a.loan_type = e.sl_no
+     AND b.forwarded_dt = (SELECT MAX(g.forwarded_dt) FROM td_forward g WHERE a.application_no=g.application_no AND g.forwarded_to = c.user_id)
     AND c.user_id = '${data.user_id}'
     AND b.forwarded_to = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
     // order = `GROUP BY a.application_no HAVING (SELECT COUNT(*) FROM td_upload_file b WHERE a.application_no=b.application_no) > 0`;
