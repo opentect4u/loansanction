@@ -376,7 +376,8 @@ sqlRouter.get("/fetch_forward_dtls", async (req, res) => {
     AND a.loan_type = e.sl_no
     AND c.user_id = '${data.user_id}'
     AND b.forwarded_to = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
-    order = `GROUP BY a.application_no HAVING (SELECT COUNT(*) FROM td_upload_file b WHERE a.application_no=b.application_no) > 0`;
+    // order = `GROUP BY a.application_no HAVING (SELECT COUNT(*) FROM td_upload_file b WHERE a.application_no=b.application_no) > 0`;
+    order = `HAVING (SELECT COUNT(*) FROM td_upload_file b WHERE a.application_no=b.application_no) > 0`;
   var res_dt = await db_Select(select, table_name, whr, order)
   console.log(res_dt,'res');
   
