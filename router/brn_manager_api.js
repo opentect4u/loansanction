@@ -92,7 +92,7 @@ brn_managerRouter.get("/fetch_brn_forward_dtls", async (req, res) => {
     datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
     
     var table_name = "td_forward",
-    fields = "(application_no, forwarded_dt, forwarded_by, by_brn, forwarded_to, to_brn, brn_mng_remarks, created_by, created_dt)",
+    fields = "(application_no, forwarded_dt, forwarded_by, by_brn, forwarded_to, to_brn, remarks, created_by, created_dt)",
     values =  `('${data.application_no}', '${datetime}', '${data.user_id}', '${data.fwd_brn}', '${data.loan_appr_id}', '${data.brn_code}', '${data.brn_remarks}', '${data.created_by}', '${datetime}')`,
     whr = null,
     flag = 0;
@@ -100,21 +100,21 @@ brn_managerRouter.get("/fetch_brn_forward_dtls", async (req, res) => {
   
   if(branch.suc > 0){
     var table_name = "td_appl_track",
-    fields = `application_status = '${data.application_status}'`,
+    fields = `fwd_dt = '${datetime}', application_status = '${data.application_status}'`,
     values = null;
     whr =`application_no=${data.application_no} AND user_id = '${data.user_id}'`,
     flag = 1; 
     var final_dt_track = await db_Insert(table_name,fields,values,whr,flag);
   
-    // var table_name = "td_appl_track",
-    // fields = `(fwd_dt, application_no,user_id,application_status,created_by,created_dt)`,
-    // values = `('${datetime}', '${data.application_no}', '${data.loan_appr_id}', 'P', '${data.created_by}', '${datetime}')`
-    // flag = 0;
     var table_name = "td_appl_track",
-    fields = `application_status = 'P'`,
-    values = null;
-    whr =`application_no=${data.application_no} AND user_id = '${data.loan_appr_id}'`,
-    flag = 1; 
+    fields = `(fwd_dt, application_no,user_id,application_status,created_by,created_dt)`,
+    values = `('${datetime}', '${data.application_no}', '${data.loan_appr_id}', 'P', '${data.created_by}', '${datetime}')`
+    flag = 0;
+    // var table_name = "td_appl_track",
+    // fields = `application_status = 'P'`,
+    // values = null;
+    // whr =`application_no=${data.application_no} AND user_id = '${data.loan_appr_id}'`,
+    // flag = 1; 
     var track_dt = await db_Insert(table_name,fields,values,whr,flag);
 
     if(track_dt.suc > 0){
@@ -131,5 +131,10 @@ brn_managerRouter.get("/fetch_brn_forward_dtls", async (req, res) => {
   }
   });
 
+// brn_managerRouter.get("/get_brn_reject", async (req, res) =>{
+//   var data = req.query;
+
+
+// })
 
 module.exports = {brn_managerRouter}
