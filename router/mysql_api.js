@@ -351,8 +351,9 @@ whr = `a.application_no = b.application_no
      AND a.application_no = c.application_no
     AND a.branch_code = d.sl_no
     AND a.loan_type = e.sl_no
+    AND b.forwarded_dt = (SELECT MAX(g.forwarded_dt) FROM td_forward g WHERE a.application_no=g.application_no AND g.forwarded_to = c.user_id)
     AND c.application_status = 'P'
-    AND c.user_id = '${data.user_id}'`
+    AND c.user_id = '${data.user_id}' '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`
     order = `ORDER BY a.created_by`;
     var res_dt = await db_Select(select, table_name, whr, order)
  
