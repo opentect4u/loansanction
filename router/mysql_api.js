@@ -217,9 +217,9 @@ sqlRouter.post("/insert_loan_dtls", async (req, res) => {
     //     }
     //   }
     // }
-  }
+  // }
 
-  if(res_dt.suc > 0){
+  // if(res_dt.suc > 0){
 
     var select = "id,branch_code",
     table_name = "md_users",
