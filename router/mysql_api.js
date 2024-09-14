@@ -345,7 +345,7 @@ sqlRouter.get("/fetch_loan_dtls", async (req, res) => {
   // var res_dt = await db_Select(select, table_name, whr, order)
   // console.log(res_dt,'res');
 
-  var select =  'a.*,b.*,c.*,d.branch_name,e.loan_type',
+  var select =  'a.*,b.*,c.*,d.branch_name,e.loan_type,e.sl_no loan_type_id',
 table_name = 'td_loan_application a, td_forward b, td_appl_track c, md_branch d, md_loan_type e',
 whr = `a.application_no = b.application_no 
      AND a.application_no = c.application_no
