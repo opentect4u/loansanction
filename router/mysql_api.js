@@ -331,20 +331,30 @@ sqlRouter.get("/fetch_loan_dtls", async (req, res) => {
   //   order = `GROUP BY a.application_no ORDER BY a.created_by`;
   // var res_dt = await db_Select(select, table_name, whr, order)
 
-  var select = '@f:=@f+1 sl_no, a.application_dt,a.application_no,a.member_id,a.member_name,a.father_name,a.gender,a.dob,a.member_dt,a.email,a.mobile_no,a.memb_address,a.branch_code,a.loan_type,a.loan_amt,a.loan_period,a.created_by,a.created_at,a.modified_by,a.modified_at,b.forwarded_dt,b.forwarded_by,b.by_brn,b.forwarded_to,b.to_brn,c.*,d.branch_name,e.loan_type loan_type_name',
-    table_name = '(SELECT @f:= 0) AS f, td_loan_application a, td_forward b, td_appl_track c, md_branch d, md_loan_type e',
-    whr = `a.application_no = b.application_no 
-    AND a.application_no = c.application_no
-    AND b.forwarded_to = c.user_id
+  // var select = '@f:=@f+1 sl_no, a.application_dt,a.application_no,a.member_id,a.member_name,a.father_name,a.gender,a.dob,a.member_dt,a.email,a.mobile_no,a.memb_address,a.branch_code,a.loan_type,a.loan_amt,a.loan_period,a.created_by,a.created_at,a.modified_by,a.modified_at,b.forwarded_dt,b.forwarded_by,b.by_brn,b.forwarded_to,b.to_brn,c.*,d.branch_name,e.loan_type loan_type_name',
+  //   table_name = '(SELECT @f:= 0) AS f, td_loan_application a, td_forward b, td_appl_track c, md_branch d, md_loan_type e',
+  //   whr = `a.application_no = b.application_no 
+  //   AND a.application_no = c.application_no
+  //   AND b.forwarded_to = c.user_id
+  //   AND a.branch_code = d.sl_no
+  //   AND a.loan_type = e.sl_no
+  //   AND b.forwarded_dt = (SELECT MAX(g.forwarded_dt) FROM td_forward g WHERE a.application_no=g.application_no AND g.forwarded_to = c.user_id)
+  //   AND c.application_status = 'P'
+  //   AND c.user_id = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
+  //   order = `GROUP BY a.application_no ORDER BY a.created_by`;
+  // var res_dt = await db_Select(select, table_name, whr, order)
+  // console.log(res_dt,'res');
+
+  var select =  'a.*,b.*,c.*,d.branch_name,e.loan_type',
+table_name = 'td_loan_application a, td_forward b, td_appl_track c, md_branch d, md_loan_type e',
+whr = ` a.application_no = b.application_no 
+     AND a.application_no = c.application_no
     AND a.branch_code = d.sl_no
     AND a.loan_type = e.sl_no
-    AND b.forwarded_dt = (SELECT MAX(g.forwarded_dt) FROM td_forward g WHERE a.application_no=g.application_no AND g.forwarded_to = c.user_id)
     AND c.application_status = 'P'
-    AND c.user_id = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
-    order = `GROUP BY a.application_no ORDER BY a.created_by`;
-  var res_dt = await db_Select(select, table_name, whr, order)
-  console.log(res_dt,'res');
-  
+    AND c.user_id = '${data.user_id}'`
+    var res_dt = await db_Select(select, table_name, whr, order)
+ 
   res.send(res_dt)
 });
 // ******************************************************************************************************
