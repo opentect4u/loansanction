@@ -351,20 +351,50 @@ sqlRouter.get("/fetch_loan_dtls", async (req, res) => {
   // var res_dt = await db_Select(select, table_name, whr, order)
   // console.log(res_dt,'res');
 
-  var select =  'a.*,b.*,c.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type',
+//   var select =  'a.*,b.*,c.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type',
+// table_name = 'td_loan_application a, td_forward b, td_appl_track c, md_branch d, md_loan_type e',
+// whr = `a.application_no = b.application_no 
+//      AND a.application_no = c.application_no
+//     AND a.branch_code = d.sl_no
+//     AND a.loan_type = e.sl_no
+//     AND b.forwarded_dt = (SELECT MAX(g.forwarded_dt) FROM td_forward g WHERE a.application_no=g.application_no AND g.forwarded_to = c.user_id)
+//     AND c.application_status = 'P'
+//     AND c.user_id = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`
+//     order = `ORDER BY a.created_by`;
+//     var res_dt = await db_Select(select, table_name, whr, order)
+
+var select = 'a.*,b.*,c.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type',
 table_name = 'td_loan_application a, td_forward b, td_appl_track c, md_branch d, md_loan_type e',
-whr = `a.application_no = b.application_no 
+whr =  `a.application_no = b.application_no 
      AND a.application_no = c.application_no
     AND a.branch_code = d.sl_no
     AND a.loan_type = e.sl_no
-    AND b.forwarded_dt = (SELECT MAX(g.forwarded_dt) FROM td_forward g WHERE a.application_no=g.application_no AND g.forwarded_to = c.user_id)
     AND c.application_status = 'P'
-    AND c.user_id = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`
-    order = `ORDER BY a.created_by`;
-    var res_dt = await db_Select(select, table_name, whr, order)
- 
+    AND c.user_id = '${data.user_id}'`,
+order = `ORDER BY a.created_by`;
+var res_dt = await db_Select(select, table_name, whr, order)
+
   res.send(res_dt)
 });
+// ******************************************************************************************************
+
+sqlRouter.get("/edit_pen_loan", async (req, res) =>{
+  var data  =req.query
+
+  var select = 'a.*,b.*,c.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type',
+  table_name = 'td_loan_application a, td_forward b, td_appl_track c, md_branch d, md_loan_type e',
+  whr = `a.application_no = b.application_no 
+     AND a.application_no = c.application_no
+    AND a.branch_code = d.sl_no
+    AND a.loan_type = e.sl_no
+    AND c.application_status = 'P'
+    AND c.user_id = '${data.user_id}' AND a.application_no = '${data.application_no}'`,
+    order = null;
+    var res_dt = await db_Select(select, table_name, whr, order)
+    res.send(res_dt)
+})
+
+
 // ******************************************************************************************************
 
 
@@ -416,15 +446,15 @@ sqlRouter.post("/forward_brn_manager", async (req, res) =>{
 var fwd_brn_dt = await db_Insert(table_name, fields, values, whr, flag);
 
 if(fwd_brn_dt.suc > 0){
-  // var table_name = "td_appl_track",
-  // fields = `application_status = '${data.application_status}'`,
-  // values = null;
-  // whr =`application_no=${data.application_no}`,
-  // flag = 1; 
   var table_name = "td_appl_track",
-  fields = `(fwd_dt, application_no,user_id,application_status,created_by,created_dt)`,
-  values = `('${datetime}', '${data.application_no}', '${data.user_id}', '${data.application_status}', '${data.created_by}', '${datetime}')`
-  flag = 0;
+  fields = `application_status = '${data.application_status}'`,
+  values = null;
+  whr =`application_no=${data.application_no}`,
+  flag = 1; 
+  // var table_name = "td_appl_track",
+  // fields = `(fwd_dt, application_no,user_id,application_status,created_by,created_dt)`,
+  // values = `('${datetime}', '${data.application_no}', '${data.user_id}', '${data.application_status}', '${data.created_by}', '${datetime}')`
+  // flag = 0;
   var final_dt = await db_Insert(table_name,fields,values,whr,flag);
 
   var table_name = "td_appl_track",
