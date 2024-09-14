@@ -244,8 +244,8 @@ sqlRouter.post("/insert_loan_dtls", async (req, res) => {
     
       if (fwd_dt.suc > 0){
         var table_name = "td_appl_track",
-        fields = "(fwd_dt, application_no, user_id, application_status, created_by, created_dt)",
-        values =  `('${datetime}', '${newId}', '${user_data.msg[0].id}', 'P', '${data.created_by}', '${datetime}')`,
+        fields = "(application_no, user_id, application_status, created_by, created_dt)",
+        values =  `('${newId}', '${user_data.msg[0].id}', 'P', '${data.created_by}', '${datetime}')`,
         whr = null,
         flag = 0;
       var app_dt = await db_Insert(table_name, fields, values, whr, flag);
@@ -458,8 +458,8 @@ if(fwd_brn_dt.suc > 0){
   var final_dt = await db_Insert(table_name,fields,values,whr,flag);
 
   var table_name = "td_appl_track",
-  fields = `(fwd_dt, application_no,user_id,application_status,created_by,created_dt)`,
-  values = `('${datetime}', '${data.application_no}', '${data.brn_mgr_id}', 'P', '${data.created_by}', '${datetime}')`
+  fields = `(application_no,user_id,application_status,created_by,created_dt)`,
+  values = `('${data.application_no}', '${data.brn_mgr_id}', 'P', '${data.created_by}', '${datetime}')`
   flag = 0;
   var final_dt_1 = await db_Insert(table_name,fields,values,whr,flag);
   res.send(final_dt_1)
