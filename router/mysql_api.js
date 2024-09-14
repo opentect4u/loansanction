@@ -235,21 +235,21 @@ sqlRouter.post("/insert_loan_dtls", async (req, res) => {
       
   
       var table_name = "td_forward",
-        fields = "(application_no, forwarded_dt, forwarded_by, by_brn, forwarded_to, to_brn, remarks, created_by, created_dt)",
-        values =  `('${newId}', '${datetime}', '8', '${data.branch_code}', '${user_data.msg[0].id}', '${user_data.msg[0].branch_code}', '', '${data.created_by}', '${datetime}')`,
+        fields = "(application_no, forwarded_dt, forwarded_by, by_brn, forwarded_to, to_brn, application_status, created_by, created_dt)",
+        values =  `('${newId}', '${datetime}', '8', '${data.branch_code}', '${user_data.msg[0].id}', '${user_data.msg[0].branch_code}', 'P', '${data.member_name}', '${datetime}')`,
         whr = null,
         flag = 0;
       var fwd_dt = await db_Insert(table_name, fields, values, whr, flag);
       // console.log(fwd_dt);
     
-      if (fwd_dt.suc > 0){
-        var table_name = "td_appl_track",
-        fields = "(application_no, user_id, application_status, created_by, created_dt)",
-        values =  `('${newId}', '${user_data.msg[0].id}', 'P', '${data.created_by}', '${datetime}')`,
-        whr = null,
-        flag = 0;
-      var app_dt = await db_Insert(table_name, fields, values, whr, flag);
-      }
+      // if (fwd_dt.suc > 0){
+      //   var table_name = "td_appl_track",
+      //   fields = "(application_no, user_id, application_status, created_by, created_dt)",
+      //   values =  `('${newId}', '${user_data.msg[0].id}', 'P', '${data.created_by}', '${datetime}')`,
+      //   whr = null,
+      //   flag = 0;
+      // var app_dt = await db_Insert(table_name, fields, values, whr, flag);
+      // }
     }
   }
 
@@ -363,19 +363,19 @@ sqlRouter.get("/fetch_loan_dtls", async (req, res) => {
 //     order = `ORDER BY a.created_by`;
 //     var res_dt = await db_Select(select, table_name, whr, order)
 
-var select = 'a.*,b.*,c.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type',
-table_name = 'td_loan_application a, td_forward b, td_appl_track c, md_branch d, md_loan_type e',
+var select = 'a.*,b.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type',
+table_name = 'td_loan_application a, td_forward b, md_branch d, md_loan_type e',
 whr =  `a.application_no = b.application_no 
-     AND a.application_no = c.application_no
     AND a.branch_code = d.sl_no
     AND a.loan_type = e.sl_no
-    AND c.application_status = 'P'
-    AND c.user_id = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
+     AND b.application_status = 'P'
+    AND  b.forwarded_to = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
 order = `ORDER BY a.created_by`;
 var res_dt = await db_Select(select, table_name, whr, order)
 
   res.send(res_dt)
 });
+
 // ******************************************************************************************************
 
 // sqlRouter.get("/edit_pen_loan", async (req, res) =>{
@@ -419,23 +419,20 @@ sqlRouter.get("/fetch_forward_dtls", async (req, res) => {
   // var res_dt = await db_Select(select, table_name, whr, order)
   // console.log(res_dt,'res');
   
-  var select = `a.*,b.*,c.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type,(SELECT CONCAT(a.first_name, ' ', a.last_name) FROM md_users a, td_forward b 
+  var select = `a.*,b.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type,(SELECT CONCAT(a.first_name, ' ', a.last_name) FROM md_users a, td_forward b 
    WHERE a.id = b.forwarded_to AND a.user_type = '4' AND b.application_no = '${data.application_no}') as forward_user_name,
  (SELECT b.remarks FROM md_users a, td_forward b 
  WHERE a.id = b.forwarded_to AND a.user_type = '4' AND b.application_no = '${data.application_no}') as forward_remarks`,
-table_name = 'td_loan_application a, td_forward b, td_appl_track c, md_branch d, md_loan_type e',
+table_name = 'td_loan_application a, td_forward b, md_branch d, md_loan_type e',
 whr =  `a.application_no = b.application_no 
-     AND a.application_no = c.application_no
-    AND a.branch_code = d.sl_no
-    AND a.loan_type = e.sl_no
-    AND c.application_status = 'A'
-    AND c.user_id = '${data.user_id}'
+     AND a.branch_code = d.sl_no
+     AND a.loan_type = e.sl_no
+    AND b.application_status = 'A'
     AND b.forwarded_to = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
 order = `HAVING (SELECT COUNT(*) FROM td_upload_file b WHERE a.application_no=b.application_no) > 0`;
 var res_dt = await db_Select(select, table_name, whr, order)
   res.send(res_dt)
 });
-
 
 // ******************************************************************************************************
 
