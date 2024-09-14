@@ -166,42 +166,44 @@ sqlRouter.post("/insert_loan_dtls", async (req, res) => {
   new_id = year1.padEnd(10,"0");
   // console.log(new_id);
 
-  var select1 = "ifnull(MAX(application_no),'2024000000') app_no",
+  var select1 = "IF(MAX(SUBSTRING(application_no, -6)) > 0, LPAD(MAX(cast(SUBSTRING(application_no, -6) as unsigned))+1, 6, '0'), '000001') max_form",
   table_name1 = "td_loan_application",
-  whr1 = null,
+  whr1 = `SUBSTRING(application_no, 1, 4) = YEAR(now())`,
   order1 = null;
   var res_dt1 = await db_Select(select1, table_name1, whr1, order1);
-  var lastrow = res_dt1.msg[0].app_no
-  var newId = parseInt(lastrow) + 1
+  // var lastrow = res_dt1.msg[0].app_no
+  // var newId = parseInt(lastrow) + 1
+  var newId = `${year}${res_dt1.msg[0].max_form}`
 
   // console.log(newId);
 
   
   if(res_dt1.suc > 0){
-  var table_name = "td_loan_application",
+    var table_name = "td_loan_application",
 
-    fields = data.application_no > 0 ? `application_dt='${date}', member_id='${data.member_id}', member_name='${data.member_name}', father_name='${data.father_name}', gender='${data.gender}', dob='${data.dob}', member_dt='${data.member_dt}', email='${data.email}', mobile_no='${data.mobile_no}', memb_address='${data.memb_address}', branch_code='${data.branch_code}', loan_type='${data.loan_type}', loan_amt='${data.loan_amt}', loan_period='${data.loan_period}', modified_by='${data.created_by}', modified_at='${datetime}'` : "(application_dt, application_no, member_id, member_name, father_name, gender, dob, member_dt, email, mobile_no, memb_address, branch_code, loan_type, loan_amt, loan_period, created_by, created_at)",
-    values =  `('${datetime}', '${newId}', ${data.member_id}, '${data.member_name}', '${data.father_name}', '${data.gender}', '${data.dob}', '${data.member_dt}', '${data.email}', '${data.mobile_no}', '${data.memb_address}', '${data.branch_code}', '${data.loan_type}', '${data.loan_amt}', '${data.loan_period}', '${data.created_by}', '${datetime}')`,
-    whr = data.application_no > 0 ? `application_no=${data.application_no}` : null,
-    flag = data.application_no > 0 ? 1 : 0;
-  var res_dt = await db_Insert(table_name, fields, values, whr, flag);
-  // console.log(res_dt,'res');
+      fields = data.application_no > 0 ? `member_id='${data.member_id}', member_name='${data.member_name}', father_name='${data.father_name}', gender='${data.gender}', dob='${data.dob}', member_dt='${data.member_dt}', email='${data.email}', mobile_no='${data.mobile_no}', memb_address='${data.memb_address}', branch_code='${data.branch_code}', loan_type='${data.loan_type}', loan_amt='${data.loan_amt}', loan_period='${data.loan_period}', modified_by='${data.created_by}', modified_at='${datetime}'` : "(application_dt, application_no, member_id, member_name, father_name, gender, dob, member_dt, email, mobile_no, memb_address, branch_code, loan_type, loan_amt, loan_period, created_by, created_at)",
+      values =  `('${datetime}', '${newId}', ${data.member_id}, '${data.member_name}', '${data.father_name}', '${data.gender}', '${data.dob}', '${data.member_dt}', '${data.email}', '${data.mobile_no}', '${data.memb_address}', '${data.branch_code}', '${data.loan_type}', '${data.loan_amt}', '${data.loan_period}', '${data.created_by}', '${datetime}')`,
+      whr = data.application_no > 0 ? `application_no=${data.application_no}` : null,
+      flag = data.application_no > 0 ? 1 : 0;
+    var res_dt = await db_Insert(table_name, fields, values, whr, flag);
+    // console.log(res_dt,'res');
   
   
-  if(files !== null){
-    var fileData = JSON.parse(data.file_name)
-    if(res_dt.suc > 0 && files){
-      if(Array.isArray(files)){
-        var i = 0
-        for(let fdt of files){
-          var file_dt = await data.application_no > 0 ? saveFile(fdt, data.application_no, data.member_id, fileData[i].l_file_name, data.user_id) : saveFile(fdt, newId, data.member_id, fileData[i].l_file_name, data.user_id)
-          // console.log(file_dt);
-          i++
+    if(files !== null){
+      var fileData = JSON.parse(data.file_name)
+      if(res_dt.suc > 0 && files){
+        if(Array.isArray(files)){
+          var i = 0
+          for(let fdt of files){
+            var file_dt = await data.application_no > 0 ? saveFile(fdt, data.application_no, data.member_id, fileData[i].l_file_name, data.user_id) : saveFile(fdt, newId, data.member_id, fileData[i].l_file_name, data.user_id)
+            // console.log(file_dt);
+            i++
+          }
+        }else{
+          var file_dt = await data.application_no>0 ?  saveFile(files, data.application_no, data.member_id, fileData[0].l_file_name, data.user_id) :  saveFile(files, newId, data.member_id, fileData[0].l_file_name, data.user_id)
         }
-      }else{
-        var file_dt = await data.application_no>0 ?  saveFile(files, data.application_no, data.member_id, fileData[0].l_file_name, data.user_id) :  saveFile(files, newId, data.member_id, fileData[0].l_file_name, data.user_id)
       }
-    }}
+    }
     // else{
     //   var fileData = null
     //   if(res_dt.suc > 0 && files){
@@ -217,36 +219,40 @@ sqlRouter.post("/insert_loan_dtls", async (req, res) => {
     //     }
     //   }
     // }
-  // }
+    // }
 
-  // if(res_dt.suc > 0){
+    // if(res_dt.suc > 0){
 
-    var select = "id,branch_code",
-    table_name = "md_users",
-    where = `user_type = '5' AND branch_code = '${data.branch_code}' AND user_approve = '1'`,
-    order = null;
-    var user_data = await db_Select(select,table_name,where,order);
-    console.log(user_data,'user');
-    
+    if(data.application_no > 0){
 
-    var table_name = "td_forward",
-    fields = "(application_no, forwarded_dt, forwarded_by, by_brn, forwarded_to, to_brn, remarks, created_by, created_dt)",
-    values =  `('${newId}', '${datetime}', '8', '${data.branch_code}', '${user_data.msg[0].id}', '${user_data.msg[0].branch_code}', '', '${data.created_by}', '${datetime}')`,
-    whr = null,
-    flag = 0;
-  var fwd_dt = await db_Insert(table_name, fields, values, whr, flag);
-  // console.log(fwd_dt);
+    }else{
+      var select = "id,branch_code",
+      table_name = "md_users",
+      where = `user_type = '5' AND branch_code = '${data.branch_code}' AND user_approve = '1'`,
+      order = null;
+      var user_data = await db_Select(select,table_name,where,order);
+      console.log(user_data,'user');
+      
   
+      var table_name = "td_forward",
+        fields = "(application_no, forwarded_dt, forwarded_by, by_brn, forwarded_to, to_brn, remarks, created_by, created_dt)",
+        values =  `('${newId}', '${datetime}', '8', '${data.branch_code}', '${user_data.msg[0].id}', '${user_data.msg[0].branch_code}', '', '${data.created_by}', '${datetime}')`,
+        whr = null,
+        flag = 0;
+      var fwd_dt = await db_Insert(table_name, fields, values, whr, flag);
+      // console.log(fwd_dt);
+    
+      if (fwd_dt.suc > 0){
+        var table_name = "td_appl_track",
+        fields = "(fwd_dt, application_no, user_id, application_status, created_by, created_dt)",
+        values =  `('${datetime}', '${newId}', '${user_data.msg[0].id}', 'P', '${data.created_by}', '${datetime}')`,
+        whr = null,
+        flag = 0;
+      var app_dt = await db_Insert(table_name, fields, values, whr, flag);
+      }
+    }
   }
 
-  if (fwd_dt.suc > 0){
-    var table_name = "td_appl_track",
-    fields = "(fwd_dt, application_no, user_id, application_status, created_by, created_dt)",
-    values =  `('${datetime}', '${newId}', '${user_data.msg[0].id}', 'P', '${data.created_by}', '${datetime}')`,
-    whr = null,
-    flag = 0;
-  var app_dt = await db_Insert(table_name, fields, values, whr, flag);
-  }
 
   const app_id = "app_id"
   data.application_no > 0 ? null : res_dt[app_id] = newId
@@ -410,11 +416,15 @@ sqlRouter.post("/forward_brn_manager", async (req, res) =>{
 var fwd_brn_dt = await db_Insert(table_name, fields, values, whr, flag);
 
 if(fwd_brn_dt.suc > 0){
+  // var table_name = "td_appl_track",
+  // fields = `application_status = '${data.application_status}'`,
+  // values = null;
+  // whr =`application_no=${data.application_no}`,
+  // flag = 1; 
   var table_name = "td_appl_track",
-  fields = `application_status = '${data.application_status}'`,
-  values = null;
-  whr =`application_no=${data.application_no}`,
-  flag = 1; 
+  fields = `(fwd_dt, application_no,user_id,application_status,created_by,created_dt)`,
+  values = `('${datetime}', '${data.application_no}', '${data.user_id}', '${data.application_status}', '${data.created_by}', '${datetime}')`
+  flag = 0;
   var final_dt = await db_Insert(table_name,fields,values,whr,flag);
 
   var table_name = "td_appl_track",
