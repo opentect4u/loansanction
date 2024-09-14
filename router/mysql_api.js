@@ -420,9 +420,9 @@ sqlRouter.get("/fetch_forward_dtls", async (req, res) => {
   // console.log(res_dt,'res');
   
   var select = `a.*,b.*,c.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type,(SELECT CONCAT(a.first_name, ' ', a.last_name) FROM md_users a, td_forward b 
-  //                WHERE a.id = b.forwarded_to AND a.user_type = '4' AND b.application_no = '${data.application_no}') as forward_user_name,
-  //                (SELECT b.remarks FROM md_users a, td_forward b 
-  //                WHERE a.id = b.forwarded_to AND a.user_type = '4' AND b.application_no = '${data.application_no}') as forward_remarks`,
+   WHERE a.id = b.forwarded_to AND a.user_type = '4' AND b.application_no = '${data.application_no}') as forward_user_name,
+ (SELECT b.remarks FROM md_users a, td_forward b 
+ WHERE a.id = b.forwarded_to AND a.user_type = '4' AND b.application_no = '${data.application_no}') as forward_remarks`,
 table_name = 'td_loan_application a, td_forward b, td_appl_track c, md_branch d, md_loan_type e',
 whr =  `a.application_no = b.application_no 
      AND a.application_no = c.application_no
