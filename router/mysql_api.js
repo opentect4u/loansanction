@@ -428,7 +428,7 @@ whr =  `a.application_no = b.application_no
      AND a.application_no = c.application_no
     AND a.branch_code = d.sl_no
     AND a.loan_type = e.sl_no
-    AND c.application_status = 'p'
+    AND c.application_status = 'A'
     AND c.user_id = '${data.user_id}'
     AND b.forwarded_to = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
 order = `HAVING (SELECT COUNT(*) FROM td_upload_file b WHERE a.application_no=b.application_no) > 0`;
