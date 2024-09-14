@@ -450,31 +450,38 @@ sqlRouter.post("/forward_brn_manager", async (req, res) =>{
   console.log(branch_data,'user');
   
   var table_name = "td_forward",
-  fields = "(application_no, forwarded_dt, forwarded_by, by_brn, forwarded_to, to_brn, remarks, created_by, created_dt)",
-  values =  `('${data.application_no}', '${datetime}', '${data.user_id}', '${data.fwd_brn}', '${data.brn_mgr_id}', '${data.brn_code}', '${data.remarks}', '${data.created_by}', '${datetime}')`,
+  fields = "(application_no, forwarded_dt, forwarded_by, by_brn, forwarded_to, to_brn, application_status, remarks, created_by, created_dt)",
+  values =  `('${data.application_no}', '${datetime}', '${data.user_id}', '${data.fwd_brn}', '${data.brn_mgr_id}', '${data.brn_code}', 'P', '${data.remarks}', '${data.created_by}', '${datetime}')`,
   whr = null,
   flag = 0;
 var fwd_brn_dt = await db_Insert(table_name, fields, values, whr, flag);
 
-if(fwd_brn_dt.suc > 0){
-  var table_name = "td_appl_track",
-  fields = `application_status = '${data.application_status}'`,
-  values = null;
-  whr =`application_no=${data.application_no}`,
-  flag = 1; 
-  // var table_name = "td_appl_track",
-  // fields = `(fwd_dt, application_no,user_id,application_status,created_by,created_dt)`,
-  // values = `('${datetime}', '${data.application_no}', '${data.user_id}', '${data.application_status}', '${data.created_by}', '${datetime}')`
-  // flag = 0;
-  var final_dt = await db_Insert(table_name,fields,values,whr,flag);
+var table_name = "td_forward",
+fields = `application_status = '${data.application_status}'`,
+values =  null,
+whr = `application_no=${data.application_no} and forwarded_to = '${data.user_id}'`,
+flag = 1;
+var final_dt_1 = await db_Insert(table_name, fields, values, whr, flag);
 
-  var table_name = "td_appl_track",
-  fields = `(application_no,user_id,application_status,created_by,created_dt)`,
-  values = `('${data.application_no}', '${data.brn_mgr_id}', 'P', '${data.created_by}', '${datetime}')`
-  flag = 0;
-  var final_dt_1 = await db_Insert(table_name,fields,values,whr,flag);
-  res.send(final_dt_1)
-}
+// if(fwd_brn_dt.suc > 0){
+//   var table_name = "td_appl_track",
+//   fields = `application_status = '${data.application_status}'`,
+//   values = null;
+//   whr =`application_no=${data.application_no}`,
+//   flag = 1; 
+//   var table_name = "td_appl_track",
+//   fields = `(fwd_dt, application_no,user_id,application_status,created_by,created_dt)`,
+//   values = `('${datetime}', '${data.application_no}', '${data.user_id}', '${data.application_status}', '${data.created_by}', '${datetime}')`
+//   flag = 0;
+//   var final_dt = await db_Insert(table_name,fields,values,whr,flag);
+
+//   var table_name = "td_appl_track",
+//   fields = `(application_no,user_id,application_status,created_by,created_dt)`,
+//   values = `('${data.application_no}', '${data.brn_mgr_id}', 'P', '${data.created_by}', '${datetime}')`
+//   flag = 0;
+//   var final_dt_1 = await db_Insert(table_name,fields,values,whr,flag);
+//   res.send(final_dt_1)
+// }
 })
 
 // ******************************************************************************************************
