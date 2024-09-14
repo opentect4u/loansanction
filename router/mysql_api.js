@@ -370,7 +370,7 @@ whr =  `a.application_no = b.application_no
     AND a.branch_code = d.sl_no
     AND a.loan_type = e.sl_no
     AND c.application_status = 'P'
-    AND c.user_id = '${data.user_id}'`,
+    AND c.user_id = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
 order = `ORDER BY a.created_by`;
 var res_dt = await db_Select(select, table_name, whr, order)
 
@@ -378,21 +378,21 @@ var res_dt = await db_Select(select, table_name, whr, order)
 });
 // ******************************************************************************************************
 
-sqlRouter.get("/edit_pen_loan", async (req, res) =>{
-  var data  =req.query
+// sqlRouter.get("/edit_pen_loan", async (req, res) =>{
+//   var data  =req.query
 
-  var select = 'a.*,b.*,c.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type',
-  table_name = 'td_loan_application a, td_forward b, td_appl_track c, md_branch d, md_loan_type e',
-  whr = `a.application_no = b.application_no 
-     AND a.application_no = c.application_no
-    AND a.branch_code = d.sl_no
-    AND a.loan_type = e.sl_no
-    AND c.application_status = 'P'
-    AND c.user_id = '${data.user_id}' AND a.application_no = '${data.application_no}'`,
-    order = null;
-    var res_dt = await db_Select(select, table_name, whr, order)
-    res.send(res_dt)
-})
+//   var select = 'a.*,b.*,c.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type',
+//   table_name = 'td_loan_application a, td_forward b, td_appl_track c, md_branch d, md_loan_type e',
+//   whr = `a.application_no = b.application_no 
+//      AND a.application_no = c.application_no
+//     AND a.branch_code = d.sl_no
+//     AND a.loan_type = e.sl_no
+//     AND c.application_status = 'P'
+//     AND c.user_id = '${data.user_id}' AND a.application_no = '${data.application_no}'`,
+//     order = null;
+//     var res_dt = await db_Select(select, table_name, whr, order)
+//     res.send(res_dt)
+// })
 
 
 // ******************************************************************************************************
