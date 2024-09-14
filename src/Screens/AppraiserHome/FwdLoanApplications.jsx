@@ -111,7 +111,7 @@ function FwdLoanApplications() {
 				<main className="px-4 h-auto my-10 mx-32">
 					<LoanApplicationsTableView
 						loanAppData={loanApplications}
-						title="Forwarded Loan Applications"
+						title="Forward Applications"
 						setSearch={(data) => setSearch(data)}
 						isForwardLoan={true}
 					/>

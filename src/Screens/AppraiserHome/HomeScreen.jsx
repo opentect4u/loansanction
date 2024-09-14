@@ -56,6 +56,8 @@ function HomeScreen() {
 			})
 			.catch((err) => {
 				Message("error", "Some error occurred while fetching loans!")
+
+				console.log("LLLLLLLLLLLLLLLLLLL", err)
 			})
 		setLoading(false)
 	}
@@ -101,7 +103,7 @@ function HomeScreen() {
 				<main className="px-4 h-auto my-10 mx-32">
 					<LoanApplicationsTableView
 						loanAppData={loanApplications}
-						title="Loan Applications"
+						title="Pending Applications"
 						setSearch={(data) => setSearch(data)}
 					/>
 					{/* <DialogBox

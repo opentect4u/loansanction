@@ -506,7 +506,7 @@ function EditLoanFormFwdBr() {
 			.post(`${url}/brn/brn_manager_reject`, creds)
 			.then((res) => {
 				Message("error", "Application Rejected.")
-				setVisibleModal2(!visibleModal2)
+				// setVisibleModal2(!visibleModal2)
 				navigate(routePaths.BR_APPLICATION_FORWARD)
 			})
 			.catch((err) => {
@@ -598,13 +598,13 @@ function EditLoanFormFwdBr() {
 					<div className="flex justify-between ml-14 mr-12">
 						<Tag
 							color="purple"
-							className="p-1 px-2 text-sm rounded-full font-bold animate-pulse"
+							className="p-1 px-2 text-sm rounded-full font-bold"
 						>
 							<ArrowRightOutlined /> From Appraiser: {forwardedByName}
 						</Tag>
 						<Tag
 							color="orange"
-							className="p-1 px-2 text-sm rounded-full font-bold animate-pulse"
+							className="p-1 px-2 text-sm rounded-full font-bold"
 						>
 							<ClockCircleOutlined /> Forwarded on:{" "}
 							{new Date(appraiserForwardedDate)?.toLocaleString("en-GB")}
@@ -1014,8 +1014,10 @@ function EditLoanFormFwdBr() {
 				onPress={() => setVisibleModal(!visibleModal)}
 				visible={visibleModal}
 				onPressYes={() => {
-					if (commentsBranchManager) sendToCreditManager("A")
-					else {
+					if (commentsBranchManager) {
+						setVisibleModal(!visibleModal)
+						sendToCreditManager("A")
+					} else {
 						Message("error", "Write Comments.")
 						setVisibleModal(!visibleModal)
 					}
@@ -1030,8 +1032,10 @@ function EditLoanFormFwdBr() {
 				onPress={() => setVisibleModal2(!visibleModal2)}
 				visible={visibleModal2}
 				onPressYes={() => {
-					if (commentsBranchManager) handleReject("R")
-					else {
+					if (commentsBranchManager) {
+						setVisibleModal2(!visibleModal2)
+						handleReject("R")
+					} else {
 						Message("error", "Write Comments.")
 						setVisibleModal2(!visibleModal2)
 					}

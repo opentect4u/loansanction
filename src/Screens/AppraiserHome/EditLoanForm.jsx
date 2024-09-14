@@ -288,6 +288,10 @@ function EditLoanForm() {
 		var data = new FormData()
 
 		data.append("application_no", +params?.id)
+		data.append(
+			"user_id",
+			+JSON.parse(localStorage.getItem("user_details"))?.id
+		)
 		data.append("member_id", +values?.l_member_id)
 		data.append("member_name", values?.l_name)
 		data.append("father_name", values?.l_father_husband_name)
@@ -427,6 +431,8 @@ function EditLoanForm() {
 						l_documents: [{ l_file_name: "", l_file: "" }],
 					})
 					setLoanApproveStatus(res?.data?.msg[0]?.application_status)
+
+					console.log("HHHHHHHHHHHHHHHH", res?.data)
 				} else {
 					Message("warning", "No data found!")
 				}
@@ -736,6 +742,7 @@ function EditLoanForm() {
 													}))}
 													mode={2}
 												/>
+												{console.log("=========", values.l_applied_for)}
 												{errors.l_applied_for && touched.l_applied_for ? (
 													<VError title={errors.l_applied_for} />
 												) : null}

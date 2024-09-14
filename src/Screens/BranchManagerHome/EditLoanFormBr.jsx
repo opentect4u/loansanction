@@ -524,13 +524,13 @@ function EditLoanFormBr() {
 					<div className="flex justify-between ml-14 mr-12">
 						<Tag
 							color="purple"
-							className="p-1 px-2 text-sm rounded-full font-bold animate-pulse"
+							className="p-1 px-2 text-sm rounded-full font-bold"
 						>
 							<ArrowRightOutlined /> From Appraiser: {forwardedByName}
 						</Tag>
 						<Tag
 							color="orange"
-							className="p-1 px-2 text-sm rounded-full font-bold animate-pulse"
+							className="p-1 px-2 text-sm rounded-full font-bold"
 						>
 							<ClockCircleOutlined /> Forwarded on:{" "}
 							{new Date(appraiserForwardedDate)?.toLocaleString("en-GB")}

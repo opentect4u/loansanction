@@ -6,11 +6,10 @@ import {
 	LogoutOutlined,
 	ArrowRightOutlined,
 	MinusCircleOutlined,
+	ImportOutlined,
 } from "@ant-design/icons"
 import { Menu } from "antd"
 import { Link } from "react-router-dom"
-import { routePaths } from "../Assets/Data/Routes"
-import { CheckOutlined, UploadFileOutlined } from "@mui/icons-material"
 import IMG from "../Assets/Images/purdcs.png"
 import Tooltip from "@mui/material/Tooltip"
 import { useNavigate } from "react-router-dom"
@@ -30,8 +29,8 @@ function Menus({ theme }) {
 	const items = [
 		{
 			key: "sub1",
-			icon: <BarChartOutlined />,
-			label: <Link to={"/appraiser/home"}>Dashboard</Link>,
+			icon: <ImportOutlined />,
+			label: <Link to={"/appraiser/home"}>Pending</Link>,
 		},
 		{
 			key: "sub2",
@@ -50,11 +49,6 @@ function Menus({ theme }) {
 		},
 	]
 
-	// const logOut = () => {
-	// 	localStorage.clear()
-	// 	navigate(routePaths.LANDING)
-	// }
-
 	return (
 		<div className="bg-[#EEEEEE44] flex justify-between align-middle gap-4 rounded-full">
 			<img src={IMG} className="w-14 h-14 p-2 -mr-6" alt="Flowbite Logo" />
@@ -66,7 +60,6 @@ function Menus({ theme }) {
 				style={{
 					width: 1000,
 					backgroundColor: "transparent",
-					// boxShadow: "none",
 					border: "none",
 				}}
 				className="rounded-full items-center justify-center"
@@ -83,10 +76,6 @@ function Menus({ theme }) {
 				flag={1}
 				onPress={() => setVisibleModal(!visibleModal)}
 				visible={visibleModal}
-				// onPressYes={logOut}
-				// onPressNo={() => {
-				// 	setVisibleModal(!visibleModal)
-				// }}
 			/>
 		</div>
 	)

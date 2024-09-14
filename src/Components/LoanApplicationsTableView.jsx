@@ -47,14 +47,14 @@ function LoanApplicationsTableView({
 				animate={{ opacity: 1 }}
 				transition={{ delay: 0.5, type: "spring", stiffness: 30 }}
 			>
-				<div className="flex flex-col p-1 bg-red-800 rounded-2xl my-3 dark:bg-red-800 md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 ">
+				<div className="flex flex-col p-1 bg-red-800 rounded-lg my-3 dark:bg-red-800 md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 ">
 					<div className="w-full">
 						<div className="flex items-center justify-between">
 							<motion.h2
 								initial={{ opacity: 0, y: -50 }}
 								animate={{ opacity: 1, y: 0 }}
 								transition={{ delay: 1, type: "just" }}
-								className="text-xl w-48 capitalize text-nowrap font-bold text-white dark:text-white sm:block hidden mx-5"
+								className="text-xl w-48 capitalize text-nowrap font-bold text-white dark:text-white sm:block hidden mx-4"
 							>
 								{title}
 							</motion.h2>
@@ -62,7 +62,7 @@ function LoanApplicationsTableView({
 							<label htmlFor="simple-search" className="sr-only">
 								Search
 							</label>
-							<div className="relative w-full -right-6 2xl:-right-12">
+							<div className="relative w-full -right-12 2xl:-right-12">
 								<div className="absolute inset-y-0 left-0 flex items-center md:ml-4 pl-3 pointer-events-none">
 									<svg
 										aria-hidden="true"
@@ -84,7 +84,7 @@ function LoanApplicationsTableView({
 									initial={{ opacity: 0, width: 0 }}
 									animate={{ opacity: 1, width: "91%" }}
 									transition={{ delay: 1.1, type: "just" }}
-									className="bg-white border rounded-2xl border-red-700 text-gray-800 block w-full h-12 pl-10 dark:bg-gray-800 md:ml-4 duration-300 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white text-lg focus:border-red-600"
+									className="bg-white border rounded-lg border-red-700 text-gray-800 block w-full h-12 pl-10 dark:bg-gray-800 md:ml-4 duration-300 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white text-lg focus:border-red-600"
 									placeholder="Search"
 									required=""
 									onChange={(text) => setSearch(text.target.value)}

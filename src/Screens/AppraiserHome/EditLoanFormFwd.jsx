@@ -495,7 +495,7 @@ function EditLoanFormFwd() {
 			.post(`${url}/sql/forward_brn_manager`, creds)
 			.then((res) => {
 				Message("success", "E-Files moved to Branch Manager.")
-				setVisibleModal(!visibleModal)
+				// setVisibleModal(!visibleModal)
 				navigate(routePaths.APPLICATION_FORWARD)
 			})
 			.catch((err) => {
@@ -825,7 +825,7 @@ function EditLoanFormFwd() {
 												<div className="text-lg font-bold">Uploaded Files</div>
 												<div className="grid grid-cols-4 gap-4 place-items-start mt-3">
 													{fetchedFileDetails?.map((item, i) => (
-														<div>
+														<div key={i}>
 															<TDInputTemplate
 																placeholder="Entered File Name..."
 																type="text"
@@ -959,8 +959,10 @@ function EditLoanFormFwd() {
 				onPress={() => setVisibleModal(!visibleModal)}
 				visible={visibleModal}
 				onPressYes={() => {
-					if (branchManagerId && remarks) sendToBranchManager("A")
-					else {
+					if (branchManagerId && remarks) {
+						setVisibleModal(!visibleModal)
+						sendToBranchManager("A")
+					} else {
 						Message("error", "Choose Branch Manager and Write Remarks.")
 						setVisibleModal(!visibleModal)
 					}
