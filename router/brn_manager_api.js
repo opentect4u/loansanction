@@ -112,43 +112,62 @@ brn_managerRouter.get("/fetch_brn_forward_dtls", async (req, res) => {
     datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
     
     var table_name = "td_forward",
-    fields = "(application_no, forwarded_dt, forwarded_by, by_brn, forwarded_to, to_brn, remarks, created_by, created_dt)",
-    values =  `('${data.application_no}', '${datetime}', '${data.user_id}', '${data.fwd_brn}', '${data.loan_appr_id}', '${data.brn_code}', '${data.brn_remarks}', '${data.created_by}', '${datetime}')`,
+    fields = "(application_no, forwarded_dt, forwarded_by, by_brn, forwarded_to, to_brn, application_status, remarks, created_by, created_dt)",
+    values =  `('${data.application_no}', '${datetime}', '${data.user_id}', '${data.fwd_brn}', '${data.loan_appr_id}', '${data.brn_code}', 'P', '${data.brn_remarks}', '${data.user_id}', '${datetime}')`,
     whr = null,
     flag = 0;
   var branch = await db_Insert(table_name, fields, values, whr, flag);
-  
-  if(branch.suc > 0){
-    var table_name = "td_appl_track",
+
+  var table_name = "td_forward",
     fields = `application_status = '${data.application_status}'`,
     values = null;
-    whr =`application_no=${data.application_no} AND user_id = '${data.user_id}'`,
-    flag = 1; 
-    var final_dt_track = await db_Insert(table_name,fields,values,whr,flag);
-  
-    // var table_name = "td_appl_track",
-    // fields = `(fwd_dt, application_no,user_id,application_status,created_by,created_dt)`,
-    // values = `('${datetime}', '${data.application_no}', '${data.loan_appr_id}', 'P', '${data.created_by}', '${datetime}')`
-    // flag = 0;
-    var table_name = "td_appl_track",
-    fields = `application_status = 'P'`,
-    values = null;
-    whr =`application_no=${data.application_no} AND user_id = '${data.loan_appr_id}'`,
+    whr =`application_no=${data.application_no} AND forwarded_to = '${data.user_id}'`,
     flag = 1; 
     var track_dt = await db_Insert(table_name,fields,values,whr,flag);
 
     if(track_dt.suc > 0){
-        if (track_dt.msg.length > 0) {
-        res.send({ suc: 1, msg: "Rejected Via Branch Manager", user_dtls: track_dt.msg[0] });
+            if (track_dt.msg.length > 0) {
+            res.send({ suc: 1, msg: "Rejected Via Branch Manager", user_dtls: track_dt.msg[0] });
+            }else {
+             res.send({ suc: 0, msg: "Something Went Wrong"});
+            }
         }else {
-         res.send({ suc: 0, msg: "Something Went Wrong"});
+            res.send({ suc: 2, msg: "No data found"})
         }
-    }else {
-        res.send({ suc: 2, msg: "No data found"})
-    }
-  } else {
-    res.send({  suc: 0, msg: branch.msg, dt: branch});
-  }
+  
+  // if(branch.suc > 0){
+  //   var table_name = "td_appl_track",
+  //   fields = `application_status = '${data.application_status}'`,
+  //   values = null;
+  //   whr =`application_no=${data.application_no} AND user_id = '${data.user_id}'`,
+  //   flag = 1; 
+  //   var final_dt_track = await db_Insert(table_name,fields,values,whr,flag);
+  
+  //   var table_name = "td_appl_track",
+  //   fields = `(fwd_dt, application_no,user_id,application_status,created_by,created_dt)`,
+  //   values = `('${datetime}', '${data.application_no}', '${data.loan_appr_id}', 'P', '${data.created_by}', '${datetime}')`
+  //   flag = 0;
+  //   var table_name = "td_appl_track",
+  //   fields = `application_status = 'P'`,
+  //   values = null;
+  //   whr =`application_no=${data.application_no} AND user_id = '${data.loan_appr_id}'`,
+  //   flag = 1; 
+  //   var track_dt = await db_Insert(table_name,fields,values,whr,flag);
+
+  //   if(track_dt.suc > 0){
+  //       if (track_dt.msg.length > 0) {
+  //       res.send({ suc: 1, msg: "Rejected Via Branch Manager", user_dtls: track_dt.msg[0] });
+  //       }else {
+  //        res.send({ suc: 0, msg: "Something Went Wrong"});
+  //       }
+  //   }else {
+  //       res.send({ suc: 2, msg: "No data found"})
+  //   }
+  // } else {
+  //   res.send({  suc: 0, msg: branch.msg, dt: branch});
+  // }
+
+  res.send(track_dt)
   });
 
 // brn_managerRouter.get("/get_brn_reject", async (req, res) =>{
