@@ -363,7 +363,7 @@ sqlRouter.get("/fetch_loan_dtls", async (req, res) => {
 //     order = `ORDER BY a.created_by`;
 //     var res_dt = await db_Select(select, table_name, whr, order)
 
-var select = 'max(a.forwarded_dt),a.application_no,b.member_name',
+var select = 'max(a.forwarded_dt) last_fwd_dt,a.application_no,b.member_name',
 table_name = 'td_forward a,td_loan_application b',
 whr = `a.application_no = b.application_no AND a.forwarded_to = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no=${data.application_no}` : ''}`,
 order = `Group by a.application_no,b.member_name`;
@@ -377,7 +377,8 @@ if(data.application_no > 0){
         AND a.branch_code = d.sl_no
         AND a.loan_type = e.sl_no
         AND  a.application_no = '${data.application_no}'
-        AND  b.forwarded_to = '${data.user_id}'`,
+        AND  b.forwarded_to = '${data.user_id}'
+        AND b.forwarded_dt = '${dt.msg[0].last_fwd_dt}'`,
     order = `ORDER BY a.created_by`;
     var res_dt = await db_Select(select, table_name, whr, order)
 
