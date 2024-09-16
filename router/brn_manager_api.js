@@ -44,16 +44,26 @@ brn_managerRouter.get("/fetch_brn_pen_dtls", async (req, res) => {
     var data = req.query;
     // console.log(data,'de');
   
-    var select = `@d:=@d+1 sl_no, a.application_dt,a.application_no,a.member_id,a.member_name,a.father_name,a.gender,a.dob,a.member_dt,a.email,a.mobile_no,a.memb_address,a.branch_code,a.loan_type,a.loan_amt,a.loan_period,a.created_by,a.created_at,a.modified_by,a.modified_at,b.forwarded_dt,b.forwarded_by,b.by_brn,b.forwarded_to,b.to_brn,b.remarks,c.*,d.branch_name,e.loan_type loan_type_name, (SELECT CONCAT(a.first_name, ' ', a.last_name) FROM md_users a, td_forward b 
-                 WHERE a.id = b.forwarded_by AND a.user_type = '5' AND b.application_no = '${data.application_no}') as forward_appr_name`,
-table_name = '(SELECT @d:= 0) AS d,td_loan_application a, td_forward b, td_appl_track c, md_branch d, md_loan_type e',
-whr = `a.application_no = b.application_no 
-AND a.application_no = c.application_no
-AND a.branch_code = d.sl_no
-AND a.loan_type = e.sl_no
-AND c.application_status = 'P'
-AND c.user_id = '${data.user_id}'
-AND b.forwarded_to = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
+//     var select = `@d:=@d+1 sl_no, a.application_dt,a.application_no,a.member_id,a.member_name,a.father_name,a.gender,a.dob,a.member_dt,a.email,a.mobile_no,a.memb_address,a.branch_code,a.loan_type,a.loan_amt,a.loan_period,a.created_by,a.created_at,a.modified_by,a.modified_at,b.forwarded_dt,b.forwarded_by,b.by_brn,b.forwarded_to,b.to_brn,b.remarks,c.*,d.branch_name,e.loan_type loan_type_name, (SELECT CONCAT(a.first_name, ' ', a.last_name) FROM md_users a, td_forward b 
+//                  WHERE a.id = b.forwarded_by AND a.user_type = '5' AND b.application_no = '${data.application_no}') as forward_appr_name`,
+// table_name = '(SELECT @d:= 0) AS d,td_loan_application a, td_forward b, td_appl_track c, md_branch d, md_loan_type e',
+// whr = `a.application_no = b.application_no 
+// AND a.application_no = c.application_no
+// AND a.branch_code = d.sl_no
+// AND a.loan_type = e.sl_no
+// AND c.application_status = 'P'
+// AND c.user_id = '${data.user_id}'
+// AND b.forwarded_to = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
+// order = `ORDER BY a.created_by`;
+
+var select = `a.*,b.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type,(SELECT CONCAT(a.first_name, ' ', a.last_name) FROM md_users a, td_forward b 
+ WHERE a.id = b.forwarded_by AND a.user_type = '5' AND b.application_no = '${data.application_no}') as forward_appr_name`,
+table_name = 'td_loan_application a, td_forward b, md_branch d, md_loan_type e',
+whr =  `a.application_no = b.application_no 
+    AND a.branch_code = d.sl_no
+    AND a.loan_type = e.sl_no
+     AND b.application_status = 'P'
+    AND  b.forwarded_to = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
 order = `ORDER BY a.created_by`;
 var res_dt = await db_Select(select, table_name, whr, order)
 // console.log(res_dt,'res');
@@ -67,20 +77,30 @@ brn_managerRouter.get("/fetch_brn_forward_dtls", async (req, res) => {
     var data = req.query;
     // console.log(data,'de');
   
-    var select = `@d:=@d+1 sl_no, a.application_dt,a.application_no,a.member_id,a.member_name,a.father_name,a.gender,a.dob,a.member_dt,a.email,a.mobile_no,a.memb_address,a.branch_code,a.loan_type,a.loan_amt,a.loan_period,a.created_by,a.created_at,a.modified_by,a.modified_at,b.forwarded_dt,b.forwarded_by,b.by_brn,b.forwarded_to,b.to_brn,b.remarks,c.*,d.branch_name,e.loan_type loan_type_name, (SELECT CONCAT(a.first_name, ' ', a.last_name) FROM md_users a, td_forward b 
-                 WHERE a.id = b.forwarded_by AND a.user_type = '5' AND b.application_no = '${data.application_no}') as forward_appr_name`,
-      table_name = '(SELECT @d:= 0) AS d,td_loan_application a, td_forward b, td_appl_track c, md_branch d, md_loan_type e',
-      whr = `a.application_no = b.application_no 
-      AND a.application_no = c.application_no
+    // var select = `@d:=@d+1 sl_no, a.application_dt,a.application_no,a.member_id,a.member_name,a.father_name,a.gender,a.dob,a.member_dt,a.email,a.mobile_no,a.memb_address,a.branch_code,a.loan_type,a.loan_amt,a.loan_period,a.created_by,a.created_at,a.modified_by,a.modified_at,b.forwarded_dt,b.forwarded_by,b.by_brn,b.forwarded_to,b.to_brn,b.remarks,c.*,d.branch_name,e.loan_type loan_type_name, (SELECT CONCAT(a.first_name, ' ', a.last_name) FROM md_users a, td_forward b 
+    //              WHERE a.id = b.forwarded_by AND a.user_type = '5' AND b.application_no = '${data.application_no}') as forward_appr_name`,
+    //   table_name = '(SELECT @d:= 0) AS d,td_loan_application a, td_forward b, td_appl_track c, md_branch d, md_loan_type e',
+    //   whr = `a.application_no = b.application_no 
+    //   AND a.application_no = c.application_no
+    //   AND a.branch_code = d.sl_no
+    //   AND a.loan_type = e.sl_no
+    //   AND c.application_status = 'P'
+    //   AND c.user_id = '${data.user_id}'
+    //   AND b.forwarded_to = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
+    //   order = `HAVING (SELECT COUNT(*) FROM td_upload_file b WHERE a.application_no=b.application_no) > 0`;
+    // var res_dt = await db_Select(select, table_name, whr, order)
+    // console.log(res_dt,'res');
+    
+    var select = `a.*,b.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type,(SELECT CONCAT(a.first_name, ' ', a.last_name) FROM md_users a, td_forward b 
+     WHERE a.id = b.forwarded_by AND a.user_type = '5' AND b.application_no = '${data.application_no}') as forward_appr_name`,
+ table_name = 'td_loan_application a, td_forward b, md_branch d, md_loan_type e',
+ whr =  `a.application_no = b.application_no 
       AND a.branch_code = d.sl_no
       AND a.loan_type = e.sl_no
-      AND c.application_status = 'P'
-      AND c.user_id = '${data.user_id}'
-      AND b.forwarded_to = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
-      order = `HAVING (SELECT COUNT(*) FROM td_upload_file b WHERE a.application_no=b.application_no) > 0`;
-    var res_dt = await db_Select(select, table_name, whr, order)
-    console.log(res_dt,'res');
-    
+     AND b.application_status = 'A'
+     AND b.forwarded_to = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
+ order = `HAVING (SELECT COUNT(*) FROM td_upload_file b WHERE a.application_no=b.application_no) > 0`;
+ var res_dt = await db_Select(select, table_name, whr, order)
     res.send(res_dt)
   });
 
