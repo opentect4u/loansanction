@@ -14,9 +14,9 @@ function App() {
 							colorPrimary: "#22543d",
 						},
 						Timeline: {
-							dotBg: "#22543d",
-							tailColor: "#22543d",
-							colorPrimary: "#22543d",
+							// dotBg: "#22543d",
+							// tailColor: "#22543d",
+							// colorPrimary: "#22543d",
 						},
 						Select: {
 							colorPrimary: "#22543d",

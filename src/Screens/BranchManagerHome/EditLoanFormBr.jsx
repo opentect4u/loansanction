@@ -10,7 +10,7 @@ import * as Yup from "yup"
 import axios from "axios"
 import { Message } from "../../Components/Message"
 import { url } from "../../Address/BaseUrl"
-import { Spin, Button, Popconfirm, Tag } from "antd"
+import { Spin, Button, Popconfirm, Tag, Timeline } from "antd"
 import {
 	LoadingOutlined,
 	DeleteOutlined,
@@ -53,6 +53,10 @@ function EditLoanFormBr() {
 	const [appraiserForwardedDate, setAppraiserForwardedDate] = useState("")
 	const [forwardedByName, setForwardedByName] = useState("")
 	const [fetchedRemarks, setFetchedRemarks] = useState("")
+
+	const [forwardedById, setForwardedById] = useState()
+	const [commentsBranchManager, setCommentsBranchManager] = useState("")
+	const [rejectReasonsArray, setRejectReasonsArray] = useState(() => [])
 
 	console.log(params, "params")
 	console.log(location, "location")
@@ -442,6 +446,8 @@ function EditLoanFormBr() {
 					setFetchedRemarks(res?.data?.msg[0]?.remarks)
 					setForwardedByName(res?.data?.msg[0]?.forward_appr_name)
 					setLoanApproveStatus(res?.data?.msg[0]?.application_status)
+					setForwardedById(res?.data?.msg[0]?.forwarded_by)
+					setRejectReasonsArray(res?.data?.msg[0]?.reject_dt)
 				} else {
 					Message("warning", "No data found!")
 				}
@@ -454,12 +460,23 @@ function EditLoanFormBr() {
 		setLoading(false)
 	}
 
-	const sendToBranchManager = () => {
+	const handleReject = async (appStatus, e) => {
+		e.preventDefault()
+		// AppStatus -> A/R
 		setLoading(true)
 		const creds = {
+			brn_code: formik.values.l_loan_through_branch,
 			application_no: +params.id,
-			// forwarded_by: +JSON.parse(localStorage.getItem("user_details"))
-			// 	?.user_type,
+			user_id: JSON.parse(localStorage.getItem("br_mgr_details")).id,
+			fwd_brn: JSON.parse(localStorage.getItem("br_mgr_details")).branch_code,
+			loan_appr_id: forwardedById,
+			brn_remarks: commentsBranchManager,
+			application_status: appStatus,
+			brn_mgr_id: JSON.parse(localStorage.getItem("br_mgr_details")).id,
+			created_by:
+				JSON.parse(localStorage.getItem("br_mgr_details")).first_name +
+				" " +
+				JSON.parse(localStorage.getItem("br_mgr_details")).last_name,
 		}
 
 		console.log(
@@ -467,19 +484,58 @@ function EditLoanFormBr() {
 			+JSON.parse(localStorage.getItem("br_mgr_details"))?.user_type
 		)
 
-		axios
-			.post(`${url}/sql/approve`, creds)
+		await axios
+			.post(`${url}/brn/brn_manager_reject`, creds)
 			.then((res) => {
-				Message("success", "E-Files moved to Branch Manager.")
-				setVisibleModal(!visibleModal)
-				navigate(routePaths.HOME_SCREEN)
+				Message("error", "Application Rejected.")
+				// setVisibleModal2(!visibleModal2)
+				navigate(routePaths.BR_APPLICATION_FORWARD)
 			})
 			.catch((err) => {
 				Message(
 					"error",
-					"Something went wrong while sending to Branch Manager!"
+					"Something went wrong while sending to Credit Manager!"
 				)
 			})
+
+		setLoading(false)
+	}
+
+	const sendToCreditManager = async (appStatus) => {
+		// AppStatus -> A/R
+		setLoading(true)
+		const creds = {
+			brn_code: formik.values.l_loan_through_branch,
+			application_no: +params.id,
+			user_id: JSON.parse(localStorage.getItem("br_mgr_details")).id,
+			fwd_brn: JSON.parse(localStorage.getItem("br_mgr_details")).branch_code,
+			remarks: fetchedRemarks,
+			application_status: appStatus,
+			brn_mgr_id: JSON.parse(localStorage.getItem("br_mgr_details")).id,
+			created_by:
+				JSON.parse(localStorage.getItem("br_mgr_details")).first_name +
+				" " +
+				JSON.parse(localStorage.getItem("br_mgr_details")).last_name,
+		}
+
+		console.log(
+			"ooooooooooooooo------------------",
+			+JSON.parse(localStorage.getItem("br_mgr_details"))?.user_type
+		)
+
+		// await axios
+		// 	.post(`${url}/sql/forward_brn_manager`, creds)
+		// 	.then((res) => {
+		// 		Message("success", "E-Files moved to Branch Manager.")
+		// 		setVisibleModal(!visibleModal)
+		// 		navigate(routePaths.APPLICATION_FORWARD)
+		// 	})
+		// 	.catch((err) => {
+		// 		Message(
+		// 			"error",
+		// 			"Something went wrong while sending to Branch Manager!"
+		// 		)
+		// 	})
 
 		setLoading(false)
 	}
@@ -882,175 +938,181 @@ function EditLoanFormBr() {
 											</div>
 										</Spin>
 
-										<FieldArray name="l_documents">
-											{({ push, remove, insert, unshift }) => (
-												<>
-													{values.l_documents?.map((item, index) => (
-														<React.Fragment key={index}>
-															<div className="flex flex-col my-8 border-t-2 border-yellow-200 border-dashed">
-																<div className="mt-4">
-																	<TDInputTemplateBr
-																		placeholder="Type File Name..."
-																		type="text"
-																		label="File Name"
-																		name={`l_documents[${index}].l_file_name`}
-																		formControlName={item.l_file_name}
-																		handleChange={handleChange}
-																		handleBlur={handleBlur}
-																		mode={1}
-																	/>
-																	{/* {errors.l_file_name &&
-															touched.l_file_name ? (
-																<VError title={errors.l_file_name} />
-															) : null} */}
+										{loanApproveStatus !== "A" && (
+											<FieldArray name="l_documents">
+												{({ push, remove, insert, unshift }) => (
+													<>
+														{values.l_documents?.map((item, index) => (
+															<React.Fragment key={index}>
+																<div className="flex flex-col my-8 border-t-2 border-yellow-200 border-dashed">
+																	<div className="mt-4">
+																		<TDInputTemplateBr
+																			placeholder="Type File Name..."
+																			type="text"
+																			label="File Name"
+																			name={`l_documents[${index}].l_file_name`}
+																			formControlName={item.l_file_name}
+																			handleChange={handleChange}
+																			handleBlur={handleBlur}
+																			mode={1}
+																		/>
+																	</div>
+																	<div className="mt-2">
+																		<TDInputTemplateBr
+																			placeholder="Upload Documents"
+																			type="file"
+																			// multiple={true}
+																			accept="application/pdf"
+																			label="Upload Documents"
+																			name={`l_documents[${index}].l_file`}
+																			handleChange={(event) => {
+																				const files = event.target.files
+																				if (files) {
+																					Array.from(files).forEach((file) => {
+																						filePush(file)
+																					})
+																				}
+																			}}
+																			handleBlur={handleBlur}
+																			mode={1}
+																		/>
+																		{errors.l_file && touched.l_file ? (
+																			<VError title={errors.l_file} />
+																		) : null}
+																	</div>
 																</div>
-																<div className="mt-2">
-																	<TDInputTemplateBr
-																		placeholder="Upload Documents"
-																		type="file"
-																		// multiple={true}
-																		accept="application/pdf"
-																		label="Upload Documents"
-																		name={`l_documents[${index}].l_file`}
-																		// formControlName={item.l_file}
-																		// handleChange={(e) => {
-																		// 	formik.handleChange(e)
-																		// 	console.log("SINGLE FILE", e.target.files)
-																		// 	// setSelectedFile(e.target.files[0])
-																		// }}
-																		handleChange={(event) => {
-																			const files = event.target.files
-																			if (files) {
-																				Array.from(files).forEach((file) => {
-																					filePush(file)
-																				})
-																			}
-																		}}
-																		// handleChange={handleChange}
-																		handleBlur={handleBlur}
-																		mode={1}
-																	/>
-																	{errors.l_file && touched.l_file ? (
-																		<VError title={errors.l_file} />
-																	) : null}
-																</div>
-															</div>
 
-															<div className="flex flex-row gap-2 justify-end align-middle">
-																{values?.l_documents?.length > 1 && (
+																<div className="flex flex-row gap-2 justify-end align-middle">
+																	{values?.l_documents?.length > 1 && (
+																		<div>
+																			<Button
+																				className="rounded-full text-white bg-red-800 border-red-800"
+																				onClick={() => {
+																					remove(index)
+																					filePop(index)
+																				}}
+																				icon={<MinusOutlined />}
+																			></Button>
+																		</div>
+																	)}
 																	<div>
 																		<Button
-																			className="rounded-full text-white bg-red-800 border-red-800"
+																			className="rounded-full bg-yellow-400 text-white"
 																			onClick={() => {
-																				remove(index)
-																				filePop(index)
+																				push({
+																					l_file_name: "",
+																					l_file: "",
+																				})
+																				console.log(values.l_documents)
 																			}}
-																			icon={<MinusOutlined />}
+																			icon={<PlusOutlined />}
 																		></Button>
 																	</div>
-																)}
-																<div>
-																	<Button
-																		className="rounded-full bg-yellow-400 text-white"
-																		onClick={() => {
-																			push({
-																				// sl_no: 0,
-																				l_file_name: "",
-																				l_file: "",
-																			})
-																			console.log(values.l_documents)
-																		}}
-																		icon={<PlusOutlined />}
-																	></Button>
 																</div>
-															</div>
+															</React.Fragment>
+														))}
+													</>
+												)}
+											</FieldArray>
+										)}
 
-															{/* <div>
-																{pdfFiles &&
-																	Array.from(pdfFiles).map((file, index) => (
-																		<div key={index}>
-																			<embed
-																				src={URL.createObjectURL(file)}
-																				className="rounded-lg"
-																				width="200"
-																				height="200"
-																				type="application/pdf"
-																			/>
-																			<button
-																				type="button"
-																				onClick={() => handleRemove(index)}
-																				className="w-8 h-2 p-5 bg-red-800 text-white text-lg mt-3 flex justify-center items-center rounded-lg"
-																			>
-																				<DeleteOutlined />
-																			</button>
-																		</div>
-																	))}
-															</div> */}
-														</React.Fragment>
-													))}
+										{rejectReasonsArray?.length > 0 && (
+											<div className="mt-8">
+												<div className="text-lg font-bold text-red-800 mb-4">
+													Comments/Rejection Remarks
+												</div>
+												<Timeline
+													mode="alternate"
+													items={rejectReasonsArray?.map((item, i) => ({
+														key: i,
+														color: "purple",
+														children: (
+															<>
+																<p>
+																	{new Date(item?.forwarded_dt).toLocaleString(
+																		"en-GB"
+																	)}
+																</p>
+																<p>
+																	<Tag color="green" className="rounded-full">
+																		From: {item?.fwd_name}
+																	</Tag>
+																</p>
+																<p>
+																	<Tag color="red" className="rounded-full">
+																		To: {item?.fwd_to_name}
+																	</Tag>
+																</p>
+																<p className="text-base">{item?.remarks}</p>
+															</>
+														),
+													}))}
+												/>
+											</div>
+										)}
 
-													{/* <div className="sm:col-span-1"></div> */}
-												</>
-											)}
-										</FieldArray>
-
-										{/* <div>
-											<TDInputTemplate
-												placeholder="Select Branch"
-												type="text"
-												label="Select Branch"
-												name="br_fwd"
-												formControlName={branchIdForForwarding}
-												handleChange={(e) =>
-													setBranchIdForForwarding(e.target.value)
-												}
-												// handleBlur={handleBlur}
-												data={branches?.map((branch) => ({
-													code: branch?.sl_no,
-													name: branch?.branch_name,
-												}))}
-												mode={2}
-											/>
-											{errors.l_loan_through_branch &&
-											touched.l_loan_through_branch ? (
-												<VError title={errors.l_loan_through_branch} />
-											) : null}
+										{/* <div className="mt-4 grid grid-cols-2 gap-6 border-b-2 border-yellow-200 pb-3 border-dashed">
+											<div className="col-span-2">
+												<TDInputTemplateBr
+													placeholder="Remarks..."
+													type="text"
+													label={`Remarks from ${forwardedByName}`}
+													// name="remarks"
+													formControlName={fetchedRemarks}
+													// handleChange={(e) =>
+													// 	setFetchedRemarks(e.target.value)
+													// }
+													mode={3}
+													disabled
+												/>
+												{!fetchedRemarks ? (
+													<VError title={"Please Enter Remarks"} />
+												) : null}
+											</div>
 										</div> */}
 
-										{+JSON.parse(localStorage.getItem("br_mgr_details"))
-											.user_type === 4 && loanApproveStatus === "P" ? (
+										<div className="mt-7">
+											<TDInputTemplateBr
+												placeholder="Write comments..."
+												type="text"
+												label={`Comments`}
+												name="comments"
+												formControlName={commentsBranchManager}
+												handleChange={(e) =>
+													setCommentsBranchManager(e.target.value)
+												}
+												mode={3}
+											/>
+											{!commentsBranchManager ? (
+												<VError
+													title={
+														"Please Enter Comments Before Forwarding or Rejecting"
+													}
+												/>
+											) : null}
+										</div>
+
+										{loanApproveStatus !== "A" ? (
 											<div className="mt-10">
 												<BtnComp
 													mode="S"
 													rejectBtn={true}
-													onReject={() =>
-														Message("error", "Application Rejected!")
-													}
-													// onReset={handleReset}
-													// sendToText="Branch Manager"
-													// onSendTo={() =>
-													// 	window.confirm(
-													// 		"Are you sure? This action cannot be undone."
-													// 	)
-													// 		? sendToBranchManager()
-													// 		: Message(
-													// 				"warning",
-													// 				"User cancelled operation."
-													// 		  )
-													// }
+													onReject={() => {
+														setVisibleModal2(true)
+													}}
+													sendToText="Credit Manager"
 													onSendTo={() => setVisibleModal(true)}
 													condition={fetchedFileDetails?.length > 0}
-													showSave={true}
+													showSave
 												/>
-												{/* {console.log(
-													"++++++++++++++++++++++++++++++++++",
-													fetchedFileDetails?.length
-												)} */}
 											</div>
 										) : (
-											<div className="text-2xl text-blue-800 text-center">
-												Loan Application forwarded to Branch Manager.
-											</div>
+											<Tag
+												color="purple"
+												className="mt-10 p-5 rounded-lg text-xl font-bold self-center"
+											>
+												E-Files forwarded to Credit Manager.
+											</Tag>
 										)}
 									</div>
 								</form>
@@ -1066,9 +1128,36 @@ function EditLoanFormBr() {
 				flag={4}
 				onPress={() => setVisibleModal(!visibleModal)}
 				visible={visibleModal}
-				onPressYes={sendToBranchManager}
+				onPressYes={() => {
+					if (commentsBranchManager) {
+						setVisibleModal(!visibleModal)
+						sendToCreditManager("A")
+					} else {
+						Message("error", "Write Comments.")
+						setVisibleModal(!visibleModal)
+					}
+				}}
 				onPressNo={() => {
 					setVisibleModal(!visibleModal)
+					Message("warning", "User cancelled operation.")
+				}}
+			/>
+
+			<DialogBox
+				flag={4}
+				onPress={() => setVisibleModal2(!visibleModal2)}
+				visible={visibleModal2}
+				onPressYes={(e) => {
+					if (commentsBranchManager) {
+						setVisibleModal2(!visibleModal2)
+						handleReject("R", e)
+					} else {
+						Message("error", "Write Comments.")
+						setVisibleModal2(!visibleModal2)
+					}
+				}}
+				onPressNo={() => {
+					setVisibleModal2(!visibleModal2)
 					Message("warning", "User cancelled operation.")
 				}}
 			/>

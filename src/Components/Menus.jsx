@@ -30,18 +30,18 @@ function Menus({ theme }) {
 		{
 			key: "sub1",
 			icon: <ImportOutlined />,
-			label: <Link to={"/appraiser/home"}>Pending</Link>,
+			label: <Link to={"/appraiser/home"}>Applications</Link>,
 		},
-		{
-			key: "sub2",
-			icon: <ArrowRightOutlined />,
-			label: <Link to={"/appraiser/home/fwdapplication"}>Forward</Link>,
-		},
-		{
-			key: "sub3",
-			icon: <MinusCircleOutlined />,
-			label: <Link to={"/appraiser/home/rejectapplication"}>Reject</Link>,
-		},
+		// {
+		// 	key: "sub2",
+		// 	icon: <ArrowRightOutlined />,
+		// 	label: <Link to={"/appraiser/home/fwdapplication"}>Forward</Link>,
+		// },
+		// {
+		// 	key: "sub3",
+		// 	icon: <MinusCircleOutlined />,
+		// 	label: <Link to={"/appraiser/home/rejectapplication"}>Reject</Link>,
+		// },
 		{
 			label: "Reports",
 			key: "sub6",

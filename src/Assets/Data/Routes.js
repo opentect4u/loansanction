@@ -64,4 +64,7 @@ export const routePaths = {
 	BR_APPLICATION_FORWARD: "/branchmanager/homebr/fwdapplication/",
 	BR_EDIT_APPLICATION_FORWARD:
 		"/branchmanager/homebr/fwdapplication/editloanform/",
+	BR_APPLICATION_REJECT: "/branchmanager/homebr/rejectapplication/",
+	BR_EDIT_APPLICATION_REJECT:
+		"/branchmanager/homebr/rejectapplication/editloanform/",
 }

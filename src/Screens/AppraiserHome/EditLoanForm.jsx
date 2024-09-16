@@ -10,7 +10,7 @@ import * as Yup from "yup"
 import axios from "axios"
 import { Message } from "../../Components/Message"
 import { url } from "../../Address/BaseUrl"
-import { Spin, Button, Popconfirm } from "antd"
+import { Spin, Button, Popconfirm, Tag, Timeline } from "antd"
 import {
 	LoadingOutlined,
 	DeleteOutlined,
@@ -18,6 +18,7 @@ import {
 	MinusOutlined,
 	FilePdfOutlined,
 	MinusCircleOutlined,
+	SmileOutlined,
 } from "@ant-design/icons"
 import FormHeader from "../../Components/FormHeader"
 import { routePaths } from "../../Assets/Data/Routes"
@@ -47,6 +48,11 @@ function EditLoanForm() {
 	const [visibleModal, setVisibleModal] = useState(() => false)
 	const [visibleModal2, setVisibleModal2] = useState(() => false)
 	const [fetchedFileDetails, setFetchedFileDetails] = useState(() => [])
+	const [branchManagers, setBranchManagers] = useState(() => [])
+	const [branchManagerId, setBranchManagerId] = useState()
+	const [remarks, setRemarks] = useState("")
+	const [fetchedBranchManagerName, setFetchedBranchManagerName] = useState("")
+	const [rejectReasonsArray, setRejectReasonsArray] = useState(() => [])
 
 	console.log(params, "params")
 	console.log(location, "location")
@@ -83,6 +89,11 @@ function EditLoanForm() {
 		l_duration: "",
 		l_documents: [{ l_file_name: "", l_file: "" }],
 	})
+
+	console.log(
+		"LLOOCCAATTIIOONN ===== EDIT LOAN FORM",
+		location.pathname.split("/")[location.pathname.split("/").length - 2]
+	)
 
 	const getExtension = (fileName) => {
 		if (!fileName) return ""
@@ -399,6 +410,22 @@ function EditLoanForm() {
 		setLoading(false)
 	}
 
+	const fetchBranchManagers = async (brCode) => {
+		await axios
+			.get(`${url}/sql/get_brn_manager?brn_code=${brCode}`)
+			.then((res) => {
+				if (res?.data?.suc === 1) {
+					setBranchManagers(res?.data?.msg)
+					console.log(")))))))))))))))))))))))))))))))", res?.data?.msg)
+				} else {
+					Message("error", "No Branch Managers Found.")
+				}
+			})
+			.catch((err) => {
+				Message("error", "Something went wrong while fetching Branch Managers.")
+			})
+	}
+
 	const fetchApplicationDetails = async () => {
 		setLoading(true)
 		await axios
@@ -410,28 +437,38 @@ function EditLoanForm() {
 			.then((res) => {
 				if (res?.data?.suc === 1) {
 					setValues({
-						l_member_id: res?.data?.msg[0]?.member_id,
+						l_member_id: res?.data?.msg[0]?.pending_dtls[0]?.member_id,
 						l_membership_date:
-							new Date(res?.data?.msg[0]?.member_dt)
+							new Date(res?.data?.msg[0]?.pending_dtls[0]?.member_dt)
 								?.toISOString()
 								?.split("T")[0] || "",
-						l_name: res?.data?.msg[0]?.member_name,
-						l_father_husband_name: res?.data?.msg[0]?.father_name,
-						l_gender: res?.data?.msg[0]?.gender,
+						l_name: res?.data?.msg[0]?.pending_dtls[0]?.member_name,
+						l_father_husband_name:
+							res?.data?.msg[0]?.pending_dtls[0]?.father_name,
+						l_gender: res?.data?.msg[0]?.pending_dtls[0]?.gender,
 						l_dob:
-							new Date(res?.data?.msg[0]?.dob)?.toISOString()?.split("T")[0] ||
-							"",
-						l_email: res?.data?.msg[0]?.email,
-						l_mobile_no: res?.data?.msg[0]?.mobile_no,
-						l_address: res?.data?.msg[0]?.memb_address,
-						l_loan_through_branch: res?.data?.msg[0]?.branch_code,
-						l_applied_for: res?.data?.msg[0]?.loan_type,
-						l_loan_amount: res?.data?.msg[0]?.loan_amt,
-						l_duration: res?.data?.msg[0]?.loan_period,
+							new Date(res?.data?.msg[0]?.pending_dtls[0]?.dob)
+								?.toISOString()
+								?.split("T")[0] || "",
+						l_email: res?.data?.msg[0]?.pending_dtls[0]?.email,
+						l_mobile_no: res?.data?.msg[0]?.pending_dtls[0]?.mobile_no,
+						l_address: res?.data?.msg[0]?.pending_dtls[0]?.memb_address,
+						l_loan_through_branch:
+							res?.data?.msg[0]?.pending_dtls[0]?.branch_code,
+						l_applied_for: res?.data?.msg[0]?.pending_dtls[0]?.loan_type,
+						l_loan_amount: res?.data?.msg[0]?.pending_dtls[0]?.loan_amt,
+						l_duration: res?.data?.msg[0]?.pending_dtls[0]?.loan_period,
 						l_documents: [{ l_file_name: "", l_file: "" }],
 					})
-					setLoanApproveStatus(res?.data?.msg[0]?.application_status)
-
+					setLoanApproveStatus(
+						res?.data?.msg[0]?.pending_dtls[0]?.application_status
+					)
+					setRemarks(res?.data?.msg[0]?.pending_dtls[0]?.forward_remarks)
+					setFetchedBranchManagerName(
+						res?.data?.msg[0]?.pending_dtls[0]?.forward_user_name
+					)
+					fetchBranchManagers(res?.data?.msg[0]?.pending_dtls[0]?.branch_code)
+					setRejectReasonsArray(res?.data?.msg[0]?.reject_dt)
 					console.log("HHHHHHHHHHHHHHHH", res?.data)
 				} else {
 					Message("warning", "No data found!")
@@ -445,12 +482,52 @@ function EditLoanForm() {
 		setLoading(false)
 	}
 
-	const sendToBranchManager = () => {
+	// const sendToBranchManager = () => {
+	// 	setLoading(true)
+	// 	const creds = {
+	// 		application_no: +params.id,
+	// 		// forwarded_by: +JSON.parse(localStorage.getItem("user_details"))
+	// 		// 	?.user_type,
+	// 	}
+
+	// 	console.log(
+	// 		"ooooooooooooooo------------------",
+	// 		+JSON.parse(localStorage.getItem("user_details"))?.user_type
+	// 	)
+
+	// 	axios
+	// 		.post(`${url}/sql/approve`, creds)
+	// 		.then((res) => {
+	// 			Message("success", "E-Files moved to Branch Manager.")
+	// 			setVisibleModal(!visibleModal)
+	// 			navigate(routePaths.HOME_SCREEN)
+	// 		})
+	// 		.catch((err) => {
+	// 			Message(
+	// 				"error",
+	// 				"Something went wrong while sending to Branch Manager!"
+	// 			)
+	// 		})
+
+	// 	setLoading(false)
+	// }
+
+	const sendToBranchManager = async (appStatus, e) => {
+		e.preventDefault()
+		// AppStatus -> A/R
 		setLoading(true)
 		const creds = {
+			brn_code: formik.values.l_loan_through_branch,
 			application_no: +params.id,
-			// forwarded_by: +JSON.parse(localStorage.getItem("user_details"))
-			// 	?.user_type,
+			user_id: JSON.parse(localStorage.getItem("user_details")).id,
+			fwd_brn: JSON.parse(localStorage.getItem("user_details")).branch_code,
+			remarks: remarks,
+			application_status: appStatus,
+			brn_mgr_id: branchManagerId,
+			created_by:
+				JSON.parse(localStorage.getItem("user_details")).first_name +
+				" " +
+				JSON.parse(localStorage.getItem("user_details")).last_name,
 		}
 
 		console.log(
@@ -458,11 +535,11 @@ function EditLoanForm() {
 			+JSON.parse(localStorage.getItem("user_details"))?.user_type
 		)
 
-		axios
-			.post(`${url}/sql/approve`, creds)
+		await axios
+			.post(`${url}/sql/forward_brn_manager`, creds)
 			.then((res) => {
 				Message("success", "E-Files moved to Branch Manager.")
-				setVisibleModal(!visibleModal)
+				// setVisibleModal(!visibleModal)
 				navigate(routePaths.HOME_SCREEN)
 			})
 			.catch((err) => {
@@ -498,6 +575,47 @@ function EditLoanForm() {
 	}
 
 	// console.log("======================================", +branchIdForForwarding)
+
+	const timeline = [
+		{
+			key: 1,
+			color: "green",
+			children: "Create a services site 2015-09-01",
+			label: "sdiuhyfusdtgf",
+		},
+		{
+			key: 2,
+			color: "orange",
+			children: "Create a services site 2015-09-01",
+		},
+		{
+			key: 3,
+			color: "purple",
+			children: "Create a services site 2015-09-01",
+		},
+		{
+			key: 4,
+			color: "red",
+			children: (
+				<>
+					<p>Solve initial network problems 1</p>
+					<p>Solve initial network problems 2</p>
+					<p>Solve initial network problems 3 2015-09-01</p>
+				</>
+			),
+		},
+		{
+			key: 5,
+			color: "blue",
+			children: (
+				<>
+					<p>Technical testing 1</p>
+					<p>Technical testing 2</p>
+					<p>Technical testing 3 2015-09-01</p>
+				</>
+			),
+		},
+	]
 
 	return (
 		<>
@@ -789,7 +907,7 @@ function EditLoanForm() {
 												<div className="text-lg font-bold">Uploaded Files</div>
 												<div className="grid grid-cols-4 gap-4 place-items-start mt-3">
 													{fetchedFileDetails?.map((item, i) => (
-														<div>
+														<div key={i}>
 															<TDInputTemplate
 																placeholder="Entered File Name..."
 																type="text"
@@ -841,117 +959,83 @@ function EditLoanForm() {
 											</div>
 										</Spin>
 
-										<FieldArray name="l_documents">
-											{({ push, remove, insert, unshift }) => (
-												<>
-													{values.l_documents?.map((item, index) => (
-														<React.Fragment key={index}>
-															<div className="flex flex-col my-8 border-t-2 border-yellow-200 border-dashed">
-																<div className="mt-4">
-																	<TDInputTemplate
-																		placeholder="Type File Name..."
-																		type="text"
-																		label="File Name"
-																		name={`l_documents[${index}].l_file_name`}
-																		formControlName={item.l_file_name}
-																		handleChange={handleChange}
-																		handleBlur={handleBlur}
-																		mode={1}
-																	/>
-																	{/* {errors.l_file_name &&
-															touched.l_file_name ? (
-																<VError title={errors.l_file_name} />
-															) : null} */}
+										{loanApproveStatus !== "A" && (
+											<FieldArray name="l_documents">
+												{({ push, remove, insert, unshift }) => (
+													<>
+														{values.l_documents?.map((item, index) => (
+															<React.Fragment key={index}>
+																<div className="flex flex-col my-8 border-t-2 border-yellow-200 border-dashed">
+																	<div className="mt-4">
+																		<TDInputTemplate
+																			placeholder="Type File Name..."
+																			type="text"
+																			label="File Name"
+																			name={`l_documents[${index}].l_file_name`}
+																			formControlName={item.l_file_name}
+																			handleChange={handleChange}
+																			handleBlur={handleBlur}
+																			mode={1}
+																		/>
+																	</div>
+																	<div className="mt-2">
+																		<TDInputTemplate
+																			placeholder="Upload Documents"
+																			type="file"
+																			accept="application/pdf"
+																			label="Upload Documents"
+																			name={`l_documents[${index}].l_file`}
+																			handleChange={(event) => {
+																				const files = event.target.files
+																				if (files) {
+																					Array.from(files).forEach((file) => {
+																						filePush(file)
+																					})
+																				}
+																			}}
+																			handleBlur={handleBlur}
+																			mode={1}
+																		/>
+																		{errors.l_file && touched.l_file ? (
+																			<VError title={errors.l_file} />
+																		) : null}
+																	</div>
 																</div>
-																<div className="mt-2">
-																	<TDInputTemplate
-																		placeholder="Upload Documents"
-																		type="file"
-																		// multiple={true}
-																		accept="application/pdf"
-																		label="Upload Documents"
-																		name={`l_documents[${index}].l_file`}
-																		// formControlName={item.l_file}
-																		// handleChange={(e) => {
-																		// 	formik.handleChange(e)
-																		// 	console.log("SINGLE FILE", e.target.files)
-																		// 	// setSelectedFile(e.target.files[0])
-																		// }}
-																		handleChange={(event) => {
-																			const files = event.target.files
-																			if (files) {
-																				Array.from(files).forEach((file) => {
-																					filePush(file)
-																				})
-																			}
-																		}}
-																		// handleChange={handleChange}
-																		handleBlur={handleBlur}
-																		mode={1}
-																	/>
-																	{errors.l_file && touched.l_file ? (
-																		<VError title={errors.l_file} />
-																	) : null}
-																</div>
-															</div>
 
-															<div className="flex flex-row gap-2 justify-end align-middle">
-																{values?.l_documents?.length > 1 && (
+																<div className="flex flex-row gap-2 justify-end align-middle">
+																	{values?.l_documents?.length > 1 && (
+																		<div>
+																			<Button
+																				className="rounded-full text-white bg-red-800 border-red-800"
+																				onClick={() => {
+																					remove(index)
+																					filePop(index)
+																				}}
+																				icon={<MinusOutlined />}
+																			></Button>
+																		</div>
+																	)}
 																	<div>
 																		<Button
-																			className="rounded-full text-white bg-red-800 border-red-800"
+																			className="rounded-full bg-yellow-400 text-white"
 																			onClick={() => {
-																				remove(index)
-																				filePop(index)
+																				push({
+																					// sl_no: 0,
+																					l_file_name: "",
+																					l_file: "",
+																				})
+																				console.log(values.l_documents)
 																			}}
-																			icon={<MinusOutlined />}
+																			icon={<PlusOutlined />}
 																		></Button>
 																	</div>
-																)}
-																<div>
-																	<Button
-																		className="rounded-full bg-yellow-400 text-white"
-																		onClick={() => {
-																			push({
-																				// sl_no: 0,
-																				l_file_name: "",
-																				l_file: "",
-																			})
-																			console.log(values.l_documents)
-																		}}
-																		icon={<PlusOutlined />}
-																	></Button>
 																</div>
-															</div>
-
-															{/* <div>
-																{pdfFiles &&
-																	Array.from(pdfFiles).map((file, index) => (
-																		<div key={index}>
-																			<embed
-																				src={URL.createObjectURL(file)}
-																				className="rounded-lg"
-																				width="200"
-																				height="200"
-																				type="application/pdf"
-																			/>
-																			<button
-																				type="button"
-																				onClick={() => handleRemove(index)}
-																				className="w-8 h-2 p-5 bg-red-800 text-white text-lg mt-3 flex justify-center items-center rounded-lg"
-																			>
-																				<DeleteOutlined />
-																			</button>
-																		</div>
-																	))}
-															</div> */}
-														</React.Fragment>
-													))}
-
-													{/* <div className="sm:col-span-1"></div> */}
-												</>
-											)}
-										</FieldArray>
+															</React.Fragment>
+														))}
+													</>
+												)}
+											</FieldArray>
+										)}
 
 										{/* <div>
 											<TDInputTemplate
@@ -976,40 +1060,118 @@ function EditLoanForm() {
 											) : null}
 										</div> */}
 
-										{+JSON.parse(localStorage.getItem("user_details"))
-											.user_type === 5 && loanApproveStatus === "P" ? (
+										{rejectReasonsArray?.length > 0 && (
+											<div className="mt-8">
+												<div className="text-xl font-bold text-red-800 mb-4">
+													Comments / Rejection Remarks
+												</div>
+												<Timeline
+													mode="alternate"
+													items={rejectReasonsArray?.map((item, i) => ({
+														key: i,
+														color: "purple",
+														children: (
+															<>
+																<p>
+																	{new Date(item?.forwarded_dt).toLocaleString(
+																		"en-GB"
+																	)}
+																</p>
+																<p>
+																	<Tag color="green" className="rounded-full">
+																		From: {item?.fwd_name}
+																	</Tag>
+																</p>
+																<p>
+																	<Tag color="red" className="rounded-full">
+																		To: {item?.fwd_to_name}
+																	</Tag>
+																</p>
+																<p className="text-base">{item?.remarks}</p>
+															</>
+														),
+													}))}
+												/>
+											</div>
+										)}
+
+										{fetchedFileDetails?.length > 0 && (
+											<div className="mt-5 grid grid-cols-2 gap-6 border-t-2 border-yellow-200 border-dashed">
+												{loanApproveStatus !== "A" ? (
+													<div className="col-span-2 mt-4">
+														<TDInputTemplate
+															placeholder="Select Branch Manager"
+															type="text"
+															label="Select Branch Manager"
+															name="br_mgr"
+															formControlName={branchManagerId}
+															handleChange={(e) =>
+																setBranchManagerId(e.target.value)
+															}
+															data={branchManagers?.map((branch) => ({
+																code: branch?.id,
+																name:
+																	branch?.first_name + " " + branch?.last_name,
+															}))}
+															mode={2}
+															disabled={loanApproveStatus === "A"}
+														/>
+														{!branchManagerId ? (
+															<VError title={"Please Select Branch Manager"} />
+														) : null}
+													</div>
+												) : (
+													<div className="col-span-2">
+														<TDInputTemplate
+															placeholder="Forwarded to..."
+															type="text"
+															label="Forwarded to..."
+															formControlName={fetchedBranchManagerName}
+															disabled
+															mode={1}
+														/>
+													</div>
+												)}
+												<div className="col-span-2">
+													<TDInputTemplate
+														placeholder="Remarks..."
+														type="text"
+														label={`Remarks`}
+														// name="remarks"
+														formControlName={remarks}
+														handleChange={(e) => setRemarks(e.target.value)}
+														mode={3}
+														disabled={loanApproveStatus === "A"}
+													/>
+													{!remarks ? (
+														<VError title={"Please Enter Remarks"} />
+													) : null}
+												</div>
+											</div>
+										)}
+
+										{loanApproveStatus !== "A" ? (
 											<div className="mt-10">
 												<BtnComp
 													mode="S"
 													rejectBtn={true}
-													onReject={() =>
-														Message("error", "Application Rejected!")
-													}
+													onReject={() => {
+														sendToBranchManager("R")
+													}}
 													// onReset={handleReset}
 													sendToText="Branch Manager"
-													// onSendTo={() =>
-													// 	window.confirm(
-													// 		"Are you sure? This action cannot be undone."
-													// 	)
-													// 		? sendToBranchManager()
-													// 		: Message(
-													// 				"warning",
-													// 				"User cancelled operation."
-													// 		  )
-													// }
 													onSendTo={() => setVisibleModal(true)}
 													condition={fetchedFileDetails?.length > 0}
 													showSave={true}
 												/>
-												{/* {console.log(
-													"++++++++++++++++++++++++++++++++++",
-													fetchedFileDetails?.length
-												)} */}
 											</div>
 										) : (
-											<div className="text-2xl text-blue-800 text-center">
-												Loan Application forwarded to Branch Manager.
-											</div>
+											<Tag
+												color="purple"
+												className="mt-10 p-5 rounded-lg text-xl font-bold self-center"
+											>
+												E-Files forwarded to Branch Manager.
+											</Tag>
 										)}
 									</div>
 								</form>
@@ -1021,11 +1183,29 @@ function EditLoanForm() {
 				</div>
 			</section>
 
-			<DialogBox
+			{/* <DialogBox
 				flag={4}
 				onPress={() => setVisibleModal(!visibleModal)}
 				visible={visibleModal}
 				onPressYes={sendToBranchManager}
+				onPressNo={() => {
+					setVisibleModal(!visibleModal)
+					Message("warning", "User cancelled operation.")
+				}}
+			/> */}
+			<DialogBox
+				flag={4}
+				onPress={() => setVisibleModal(!visibleModal)}
+				visible={visibleModal}
+				onPressYes={(e) => {
+					if (branchManagerId && remarks) {
+						setVisibleModal(!visibleModal)
+						sendToBranchManager("A", e)
+					} else {
+						Message("error", "Choose Branch Manager and Write Remarks.")
+						setVisibleModal(!visibleModal)
+					}
+				}}
 				onPressNo={() => {
 					setVisibleModal(!visibleModal)
 					Message("warning", "User cancelled operation.")

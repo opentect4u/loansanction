@@ -30,18 +30,9 @@ import { url } from "../../Address/BaseUrl"
 import { Message } from "../../Components/Message"
 import { Spin } from "antd"
 import { LoadingOutlined } from "@ant-design/icons"
-import { useLocation } from "react-router"
+import LoanApplicationsTableViewBr from "../../Components/LoanApplicationsTableViewBr"
 
-function FwdLoanApplications() {
-	const location = useLocation()
-	console.log(
-		"LLOOCCAATTIIOONN ===== EDIT LOAN FORM",
-		location.pathname.split("/")[location.pathname.split("/").length - 1]
-	)
-
-	var forwardIdentifier =
-		location.pathname.split("/")[location.pathname.split("/").length - 1]
-
+function RejectLoanApplicationsBr() {
 	const [loading, setLoading] = useState(false)
 	const [loanApplications, setLoanApplications] = useState(() => [])
 	const [copyLoanApplications, setCopyLoanApplications] = useState(() => [])
@@ -50,8 +41,8 @@ function FwdLoanApplications() {
 		setLoading(true)
 		await axios
 			.get(
-				`${url}/sql/fetch_forward_dtls?user_id=${+JSON.parse(
-					localStorage.getItem("user_details")
+				`${url}/brn/brn_mng_reject_list?user_id=${+JSON.parse(
+					localStorage.getItem("br_mgr_details")
 				)?.id}`
 			)
 			.then((res) => {
@@ -101,19 +92,20 @@ function FwdLoanApplications() {
 
 	return (
 		<div>
-			<Sidebar />
+			<Sidebar mode={1} />
 			<Spin
 				indicator={<LoadingOutlined spin />}
 				size="large"
-				className="text-red-800 dark:text-gray-400"
+				className="text-blue-800 dark:text-gray-400"
 				spinning={loading}
 			>
 				<main className="px-4 h-auto my-10 mx-32">
-					<LoanApplicationsTableView
+					<LoanApplicationsTableViewBr
 						loanAppData={loanApplications}
-						title="Forward Applications"
+						title="Rejected Applications"
 						setSearch={(data) => setSearch(data)}
-						isForwardLoan={true}
+						// isForwardLoan={true}
+						isRejected={true}
 					/>
 					{/* <DialogBox
 					visible={visible}
@@ -126,4 +118,4 @@ function FwdLoanApplications() {
 	)
 }
 
-export default FwdLoanApplications
+export default RejectLoanApplicationsBr

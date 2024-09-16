@@ -44,8 +44,8 @@ const DialogBox = ({ visible, flag, onPress, data, onPressNo, onPressYes }) => {
 				<div
 					className={
 						flag != 1
-							? "text-green-900  font-bold"
-							: "text-green-900  font-bold w-20"
+							? "text-red-800  font-bold"
+							: "text-red-800  font-bold w-20"
 					}
 				>
 					{flag != 2 &&

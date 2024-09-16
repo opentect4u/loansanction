@@ -32,18 +32,18 @@ function MenusBr({ theme }) {
 		{
 			key: "sub1",
 			icon: <ImportOutlined />,
-			label: <Link to={"/branchmanager/homebr"}>Pending</Link>,
+			label: <Link to={"/branchmanager/homebr"}>Applications</Link>,
 		},
-		{
-			key: "sub2",
-			icon: <ArrowRightOutlined />,
-			label: <Link to={"/branchmanager/homebr/fwdapplication"}>Forward</Link>,
-		},
-		{
-			key: "sub3",
-			icon: <MinusCircleOutlined />,
-			label: <Link to={"/branchmanager/homebr/rejectapplication"}>Reject</Link>,
-		},
+		// {
+		// 	key: "sub2",
+		// 	icon: <ArrowRightOutlined />,
+		// 	label: <Link to={"/branchmanager/homebr/fwdapplication"}>Forward</Link>,
+		// },
+		// {
+		// 	key: "sub3",
+		// 	icon: <MinusCircleOutlined />,
+		// 	label: <Link to={"/branchmanager/homebr/rejectapplication"}>Reject</Link>,
+		// },
 		{
 			label: "Reports",
 			key: "sub6",

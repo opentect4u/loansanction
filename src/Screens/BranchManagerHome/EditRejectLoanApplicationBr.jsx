@@ -10,7 +10,7 @@ import * as Yup from "yup"
 import axios from "axios"
 import { Message } from "../../Components/Message"
 import { url } from "../../Address/BaseUrl"
-import { Spin, Timeline, Tag } from "antd"
+import { Spin, Button, Popconfirm, Tag } from "antd"
 import {
 	LoadingOutlined,
 	DeleteOutlined,
@@ -18,16 +18,19 @@ import {
 	MinusOutlined,
 	FilePdfOutlined,
 	MinusCircleOutlined,
+	ClockCircleOutlined,
+	ArrowRightOutlined,
 } from "@ant-design/icons"
 import FormHeader from "../../Components/FormHeader"
 import { routePaths } from "../../Assets/Data/Routes"
 import { useLocation } from "react-router"
 import Sidebar from "../../Components/Sidebar"
 import DialogBox from "../../Components/DialogBox"
+import TDInputTemplateBr from "../../Components/TDInputTemplateBr"
 
 const MAX_FILE_SIZE = 200000
 
-function EditLoanFormFwd() {
+function EditRejectLoanApplicationBr() {
 	const params = useParams()
 	const [loading, setLoading] = useState(false)
 	const [selectedFiles, setSelectedFile] = useState([])
@@ -49,9 +52,12 @@ function EditLoanFormFwd() {
 	const [fetchedFileDetails, setFetchedFileDetails] = useState(() => [])
 	const [branchManagers, setBranchManagers] = useState(() => [])
 	const [branchManagerId, setBranchManagerId] = useState()
-	const [remarks, setRemarks] = useState("")
-	const [fetchedBranchManagerName, setFetchedBranchManagerName] = useState("")
-	const [rejectReasonsArray, setRejectReasonsArray] = useState(() => [])
+	// const [fetchedBranchManagerName, setFetchedBranchManagerName] = useState("")
+	const [fetchedRemarks, setFetchedRemarks] = useState("")
+	const [appraiserForwardedDate, setAppraiserForwardedDate] = useState("")
+	const [forwardedByName, setForwardedByName] = useState("")
+	const [forwardedById, setForwardedById] = useState()
+	const [commentsBranchManager, setCommentsBranchManager] = useState("")
 
 	console.log(params, "params")
 	console.log(location, "location")
@@ -308,7 +314,7 @@ function EditLoanFormFwd() {
 		data.append("loan_period", values?.l_duration)
 		data.append(
 			"created_by",
-			JSON.parse(localStorage.getItem("user_details"))?.created_by
+			JSON.parse(localStorage.getItem("br_mgr_details"))?.created_by
 		)
 
 		// data.append("application_no", params.id)
@@ -404,8 +410,8 @@ function EditLoanFormFwd() {
 		setLoading(true)
 		await axios
 			.get(
-				`${url}/sql/fetch_forward_dtls?user_id=${+JSON.parse(
-					localStorage.getItem("user_details")
+				`${url}/brn/brn_mng_reject_list?user_id=${+JSON.parse(
+					localStorage.getItem("br_mgr_details")
 				)?.id}&application_no=${params?.id}`
 			)
 			.then((res) => {
@@ -431,9 +437,13 @@ function EditLoanFormFwd() {
 						l_duration: res?.data?.msg[0]?.loan_period,
 						l_documents: [{ l_file_name: "", l_file: "" }],
 					})
+					setAppraiserForwardedDate(res?.data?.msg[0]?.forwarded_dt)
 					setLoanApproveStatus(res?.data?.msg[0]?.application_status)
-					setRemarks(res?.data?.msg[0]?.forward_remarks)
-					setFetchedBranchManagerName(res?.data?.msg[0]?.forward_user_name)
+					setFetchedRemarks(res?.data?.msg[0]?.remarks)
+					setForwardedByName(res?.data?.msg[0]?.forward_appr_name)
+					setForwardedById(res?.data?.msg[0]?.forwarded_by)
+					// setFetchedBranchManagerName(res?.data?.msg[0]?.forward_user_name)
+					setCommentsBranchManager(res?.data?.msg[0]?.reject_remarks)
 					console.log(
 						"VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV",
 						res?.data?.msg[0]?.application_status
@@ -442,7 +452,6 @@ function EditLoanFormFwd() {
 					// setBranchManagerId()
 					// setRemarks()
 					fetchBranchManagers(res?.data?.msg[0]?.branch_code)
-					setRejectReasonsArray(res?.data?.msg[0]?.reject_dt)
 				} else {
 					Message("warning", "No data found!")
 				}
@@ -471,41 +480,81 @@ function EditLoanFormFwd() {
 			})
 	}
 
-	const sendToBranchManager = async (appStatus) => {
+	const handleReject = async (appStatus) => {
 		// AppStatus -> A/R
 		setLoading(true)
 		const creds = {
 			brn_code: formik.values.l_loan_through_branch,
 			application_no: +params.id,
-			user_id: JSON.parse(localStorage.getItem("user_details")).id,
-			fwd_brn: JSON.parse(localStorage.getItem("user_details")).branch_code,
-			remarks: remarks,
+			user_id: JSON.parse(localStorage.getItem("br_mgr_details")).id,
+			fwd_brn: JSON.parse(localStorage.getItem("br_mgr_details")).branch_code,
+			loan_appr_id: forwardedById,
+			brn_remarks: commentsBranchManager,
 			application_status: appStatus,
 			brn_mgr_id: branchManagerId,
 			created_by:
-				JSON.parse(localStorage.getItem("user_details")).first_name +
+				JSON.parse(localStorage.getItem("br_mgr_details")).first_name +
 				" " +
-				JSON.parse(localStorage.getItem("user_details")).last_name,
+				JSON.parse(localStorage.getItem("br_mgr_details")).last_name,
 		}
 
 		console.log(
 			"ooooooooooooooo------------------",
-			+JSON.parse(localStorage.getItem("user_details"))?.user_type
+			+JSON.parse(localStorage.getItem("br_mgr_details"))?.user_type
 		)
 
 		await axios
-			.post(`${url}/sql/forward_brn_manager`, creds)
+			.post(`${url}/brn/brn_manager_reject`, creds)
 			.then((res) => {
-				Message("success", "E-Files moved to Branch Manager.")
-				// setVisibleModal(!visibleModal)
-				navigate(routePaths.APPLICATION_FORWARD)
+				Message("error", "Application Rejected.")
+				// setVisibleModal2(!visibleModal2)
+				navigate(routePaths.BR_APPLICATION_FORWARD)
 			})
 			.catch((err) => {
 				Message(
 					"error",
-					"Something went wrong while sending to Branch Manager!"
+					"Something went wrong while sending to Credit Manager!"
 				)
 			})
+
+		setLoading(false)
+	}
+
+	const sendToCreditManager = async (appStatus) => {
+		// AppStatus -> A/R
+		setLoading(true)
+		const creds = {
+			brn_code: formik.values.l_loan_through_branch,
+			application_no: +params.id,
+			user_id: JSON.parse(localStorage.getItem("br_mgr_details")).id,
+			fwd_brn: JSON.parse(localStorage.getItem("br_mgr_details")).branch_code,
+			remarks: fetchedRemarks,
+			application_status: appStatus,
+			brn_mgr_id: branchManagerId,
+			created_by:
+				JSON.parse(localStorage.getItem("br_mgr_details")).first_name +
+				" " +
+				JSON.parse(localStorage.getItem("br_mgr_details")).last_name,
+		}
+
+		console.log(
+			"ooooooooooooooo------------------",
+			+JSON.parse(localStorage.getItem("br_mgr_details"))?.user_type
+		)
+
+		// await axios
+		// 	.post(`${url}/sql/forward_brn_manager`, creds)
+		// 	.then((res) => {
+		// 		Message("success", "E-Files moved to Branch Manager.")
+		// 		setVisibleModal(!visibleModal)
+		// 		navigate(routePaths.APPLICATION_FORWARD)
+		// 	})
+		// 	.catch((err) => {
+		// 		Message(
+		// 			"error",
+		// 			"Something went wrong while sending to Branch Manager!"
+		// 		)
+		// 	})
 
 		setLoading(false)
 	}
@@ -536,8 +585,8 @@ function EditLoanFormFwd() {
 
 	return (
 		<>
-			<Sidebar />
-			<section className="bg-red-50 dark:bg-[#001529] flex justify-center align-middle p-5">
+			<Sidebar mode={1} />
+			<section className="bg-blue-50 dark:bg-[#001529] flex justify-center align-middle p-5">
 				{/* {params.id>0 && data && <PrintComp toPrint={data} title={'Department'}/>} */}
 				{/* <HeadingTemplate
 				text={params.id > 0 ? "Update vendor" : "Add vendor"}
@@ -547,13 +596,28 @@ function EditLoanFormFwd() {
 			/> */}
 				{/* {JSON.stringify(loanAppData)} */}
 				<div className=" bg-white p-5 w-4/5 min-h-screen rounded-3xl">
+					<div className="flex justify-between ml-14 mr-12">
+						<Tag
+							color="purple"
+							className="p-1 px-2 text-sm rounded-full font-bold"
+						>
+							<ArrowRightOutlined /> From Appraiser: {forwardedByName}
+						</Tag>
+						<Tag
+							color="orange"
+							className="p-1 px-2 text-sm rounded-full font-bold"
+						>
+							<ClockCircleOutlined /> Forwarded on:{" "}
+							{new Date(appraiserForwardedDate)?.toLocaleString("en-GB")}
+						</Tag>
+					</div>
 					<div className="w-auto mx-14 my-4">
-						<FormHeader text="Forward Loan Application" />
+						<FormHeader text="Rejected Loan Application" mode={1} />
 					</div>
 					<Spin
 						indicator={<LoadingOutlined spin />}
 						size="large"
-						className="text-red-800 dark:text-gray-400"
+						className="text-blue-800 dark:text-gray-400"
 						spinning={loading}
 					>
 						<Formik
@@ -575,7 +639,7 @@ function EditLoanFormFwd() {
 								<form onSubmit={handleSubmit}>
 									<div className="card flex flex-col justify-center px-16 py-5">
 										<div className="mb-4">
-											<TDInputTemplate
+											<TDInputTemplateBr
 												placeholder="Application Number"
 												type="text"
 												label="Application Number"
@@ -587,7 +651,7 @@ function EditLoanFormFwd() {
 										</div>
 										<div className="grid gap-4 sm:grid-cols-6 sm:gap-6">
 											<div className="sm:col-span-2">
-												<TDInputTemplate
+												<TDInputTemplateBr
 													placeholder="Type Member ID..."
 													type="text"
 													label="Member ID"
@@ -603,7 +667,7 @@ function EditLoanFormFwd() {
 												) : null}
 											</div>
 											<div className="sm:col-span-2">
-												<TDInputTemplate
+												<TDInputTemplateBr
 													placeholder="Type Membership Date..."
 													type="date"
 													label="Membership Date"
@@ -621,7 +685,7 @@ function EditLoanFormFwd() {
 												) : null}
 											</div>
 											<div className="sm:col-span-2">
-												<TDInputTemplate
+												<TDInputTemplateBr
 													placeholder="Type name..."
 													type="text"
 													label="Name"
@@ -640,7 +704,7 @@ function EditLoanFormFwd() {
 
 										<div className="grid gap-4 sm:grid-cols-2 sm:gap-6 pt-5">
 											<div>
-												<TDInputTemplate
+												<TDInputTemplateBr
 													placeholder="Type Father's/Husband's Name..."
 													type="text"
 													label="Father's/Husband's Name"
@@ -657,7 +721,7 @@ function EditLoanFormFwd() {
 												) : null}
 											</div>
 											<div>
-												<TDInputTemplate
+												<TDInputTemplateBr
 													placeholder="Select Gender..."
 													type="text"
 													label="Gender"
@@ -678,7 +742,7 @@ function EditLoanFormFwd() {
 												) : null}
 											</div>
 											<div>
-												<TDInputTemplate
+												<TDInputTemplateBr
 													placeholder="Type DOB..."
 													type="date"
 													label="Date of Birth (DOB)"
@@ -695,7 +759,7 @@ function EditLoanFormFwd() {
 												) : null}
 											</div>
 											<div>
-												<TDInputTemplate
+												<TDInputTemplateBr
 													placeholder="Type Email..."
 													type="email"
 													label="Email"
@@ -711,7 +775,7 @@ function EditLoanFormFwd() {
 												) : null}
 											</div>
 											<div>
-												<TDInputTemplate
+												<TDInputTemplateBr
 													placeholder="Type Address..."
 													type="text"
 													label={`Address`}
@@ -727,7 +791,7 @@ function EditLoanFormFwd() {
 												) : null}
 											</div>
 											<div>
-												<TDInputTemplate
+												<TDInputTemplateBr
 													placeholder="Type Mobile Number..."
 													type="number"
 													label="Mobile Number"
@@ -743,7 +807,7 @@ function EditLoanFormFwd() {
 												) : null}
 											</div>
 											<div>
-												<TDInputTemplate
+												<TDInputTemplateBr
 													placeholder="Type Loan Through Branch..."
 													type="text"
 													label="Loan Through Branch"
@@ -764,7 +828,7 @@ function EditLoanFormFwd() {
 												) : null}
 											</div>
 											<div>
-												<TDInputTemplate
+												<TDInputTemplateBr
 													placeholder="Type Applied For..."
 													type="text"
 													label="Applied For"
@@ -784,7 +848,7 @@ function EditLoanFormFwd() {
 												) : null}
 											</div>
 											<div>
-												<TDInputTemplate
+												<TDInputTemplateBr
 													placeholder="Type Loan Amount..."
 													type="number"
 													label="Loan Amount"
@@ -800,7 +864,7 @@ function EditLoanFormFwd() {
 												) : null}
 											</div>
 											<div>
-												<TDInputTemplate
+												<TDInputTemplateBr
 													placeholder="Type Duration..."
 													type="number"
 													label="Duration (In Months)"
@@ -820,15 +884,17 @@ function EditLoanFormFwd() {
 										<Spin
 											indicator={<LoadingOutlined spin />}
 											size="large"
-											className="text-red-800 dark:text-gray-400"
+											className="text-blue-800 dark:text-gray-400"
 											spinning={loading}
 										>
-											<div className="mt-10 text-red-800">
-												<div className="text-lg font-bold">Uploaded Files</div>
+											<div className="mt-10 text-blue-800">
+												<div className="text-lg font-bold text-blue-800">
+													Uploaded Files
+												</div>
 												<div className="grid grid-cols-4 gap-4 place-items-start mt-3">
 													{fetchedFileDetails?.map((item, i) => (
-														<div key={i}>
-															<TDInputTemplate
+														<div>
+															<TDInputTemplateBr
 																placeholder="Entered File Name..."
 																type="text"
 																label="File Name"
@@ -872,93 +938,47 @@ function EditLoanFormFwd() {
 											</div>
 										</Spin>
 
-										{rejectReasonsArray?.length > 0 && (
-											<div className="mt-8">
-												<div className="text-lg font-bold text-red-800 mb-4">
-													Comments/Rejection Remarks
-												</div>
-												<Timeline
-													mode="alternate"
-													items={rejectReasonsArray?.map((item, i) => ({
-														key: i,
-														color: "purple",
-														children: (
-															<>
-																<p>
-																	{new Date(item?.forwarded_dt).toLocaleString(
-																		"en-GB"
-																	)}
-																</p>
-																<p>
-																	<Tag color="green" className="rounded-full">
-																		From: {item?.fwd_name}
-																	</Tag>
-																</p>
-																<p>
-																	<Tag color="red" className="rounded-full">
-																		To: {item?.fwd_to_name}
-																	</Tag>
-																</p>
-																<p className="text-base">{item?.remarks}</p>
-															</>
-														),
-													}))}
-												/>
-											</div>
-										)}
-
-										{/* <div className="mt-5 grid grid-cols-2 gap-6 border-t-2 border-yellow-200 border-dashed"> */}
-										{/* {loanApproveStatus !== "A" ? (
-												<div className="col-span-2 mt-2">
-													<TDInputTemplate
-														placeholder="Select Branch Manager"
-														type="text"
-														label="Select Branch Manager"
-														name="br_mgr"
-														formControlName={branchManagerId}
-														handleChange={(e) =>
-															setBranchManagerId(e.target.value)
-														}
-														data={branchManagers?.map((branch) => ({
-															code: branch?.id,
-															name:
-																branch?.first_name + " " + branch?.last_name,
-														}))}
-														mode={2}
-														disabled={loanApproveStatus === "A"}
-													/>
-													{!branchManagerId ? (
-														<VError title={"Please Select Branch Manager"} />
-													) : null}
-												</div>
-											) : ( */}
-										{/* <div className="col-span-2 mt-2">
-												<TDInputTemplate
-													placeholder="Forwarded to..."
-													type="text"
-													label="Forwarded to..."
-													formControlName={fetchedBranchManagerName}
-													disabled
-													mode={1}
-												/>
-											</div> */}
-										{/* )} */}
-										{/* <div className="col-span-2">
-												<TDInputTemplate
+										<div className="mt-4 grid grid-cols-2 gap-6 border-b-2 border-yellow-200 pb-3 border-dashed">
+											<div className="col-span-2">
+												<TDInputTemplateBr
 													placeholder="Remarks..."
 													type="text"
-													label={`Remarks`}
+													label={`Remarks from ${forwardedByName}`}
 													// name="remarks"
-													formControlName={remarks}
-													// handleChange={(e) => setRemarks(e.target.value)}
+													formControlName={fetchedRemarks}
+													// handleChange={(e) =>
+													// 	setFetchedRemarks(e.target.value)
+													// }
 													mode={3}
 													disabled
 												/>
-												{!remarks ? (
+												{!fetchedRemarks ? (
 													<VError title={"Please Enter Remarks"} />
 												) : null}
-											</div> */}
-										{/* </div> */}
+											</div>
+										</div>
+
+										<div className="mt-7">
+											<TDInputTemplateBr
+												placeholder="Write comments..."
+												type="text"
+												label={`Reason for Rejecting`}
+												name="comments"
+												formControlName={commentsBranchManager}
+												handleChange={(e) =>
+													setCommentsBranchManager(e.target.value)
+												}
+												mode={3}
+												disabled
+											/>
+											{!commentsBranchManager ? (
+												<VError
+													title={
+														"Please Enter Comments Before Forwarding or Rejecting"
+													}
+												/>
+											) : null}
+										</div>
 
 										{/* {loanApproveStatus !== "A" ? (
 											<div className="mt-10">
@@ -966,21 +986,30 @@ function EditLoanFormFwd() {
 													mode="S"
 													rejectBtn={true}
 													onReject={() => {
-														sendToBranchManager("R")
+														setVisibleModal2(true)
 													}}
-													sendToText="Branch Manager"
+													sendToText="Credit Manager"
 													onSendTo={() => setVisibleModal(true)}
 													condition={fetchedFileDetails?.length > 0}
 												/>
 											</div>
-										) : ( */}
-										<Tag
-											color="purple"
-											className="mt-10 p-5 rounded-lg text-xl font-bold self-center"
-										>
-											E-Files forwarded to Branch Manager.
-										</Tag>
-										{/* )} */}
+										) : (
+											<Tag
+												color="purple"
+												className="mt-10 p-5 rounded-lg text-xl font-bold self-center"
+											>
+												E-Files forwarded to Credit Manager.
+											</Tag>
+										)} */}
+
+										{loanApproveStatus === "R" && (
+											<Tag
+												color="red"
+												className="mt-10 p-5 rounded-lg text-xl font-bold self-center"
+											>
+												E-Files sent to Loan Appraiser "{forwardedByName}"
+											</Tag>
+										)}
 									</div>
 								</form>
 							)}
@@ -996,16 +1025,34 @@ function EditLoanFormFwd() {
 				onPress={() => setVisibleModal(!visibleModal)}
 				visible={visibleModal}
 				onPressYes={() => {
-					if (branchManagerId && remarks) {
+					if (commentsBranchManager) {
 						setVisibleModal(!visibleModal)
-						sendToBranchManager("A")
+						sendToCreditManager("A")
 					} else {
-						Message("error", "Choose Branch Manager and Write Remarks.")
+						Message("error", "Write Comments.")
 						setVisibleModal(!visibleModal)
 					}
 				}}
 				onPressNo={() => {
 					setVisibleModal(!visibleModal)
+					Message("warning", "User cancelled operation.")
+				}}
+			/>
+			<DialogBox
+				flag={4}
+				onPress={() => setVisibleModal2(!visibleModal2)}
+				visible={visibleModal2}
+				onPressYes={() => {
+					if (commentsBranchManager) {
+						setVisibleModal2(!visibleModal2)
+						handleReject("R")
+					} else {
+						Message("error", "Write Comments.")
+						setVisibleModal2(!visibleModal2)
+					}
+				}}
+				onPressNo={() => {
+					setVisibleModal2(!visibleModal2)
 					Message("warning", "User cancelled operation.")
 				}}
 			/>
@@ -1024,4 +1071,4 @@ function EditLoanFormFwd() {
 	)
 }
 
-export default EditLoanFormFwd
+export default EditRejectLoanApplicationBr

@@ -94,14 +94,14 @@ const router = createBrowserRouter([
 										path: "editloanform/:id",
 										element: <EditLoanForm />,
 									},
-									// {
-									// 	path: "fwdapplication",
-									// 	element: <FwdLoanApplications />,
-									// },
-									// {
-									// 	path: "fwdapplication/editloanform/:id",
-									// 	element: <EditLoanFormFwd />,
-									// },
+									{
+										path: "fwdapplication",
+										element: <FwdLoanApplications />,
+									},
+									{
+										path: "fwdapplication/editloanform/:id",
+										element: <EditLoanFormFwd />,
+									},
 								],
 							},
 						],
@@ -134,22 +134,22 @@ const router = createBrowserRouter([
 										path: "editloanform/:id",
 										element: <EditLoanFormBr />,
 									},
-									// {
-									// 	path: "fwdapplication",
-									// 	element: <FwdLoanApplicationsBr />,
-									// },
-									// {
-									// 	path: "fwdapplication/editloanform/:id",
-									// 	element: <EditLoanFormFwdBr />,
-									// },
-									// {
-									// 	path: "rejectapplication",
-									// 	element: <RejectLoanApplicationsBr />,
-									// },
-									// {
-									// 	path: "rejectapplication/editloanform/:id",
-									// 	element: <EditRejectLoanApplicationBr />,
-									// },
+									{
+										path: "fwdapplication",
+										element: <FwdLoanApplicationsBr />,
+									},
+									{
+										path: "fwdapplication/editloanform/:id",
+										element: <EditLoanFormFwdBr />,
+									},
+									{
+										path: "rejectapplication",
+										element: <RejectLoanApplicationsBr />,
+									},
+									{
+										path: "rejectapplication/editloanform/:id",
+										element: <EditRejectLoanApplicationBr />,
+									},
 								],
 							},
 						],

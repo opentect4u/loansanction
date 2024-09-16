@@ -113,7 +113,7 @@ function FwdLoanApplications() {
 						loanAppData={loanApplications}
 						title="Forward Applications"
 						setSearch={(data) => setSearch(data)}
-						isForwardLoan={true}
+						// isForwardLoan={true}
 					/>
 					{/* <DialogBox
 					visible={visible}

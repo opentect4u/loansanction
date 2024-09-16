@@ -114,12 +114,12 @@ function LoanApplicationsTableView({
 							<th scope="col" className="p-4">
 								Name
 							</th>
-							<th scope="col" className="p-4">
+							{/* <th scope="col" className="p-4">
 								Branch
 							</th>
 							<th scope="col" className="p-4">
 								Loan Type
-							</th>
+							</th> */}
 							{/* <th scope="col" className="p-4">
 								Created By
 							</th> */}
@@ -147,14 +147,13 @@ function LoanApplicationsTableView({
 										{item.application_no || "-----"}
 									</td>
 									<td className="px-6 py-4">
-										{new Date(item.created_at).toLocaleDateString("en-GB")}
+										{new Date(item.last_fwd_dt).toLocaleString("en-GB")}
 									</td>
 									<td className="px-6 py-4">{item.member_name}</td>
-									<td className="px-6 py-4">
+									{/* <td className="px-6 py-4">
 										{item.branch_name}
-										{/* {item.fresh_flag} */}
 									</td>
-									<td className="px-6 py-4">{item.loan_type_name}</td>
+									<td className="px-6 py-4">{item.loan_type_name}</td> */}
 									{/* <td className="px-6 py-4">{item.member_name}</td> */}
 									<td className="px-6 py-4">
 										<Link

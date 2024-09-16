@@ -19,6 +19,7 @@ function LoanApplicationsTableViewBr({
 	setSearch,
 	title,
 	isForwardLoan = false,
+	isRejected = false,
 }) {
 	const navigate = useNavigate()
 
@@ -147,7 +148,7 @@ function LoanApplicationsTableViewBr({
 										{item.application_no || "-----"}
 									</td>
 									<td className="px-6 py-4">
-										{new Date(item.created_at).toLocaleDateString("en-GB")}
+										{new Date(item.created_at).toLocaleString("en-GB")}
 									</td>
 									<td className="px-6 py-4">{item.member_name}</td>
 									<td className="px-6 py-4">
@@ -159,10 +160,13 @@ function LoanApplicationsTableViewBr({
 									<td className="px-6 py-4">
 										<Link
 											to={
-												isForwardLoan
-													? routePaths.BR_EDIT_APPLICATION_FORWARD +
-													  item?.application_no
-													: routePaths.BR_EDIT_APPLICATION +
+												!isRejected
+													? isForwardLoan
+														? routePaths.BR_EDIT_APPLICATION_FORWARD +
+														  item?.application_no
+														: routePaths.BR_EDIT_APPLICATION +
+														  item?.application_no
+													: routePaths.BR_EDIT_APPLICATION_REJECT +
 													  item?.application_no
 											}
 											// to={}
