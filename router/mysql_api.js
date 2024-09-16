@@ -378,7 +378,7 @@ if(res_dt.msg.length > 0){
 
   var select = `@a:=@a+1 sl_no,b.remarks as reject_remarks,b.forwarded_dt, CONCAT(c.first_name, ' ', c.last_name) fwd_name`,
   table_name = "(SELECT @a:= 0) AS a, td_forward b, md_users c",
-  whr = ` b.forwarded_by=c.id AND b.forwarded_by = '${data.user_id}' AND b.application_no = '${data.application_no}' AND b.application_status = 'P'`,
+  whr = `b.forwarded_by=c.id AND c.user_type = 4 AND b.forwarded_to = '${data.user_id}' AND b.application_no = '${data.application_no}' AND application_status = 'P'`,
   order = `ORDER BY b.forwarded_dt`;
   var reject_dt = await db_Select(select, table_name, whr, order);
   
