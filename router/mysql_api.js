@@ -365,35 +365,52 @@ sqlRouter.get("/fetch_loan_dtls", async (req, res) => {
 
 var select = 'max(a.forwarded_dt),a.application_no,b.member_name',
 table_name = 'td_forward a,td_loan_application b',
-whr = `a.application_no = b.application_no AND a.forwarded_to = '${data.user_id}'`,
+whr = `a.application_no = b.application_no AND a.forwarded_to = '${data.user_id}' ${data.application_no > 0 ? `a.application_no=${data.application_no}` : ''}`,
 order = `Group by a.application_no,b.member_name`;
 var dt = await db_Select(select,table_name,whr,order)
 
-var select = 'a.*,b.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type',
-table_name = 'td_loan_application a, td_forward b, md_branch d, md_loan_type e',
-whr =  `a.application_no = b.application_no 
-    AND a.branch_code = d.sl_no
-    AND a.loan_type = e.sl_no
-    AND  a.application_no = '${data.application_no}'
-    AND  b.forwarded_to = '${data.user_id}'`,
-order = `ORDER BY a.created_by`;
-var res_dt = await db_Select(select, table_name, whr, order)
-console.log(res_dt,'lolo');
+if(data.application_no > 0){
+  if(dt.suc > 0 && dt.msg.length > 0){
+    var select = 'a.*,b.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type',
+    table_name = 'td_loan_application a, td_forward b, md_branch d, md_loan_type e',
+    whr =  `a.application_no = b.application_no 
+        AND a.branch_code = d.sl_no
+        AND a.loan_type = e.sl_no
+        AND  a.application_no = '${data.application_no}'
+        AND  b.forwarded_to = '${data.user_id}'`,
+    order = `ORDER BY a.created_by`;
+    var res_dt = await db_Select(select, table_name, whr, order)
 
-if(res_dt.msg.length > 0){
+    dt.msg[0]['pending_dtls'] = res_dt.suc > 0 ? res_dt.msg : []
 
-  var select = `@a:=@a+1 sl_no,b.remarks,b.forwarded_dt, CONCAT(c.first_name, ' ', c.last_name) fwd_name, CONCAT(d.first_name, ' ', d.last_name) fwd_to_name,b.application_status`,
-  table_name = "(SELECT @a:= 0) AS a, td_forward b, md_users c,  md_users d",
-  whr = `b.forwarded_by=c.id AND  b.forwarded_to=d.id AND b.application_no = '${data.application_no}'`,
-  order = `ORDER BY b.forwarded_dt`;
-  var reject_dt = await db_Select(select, table_name, whr, order);
-  
-  res_dt.msg[0]["reject_dt"] =
-  reject_dt.suc > 0 ? (reject_dt.msg.length > 0 ? reject_dt.msg : []) : [];
-    res.send(dt)
-}else{
-  res.send(dt)
+    var select = `@a:=@a+1 sl_no,b.remarks,b.forwarded_dt, CONCAT(c.first_name, ' ', c.last_name) fwd_name, CONCAT(d.first_name, ' ', d.last_name) fwd_to_name,b.application_status`,
+      table_name = "(SELECT @a:= 0) AS a, td_forward b, md_users c,  md_users d",
+      whr = `b.forwarded_by=c.id AND  b.forwarded_to=d.id AND b.application_no = '${data.application_no}'`,
+      order = `ORDER BY b.forwarded_dt`;
+      var reject_dt = await db_Select(select, table_name, whr, order);
+      
+      dt.msg[0]["reject_dt"] = reject_dt.suc > 0 ? (reject_dt.msg.length > 0 ? reject_dt.msg : []) : [];
+  }
 }
+
+
+// console.log(res_dt,'lolo');
+
+// if(res_dt.msg.length > 0){
+
+//   var select = `@a:=@a+1 sl_no,b.remarks,b.forwarded_dt, CONCAT(c.first_name, ' ', c.last_name) fwd_name, CONCAT(d.first_name, ' ', d.last_name) fwd_to_name,b.application_status`,
+//   table_name = "(SELECT @a:= 0) AS a, td_forward b, md_users c,  md_users d",
+//   whr = `b.forwarded_by=c.id AND  b.forwarded_to=d.id AND b.application_no = '${data.application_no}'`,
+//   order = `ORDER BY b.forwarded_dt`;
+//   var reject_dt = await db_Select(select, table_name, whr, order);
+  
+//   res_dt.msg[0]["reject_dt"] =
+//   reject_dt.suc > 0 ? (reject_dt.msg.length > 0 ? reject_dt.msg : []) : [];
+//     res.send(dt)
+// }else{
+//   res.send(dt)
+// }
+res.send(dt)
 
 });
 
