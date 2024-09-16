@@ -482,6 +482,7 @@ var final_dt_1 = await db_Insert(table_name, fields, values, whr, flag);
 //   var final_dt_1 = await db_Insert(table_name,fields,values,whr,flag);
 //   res.send(final_dt_1)
 // }
+res.send(final_dt_1)
 })
 
 // ******************************************************************************************************
@@ -566,42 +567,43 @@ sqlRouter.post("/insert_fwd_dtls", async (req, res) => {
 
 // *********************************************************************************************************
 
-sqlRouter.post("/approve", async (req, res) => {
-  var data = req.body;
-  datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
-  var approve_status = await db_Select('approve_status','td_loan_application', `application_no=${data.application_no}`,null);
-  var status = approve_status.msg[0]["approve_status"]
+//comment 16.09.2024
+// sqlRouter.post("/approve", async (req, res) => {
+//   var data = req.body;
+//   datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+//   var approve_status = await db_Select('approve_status','td_loan_application', `application_no=${data.application_no}`,null);
+//   var status = approve_status.msg[0]["approve_status"]
 
-  var select = "a.id",
-  table_name = "md_users a, td_loan_application b",
-  where = status == 'LM' ? `a.branch_code = b.branch_code AND b.application_no = '${data.application_no}' and a.user_type = '4'` : status == 'BM' ? `a.branch_code = b.branch_code AND b.application_no = '${data.application_no}' and a.user_type = '3'` : status == 'CM' ?  `a.branch_code = b.branch_code AND b.application_no = '${data.application_no}' and a.user_type = '2'` :   `a.branch_code = b.branch_code AND b.application_no = '${data.application_no}' and a.user_type = '2'`;
-  order = null;
-  var user_dt = await db_Select(select,table_name,where,order);
-  var fwd_to = user_dt.msg[0].id;
+//   var select = "a.id",
+//   table_name = "md_users a, td_loan_application b",
+//   where = status == 'LM' ? `a.branch_code = b.branch_code AND b.application_no = '${data.application_no}' and a.user_type = '4'` : status == 'BM' ? `a.branch_code = b.branch_code AND b.application_no = '${data.application_no}' and a.user_type = '3'` : status == 'CM' ?  `a.branch_code = b.branch_code AND b.application_no = '${data.application_no}' and a.user_type = '2'` :   `a.branch_code = b.branch_code AND b.application_no = '${data.application_no}' and a.user_type = '2'`;
+//   order = null;
+//   var user_dt = await db_Select(select,table_name,where,order);
+//   var fwd_to = user_dt.msg[0].id;
   
 
-  // console.log(approve_status,"LLL");
-  if (approve_status.suc > 0){
-    var table_name = "td_loan_application",
-        fields = status=='LA'? `approve_status = 'BM'`: status=='BM'? `approve_status = 'CM'` : status=='CM'? `approve_status = 'CEO'` : `approve_status = 'CEO'`,
-        values = null,
-        whr = `application_no=${data.application_no}`,
-        flag = 1
-    var res_dt = await db_Insert(table_name, fields, values, whr, flag);
+//   // console.log(approve_status,"LLL");
+//   if (approve_status.suc > 0){
+//     var table_name = "td_loan_application",
+//         fields = status=='LA'? `approve_status = 'BM'`: status=='BM'? `approve_status = 'CM'` : status=='CM'? `approve_status = 'CEO'` : `approve_status = 'CEO'`,
+//         values = null,
+//         whr = `application_no=${data.application_no}`,
+//         flag = 1
+//     var res_dt = await db_Insert(table_name, fields, values, whr, flag);
 
-    if (res_dt.suc>0){
-      if (user_dt.suc > 0){
-      var table_name = "td_forward",
-      fields = "(application_no, forwarded_dt, forwarded_by, forwarded_to, created_by, created_dt)",
-      values = `(${data.application_no}, '${datetime}', '${data.forwarded_by}', '${fwd_to}', '${data.forwarded_by}', '${datetime}')`,
-      whr = null,
-      flag = 0;
-    var res_dt1 = await db_Insert(table_name, fields, values, whr, flag);
-      }
-    }
-  }
-  res.send(res_dt1);
-});
+//     if (res_dt.suc>0){
+//       if (user_dt.suc > 0){
+//       var table_name = "td_forward",
+//       fields = "(application_no, forwarded_dt, forwarded_by, forwarded_to, created_by, created_dt)",
+//       values = `(${data.application_no}, '${datetime}', '${data.forwarded_by}', '${fwd_to}', '${data.forwarded_by}', '${datetime}')`,
+//       whr = null,
+//       flag = 0;
+//     var res_dt1 = await db_Insert(table_name, fields, values, whr, flag);
+//       }
+//     }
+//   }
+//   res.send(res_dt1);
+// });
 // ********************************************************************************************************
 
 sqlRouter.post("/update_file", async (req, res) => {
