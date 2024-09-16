@@ -372,16 +372,23 @@ whr =  `a.application_no = b.application_no
     AND  b.forwarded_to = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
 order = `ORDER BY a.created_by`;
 var res_dt = await db_Select(select, table_name, whr, order)
+console.log(res_dt,'lolo');
 
-var select = `@a:=@a+1 sl_no,b.remarks as reject_remarks,b.forwarded_dt, CONCAT(c.first_name, ' ', c.last_name) fwd_name`,
-table_name = "(SELECT @a:= 0) AS a, td_forward b, md_users c",
-whr = ` b.forwarded_by=c.id AND b.forwarded_by = '${data.user_id}' AND b.application_no = '${data.application_no}' AND b.application_status = 'P'`,
-order = `ORDER BY b.forwarded_dt`;
-var reject_dt = await db_Select(select, table_name, whr, order);
+if(res_dt.msg.length > 0){
 
-res_dt.msg[0]["reject_dt"] =
-reject_dt.suc > 0 ? (reject_dt.msg.length > 0 ? reject_dt.msg : []) : [];
+  var select = `@a:=@a+1 sl_no,b.remarks as reject_remarks,b.forwarded_dt, CONCAT(c.first_name, ' ', c.last_name) fwd_name`,
+  table_name = "(SELECT @a:= 0) AS a, td_forward b, md_users c",
+  whr = ` b.forwarded_by=c.id AND b.forwarded_by = '${data.user_id}' AND b.application_no = '${data.application_no}' AND b.application_status = 'P'`,
+  order = `ORDER BY b.forwarded_dt`;
+  var reject_dt = await db_Select(select, table_name, whr, order);
+  
+  res_dt.msg[0]["reject_dt"] =
+  reject_dt.suc > 0 ? (reject_dt.msg.length > 0 ? reject_dt.msg : []) : [];
+    res.send(res_dt)
+}else{
   res.send(res_dt)
+}
+
 });
 
 // ******************************************************************************************************
