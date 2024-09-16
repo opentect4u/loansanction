@@ -106,6 +106,24 @@ brn_managerRouter.get("/fetch_brn_forward_dtls", async (req, res) => {
 
 // *******************************************************************************************************
 
+brn_managerRouter.get("/brn_mng_reject_list", async (req, res) => {
+  var data = req.query;
+
+  var select = `a.*,b.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type,(SELECT CONCAT(a.first_name, ' ', a.last_name) FROM md_users a, td_forward b 
+  WHERE a.id = b.forwarded_by AND a.user_type = '5' AND b.application_no = '${data.application_no}') as forward_appr_name`,
+table_name = 'td_loan_application a, td_forward b, md_branch d, md_loan_type e',
+whr =  `a.application_no = b.application_no 
+   AND a.branch_code = d.sl_no
+   AND a.loan_type = e.sl_no
+  AND b.application_status = 'R'
+  AND b.forwarded_to = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
+order = `HAVING (SELECT COUNT(*) FROM td_upload_file b WHERE a.application_no=b.application_no) > 0`;
+var res_dt = await db_Select(select, table_name, whr, order)
+ res.send(res_dt)
+})
+
+// *******************************************************************************************************
+
   brn_managerRouter.post("/brn_manager_reject", async (req, res) =>{
     var data = req.body;
     console.log(data,'dd');
