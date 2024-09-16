@@ -167,7 +167,7 @@ brn_managerRouter.get("/fetch_brn_forward_dtls", async (req, res) => {
   //   res.send({  suc: 0, msg: branch.msg, dt: branch});
   // }
 
-  res.send(track_dt)
+  // res.send(track_dt)
   });
 
 // brn_managerRouter.get("/get_brn_reject", async (req, res) =>{
