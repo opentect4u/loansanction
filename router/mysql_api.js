@@ -390,9 +390,9 @@ if(res_dt.msg.length > 0){
   
   res_dt.msg[0]["reject_dt"] =
   reject_dt.suc > 0 ? (reject_dt.msg.length > 0 ? reject_dt.msg : []) : [];
-    res.send(res_dt)
+    res.send(dt)
 }else{
-  res.send(res_dt)
+  res.send(dt)
 }
 
 });
