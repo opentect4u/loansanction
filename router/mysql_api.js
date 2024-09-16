@@ -446,7 +446,22 @@ whr =  `a.application_no = b.application_no
     AND b.forwarded_to = '${data.user_id}' ${data.application_no > 0 ? `AND a.application_no = '${data.application_no}'` : ''}`,
 order = `HAVING (SELECT COUNT(*) FROM td_upload_file b WHERE a.application_no=b.application_no) > 0`;
 var res_dt = await db_Select(select, table_name, whr, order)
+
+if(res_dt.msg.length > 0){
+
+  var select = `@a:=@a+1 sl_no,b.remarks,b.forwarded_dt, CONCAT(c.first_name, ' ', c.last_name) fwd_name, CONCAT(d.first_name, ' ', d.last_name) fwd_to_name,b.application_status`,
+  table_name = "(SELECT @a:= 0) AS a, td_forward b, md_users c,  md_users d",
+  whr = `b.forwarded_by=c.id AND  b.forwarded_to=d.id AND b.application_no = '${data.application_no}'`,
+  order = `ORDER BY b.forwarded_dt`;
+  var reject_dt = await db_Select(select, table_name, whr, order);
+  
+  res_dt.msg[0]["reject_dt"] =
+  reject_dt.suc > 0 ? (reject_dt.msg.length > 0 ? reject_dt.msg : []) : [];
+    res.send(res_dt)
+}else{
   res.send(res_dt)
+}
+  // res.send(res_dt)
 });
 
 // ******************************************************************************************************
