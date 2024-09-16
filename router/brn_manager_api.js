@@ -188,10 +188,32 @@ var res_dt = await db_Select(select, table_name, whr, order)
   // res.send(track_dt)
   });
 
-// brn_managerRouter.get("/get_brn_reject", async (req, res) =>{
-//   var data = req.query;
-
-
-// })
+  // brn_managerRouter.post("/forward_credit_manager", async (req, res) =>{
+  //   var data = req.body;
+  //   // console.log(data,'dd');
+  //   datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+  
+  //   var select = "id,branch_code,user_type",
+  //   table_name = "md_users",
+  //   where = `user_type = '2' AND branch_code = '${data.brn_code}' AND user_approve = '1'`,
+  //   order = null;
+  //   var manager_data = await db_Select(select,table_name,where,order);
+  //   console.log(manager_data,'user');
+    
+  //   var table_name = "td_forward",
+  //   fields = "(application_no, forwarded_dt, forwarded_by, by_brn, forwarded_to, to_brn, application_status, remarks, created_by, created_dt)",
+  //   values =  `('${data.application_no}', '${datetime}', '${data.user_id}', '${data.fwd_brn}', '${data.brn_mgr_id}', '${data.brn_code}', 'P', '${data.remarks}', '${data.created_by}', '${datetime}')`,
+  //   whr = null,
+  //   flag = 0;
+  // var fwd_brn_dt = await db_Insert(table_name, fields, values, whr, flag);
+  
+  // var table_name = "td_forward",
+  // fields = `application_status = '${data.application_status}'`,
+  // values =  null,
+  // whr = `application_no=${data.application_no} and forwarded_to = '${data.user_id}'`,
+  // flag = 1;
+  // var final_dt_1 = await db_Insert(table_name, fields, values, whr, flag);
+  // res.send(final_dt_1)
+  // })
 
 module.exports = {brn_managerRouter}
