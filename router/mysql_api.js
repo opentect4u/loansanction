@@ -434,10 +434,7 @@ sqlRouter.get("/fetch_forward_dtls", async (req, res) => {
   // var res_dt = await db_Select(select, table_name, whr, order)
   // console.log(res_dt,'res');
   
-  var select = `a.*,b.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type,(SELECT CONCAT(a.first_name, ' ', a.last_name) FROM md_users a, td_forward b 
-   WHERE a.id = b.forwarded_to AND a.user_type = '4' AND b.application_no = '${data.application_no}') as forward_user_name,
- (SELECT b.remarks FROM md_users a, td_forward b 
- WHERE a.id = b.forwarded_to AND a.user_type = '4' AND b.application_no = '${data.application_no}') as forward_remarks`,
+  var select = `a.*,b.*,d.branch_name,e.loan_type loan_type_name,e.sl_no loan_type`,
 table_name = 'td_loan_application a, td_forward b, md_branch d, md_loan_type e',
 whr =  `a.application_no = b.application_no 
      AND a.branch_code = d.sl_no
