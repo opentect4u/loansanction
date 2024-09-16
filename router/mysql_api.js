@@ -381,7 +381,7 @@ if(data.application_no > 0){
         AND b.forwarded_dt = '${dateFormat(new Date(dt.msg[0].last_fwd_dt), "yyyy-mm-dd HH:MM:ss")}'`,
     order = `ORDER BY a.created_by`;
     var res_dt = await db_Select(select, table_name, whr, order)
-    console.log(res_dt);
+    // console.log(res_dt);
 
     dt.msg[0]['pending_dtls'] = res_dt.suc > 0 ? res_dt.msg : []
 
