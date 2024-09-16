@@ -373,10 +373,10 @@ whr =  `a.application_no = b.application_no
 order = `ORDER BY a.created_by`;
 var res_dt = await db_Select(select, table_name, whr, order)
 
-var select = "@a:=@a+1 sl_no,b.remarks as reject_remarks,",
+var select = "@a:=@a+1 sl_no,b.remarks as reject_remarks",
 table_name = "(SELECT @a:= 0) AS a, td_forward b",
 whr = `b.forwarded_to = '${data.user_id}' AND b.application_no = '${data.application_no}'`,
-order = "";
+order = null;
 var reject_dt = await db_Select(select, table_name, whr, order);
 
 res_dt.msg[0]["reject_dt"] =
