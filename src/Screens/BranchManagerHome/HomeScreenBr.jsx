@@ -77,14 +77,6 @@ function HomeScreenBr() {
 					e?.member_name
 						?.toString()
 						?.toLowerCase()
-						?.includes(word?.toLowerCase()) ||
-					e?.branch_name
-						?.toString()
-						?.toLowerCase()
-						?.includes(word?.toLowerCase()) ||
-					e?.loan_type_name
-						?.toString()
-						?.toLowerCase()
 						?.includes(word?.toLowerCase())
 			)
 		)

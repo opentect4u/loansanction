@@ -839,6 +839,10 @@ function EditLoanForm() {
 														name: branch?.branch_name,
 													}))}
 													mode={2}
+													disabled={
+														loanApproveStatus === "A" ||
+														loanApproveStatus === "R"
+													}
 												/>
 												{errors.l_loan_through_branch &&
 												touched.l_loan_through_branch ? (
@@ -859,6 +863,10 @@ function EditLoanForm() {
 														name: loan?.loan_type,
 													}))}
 													mode={2}
+													disabled={
+														loanApproveStatus === "A" ||
+														loanApproveStatus === "R"
+													}
 												/>
 												{console.log("=========", values.l_applied_for)}
 												{errors.l_applied_for && touched.l_applied_for ? (
@@ -875,6 +883,10 @@ function EditLoanForm() {
 													handleChange={handleChange}
 													handleBlur={handleBlur}
 													mode={1}
+													disabled={
+														loanApproveStatus === "A" ||
+														loanApproveStatus === "R"
+													}
 												/>
 												{errors.l_loan_amount && touched.l_loan_amount ? (
 													<VError title={errors.l_loan_amount} />
@@ -890,6 +902,10 @@ function EditLoanForm() {
 													handleChange={handleChange}
 													handleBlur={handleBlur}
 													mode={1}
+													disabled={
+														loanApproveStatus === "A" ||
+														loanApproveStatus === "R"
+													}
 												/>
 												{errors.l_duration && touched.l_duration ? (
 													<VError title={errors.l_duration} />
@@ -950,7 +966,10 @@ function EditLoanForm() {
 																		},
 																	}}
 																>
-																	<DeleteOutlined className="text-[#5f49cc] text-xl ml-40 hover:animate-pulse hover:text-black delay-50 duration-50" />
+																	{loanApproveStatus !== "A" &&
+																		loanApproveStatus !== "R" && (
+																			<DeleteOutlined className="text-[#5f49cc] text-xl ml-40 hover:animate-pulse hover:text-black delay-50 duration-50" />
+																		)}
 																</Popconfirm>
 															</div>
 														</div>
@@ -959,7 +978,7 @@ function EditLoanForm() {
 											</div>
 										</Spin>
 
-										{loanApproveStatus !== "A" && (
+										{loanApproveStatus !== "A" && loanApproveStatus !== "R" && (
 											<FieldArray name="l_documents">
 												{({ push, remove, insert, unshift }) => (
 													<>
@@ -1061,7 +1080,7 @@ function EditLoanForm() {
 										</div> */}
 
 										{rejectReasonsArray?.length > 0 && (
-											<div className="mt-8">
+											<div className="mt-12">
 												<div className="text-xl font-bold text-red-800 mb-4">
 													Comments / Rejection Remarks
 												</div>
@@ -1069,10 +1088,13 @@ function EditLoanForm() {
 													mode="alternate"
 													items={rejectReasonsArray?.map((item, i) => ({
 														key: i,
-														color: "purple",
+														color:
+															item?.application_status === "P"
+																? "red"
+																: "green",
 														children: (
-															<>
-																<p>
+															<div className="bg-gray-100 p-5 rounded-xl">
+																<p className="pb-4">
 																	{new Date(item?.forwarded_dt).toLocaleString(
 																		"en-GB"
 																	)}
@@ -1087,8 +1109,10 @@ function EditLoanForm() {
 																		To: {item?.fwd_to_name}
 																	</Tag>
 																</p>
-																<p className="text-base">{item?.remarks}</p>
-															</>
+																<p className="text-base pt-4">
+																	{item?.remarks}
+																</p>
+															</div>
 														),
 													}))}
 												/>
@@ -1097,7 +1121,8 @@ function EditLoanForm() {
 
 										{fetchedFileDetails?.length > 0 && (
 											<div className="mt-5 grid grid-cols-2 gap-6 border-t-2 border-yellow-200 border-dashed">
-												{loanApproveStatus !== "A" ? (
+												{loanApproveStatus !== "A" &&
+												loanApproveStatus !== "R" ? (
 													<div className="col-span-2 mt-4">
 														<TDInputTemplate
 															placeholder="Select Branch Manager"
@@ -1114,43 +1139,45 @@ function EditLoanForm() {
 																	branch?.first_name + " " + branch?.last_name,
 															}))}
 															mode={2}
-															disabled={loanApproveStatus === "A"}
 														/>
 														{!branchManagerId ? (
 															<VError title={"Please Select Branch Manager"} />
 														) : null}
 													</div>
 												) : (
-													<div className="col-span-2">
-														<TDInputTemplate
-															placeholder="Forwarded to..."
-															type="text"
-															label="Forwarded to..."
-															formControlName={fetchedBranchManagerName}
-															disabled
-															mode={1}
-														/>
-													</div>
+													// <div className="col-span-2">
+													// 	<TDInputTemplate
+													// 		placeholder="Forwarded to..."
+													// 		type="text"
+													// 		label="Forwarded to..."
+													// 		formControlName={fetchedBranchManagerName}
+													// 		disabled
+													// 		mode={1}
+													// 	/>
+													// </div>
+													<></>
 												)}
-												<div className="col-span-2">
-													<TDInputTemplate
-														placeholder="Remarks..."
-														type="text"
-														label={`Remarks`}
-														// name="remarks"
-														formControlName={remarks}
-														handleChange={(e) => setRemarks(e.target.value)}
-														mode={3}
-														disabled={loanApproveStatus === "A"}
-													/>
-													{!remarks ? (
-														<VError title={"Please Enter Remarks"} />
-													) : null}
-												</div>
+												{loanApproveStatus !== "A" &&
+													loanApproveStatus !== "R" && (
+														<div className="col-span-2 mt-4">
+															<TDInputTemplate
+																placeholder="Remarks..."
+																type="text"
+																label={`Remarks`}
+																// name="remarks"
+																formControlName={remarks}
+																handleChange={(e) => setRemarks(e.target.value)}
+																mode={3}
+															/>
+															{!remarks ? (
+																<VError title={"Please Enter Remarks"} />
+															) : null}
+														</div>
+													)}
 											</div>
 										)}
 
-										{loanApproveStatus !== "A" ? (
+										{loanApproveStatus !== "A" && loanApproveStatus !== "R" ? (
 											<div className="mt-10">
 												<BtnComp
 													mode="S"

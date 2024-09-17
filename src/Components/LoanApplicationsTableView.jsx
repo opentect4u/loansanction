@@ -158,10 +158,11 @@ function LoanApplicationsTableView({
 									<td className="px-6 py-4">
 										<Link
 											to={
-												isForwardLoan
-													? routePaths.EDIT_APPLICATION_FORWARD +
-													  item?.application_no
-													: routePaths.EDIT_APPLICATION + item?.application_no
+												// isForwardLoan
+												// 	? routePaths.EDIT_APPLICATION_FORWARD +
+												// 	  item?.application_no
+												// 	:
+												routePaths.EDIT_APPLICATION + item?.application_no
 											}
 											// to={}
 										>

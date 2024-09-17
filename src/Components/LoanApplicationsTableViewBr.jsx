@@ -103,9 +103,9 @@ function LoanApplicationsTableViewBr({
 				<table className="w-full text-sm text-left rtl:text-right shadow-lg text-green-900dark:text-gray-400">
 					<thead className=" text-md  text-gray-700 capitalize   bg-blue-100 dark:bg-gray-700 dark:text-gray-400">
 						<tr>
-							<th scope="col" className="p-4">
+							{/* <th scope="col" className="p-4">
 								#
-							</th>
+							</th> */}
 							<th scope="col" className="p-4">
 								Application No.
 							</th>
@@ -115,12 +115,15 @@ function LoanApplicationsTableViewBr({
 							<th scope="col" className="p-4">
 								Name
 							</th>
-							<th scope="col" className="p-4">
+							{/* <th scope="col" className="p-4">
+								Status
+							</th> */}
+							{/* <th scope="col" className="p-4">
 								Branch
 							</th>
 							<th scope="col" className="p-4">
 								Loan Type
-							</th>
+							</th> */}
 							{/* <th scope="col" className="p-4">
 								Created By
 							</th> */}
@@ -138,36 +141,37 @@ function LoanApplicationsTableViewBr({
 									}
 									key={i}
 								>
-									<th
+									{/* <th
 										scope="row"
 										className="px-3 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
 									>
 										{item.sl_no}
-									</th>
+									</th> */}
 									<td className="px-6 py-4">
 										{item.application_no || "-----"}
 									</td>
 									<td className="px-6 py-4">
-										{new Date(item.created_at).toLocaleString("en-GB")}
+										{new Date(item.last_fwd_dt).toLocaleString("en-GB")}
 									</td>
 									<td className="px-6 py-4">{item.member_name}</td>
-									<td className="px-6 py-4">
+									{/* <td className="px-6 py-4">{item.member_name}</td> */}
+									{/* <td className="px-6 py-4">
 										{item.branch_name}
-										{/* {item.fresh_flag} */}
 									</td>
-									<td className="px-6 py-4">{item.loan_type_name}</td>
+									<td className="px-6 py-4">{item.loan_type_name}</td> */}
 									{/* <td className="px-6 py-4">{item.member_name}</td> */}
 									<td className="px-6 py-4">
 										<Link
 											to={
-												!isRejected
-													? isForwardLoan
-														? routePaths.BR_EDIT_APPLICATION_FORWARD +
-														  item?.application_no
-														: routePaths.BR_EDIT_APPLICATION +
-														  item?.application_no
-													: routePaths.BR_EDIT_APPLICATION_REJECT +
-													  item?.application_no
+												// !isRejected
+												// 	? isForwardLoan
+												// 		? routePaths.BR_EDIT_APPLICATION_FORWARD +
+												// 		  item?.application_no
+												// 		:
+
+												routePaths.BR_EDIT_APPLICATION + item?.application_no
+												// : routePaths.BR_EDIT_APPLICATION_REJECT +
+												//   item?.application_no
 											}
 											// to={}
 										>

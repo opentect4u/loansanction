@@ -420,33 +420,40 @@ function EditLoanFormBr() {
 			.then((res) => {
 				if (res?.data?.suc === 1) {
 					setValues({
-						l_member_id: res?.data?.msg[0]?.member_id,
+						l_member_id: res?.data?.msg[0]?.pending_dtls[0]?.member_id,
 						l_membership_date:
-							new Date(res?.data?.msg[0]?.member_dt)
+							new Date(res?.data?.msg[0]?.pending_dtls[0]?.member_dt)
 								?.toISOString()
 								?.split("T")[0] || "",
-						l_name: res?.data?.msg[0]?.member_name,
-						l_father_husband_name: res?.data?.msg[0]?.father_name,
-						l_gender: res?.data?.msg[0]?.gender,
+						l_name: res?.data?.msg[0]?.pending_dtls[0]?.member_name,
+						l_father_husband_name:
+							res?.data?.msg[0]?.pending_dtls[0]?.father_name,
+						l_gender: res?.data?.msg[0]?.pending_dtls[0]?.gender,
 						l_dob:
-							new Date(res?.data?.msg[0]?.dob)?.toISOString()?.split("T")[0] ||
-							"",
-						l_email: res?.data?.msg[0]?.email,
-						l_mobile_no: res?.data?.msg[0]?.mobile_no,
-						l_address: res?.data?.msg[0]?.memb_address,
-						l_loan_through_branch: res?.data?.msg[0]?.branch_code,
-						l_applied_for: res?.data?.msg[0]?.loan_type,
-						l_loan_amount: res?.data?.msg[0]?.loan_amt,
-						l_duration: res?.data?.msg[0]?.loan_period,
+							new Date(res?.data?.msg[0]?.pending_dtls[0]?.dob)
+								?.toISOString()
+								?.split("T")[0] || "",
+						l_email: res?.data?.msg[0]?.pending_dtls[0]?.email,
+						l_mobile_no: res?.data?.msg[0]?.pending_dtls[0]?.mobile_no,
+						l_address: res?.data?.msg[0]?.pending_dtls[0]?.memb_address,
+						l_loan_through_branch:
+							res?.data?.msg[0]?.pending_dtls[0]?.branch_code,
+						l_applied_for: res?.data?.msg[0]?.pending_dtls[0]?.loan_type,
+						l_loan_amount: res?.data?.msg[0]?.pending_dtls[0]?.loan_amt,
+						l_duration: res?.data?.msg[0]?.pending_dtls[0]?.loan_period,
 						l_documents: [{ l_file_name: "", l_file: "" }],
 					})
 
-					console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", res?.data)
-					setAppraiserForwardedDate(res?.data?.msg[0]?.forwarded_dt)
-					setFetchedRemarks(res?.data?.msg[0]?.remarks)
-					setForwardedByName(res?.data?.msg[0]?.forward_appr_name)
-					setLoanApproveStatus(res?.data?.msg[0]?.application_status)
-					setForwardedById(res?.data?.msg[0]?.forwarded_by)
+					console.log("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB", res?.data)
+					setAppraiserForwardedDate(
+						res?.data?.msg[0]?.pending_dtls[0]?.forwarded_dt
+					)
+					setFetchedRemarks(res?.data?.msg[0]?.pending_dtls[0]?.remarks)
+					// setForwardedByName(res?.data?.msg[0]?.forward_appr_name)
+					setLoanApproveStatus(
+						res?.data?.msg[0]?.pending_dtls[0]?.application_status
+					)
+					setForwardedById(res?.data?.msg[0]?.pending_dtls[0]?.forwarded_by)
 					setRejectReasonsArray(res?.data?.msg[0]?.reject_dt)
 				} else {
 					Message("warning", "No data found!")
@@ -489,7 +496,7 @@ function EditLoanFormBr() {
 			.then((res) => {
 				Message("error", "Application Rejected.")
 				// setVisibleModal2(!visibleModal2)
-				navigate(routePaths.BR_APPLICATION_FORWARD)
+				navigate(routePaths.BRANCH_MANAGER_HOME)
 			})
 			.catch((err) => {
 				Message(
@@ -578,12 +585,12 @@ function EditLoanFormBr() {
 				{/* {JSON.stringify(loanAppData)} */}
 				<div className=" bg-white p-5 w-4/5 min-h-screen rounded-3xl">
 					<div className="flex justify-between ml-14 mr-12">
-						<Tag
+						{/* <Tag
 							color="purple"
 							className="p-1 px-2 text-sm rounded-full font-bold"
 						>
 							<ArrowRightOutlined /> From Appraiser: {forwardedByName}
-						</Tag>
+						</Tag> */}
 						<Tag
 							color="orange"
 							className="p-1 px-2 text-sm rounded-full font-bold"
@@ -788,22 +795,25 @@ function EditLoanFormBr() {
 												) : null}
 											</div>
 
-											<div className="col-span-2">
-												<TDInputTemplateBr
-													placeholder="Remarks"
-													type="text"
-													label={`Remarks from ${forwardedByName}`}
-													// name="l_address"
-													formControlName={fetchedRemarks}
-													// handleChange={handleChange}
-													// handleBlur={handleBlur}
-													mode={3}
-													disabled
-												/>
-												{errors.l_address && touched.l_address ? (
-													<VError title={errors.l_address} />
-												) : null}
-											</div>
+											{/* {loanApproveStatus !== "A" &&
+												loanApproveStatus !== "R" && (
+													<div className="col-span-2">
+														<TDInputTemplateBr
+															placeholder="Remarks"
+															type="text"
+															label={`Remarks from ${forwardedByName}`}
+															// name="l_address"
+															formControlName={fetchedRemarks}
+															// handleChange={handleChange}
+															// handleBlur={handleBlur}
+															mode={3}
+															disabled
+														/>
+														{errors.l_address && touched.l_address ? (
+															<VError title={errors.l_address} />
+														) : null}
+													</div>
+												)} */}
 
 											<div>
 												<TDInputTemplateBr
@@ -819,6 +829,10 @@ function EditLoanFormBr() {
 														name: branch?.branch_name,
 													}))}
 													mode={2}
+													disabled={
+														loanApproveStatus === "A" ||
+														loanApproveStatus === "R"
+													}
 												/>
 												{errors.l_loan_through_branch &&
 												touched.l_loan_through_branch ? (
@@ -839,6 +853,10 @@ function EditLoanFormBr() {
 														name: loan?.loan_type,
 													}))}
 													mode={2}
+													disabled={
+														loanApproveStatus === "A" ||
+														loanApproveStatus === "R"
+													}
 												/>
 												{errors.l_applied_for && touched.l_applied_for ? (
 													<VError title={errors.l_applied_for} />
@@ -854,6 +872,10 @@ function EditLoanFormBr() {
 													handleChange={handleChange}
 													handleBlur={handleBlur}
 													mode={1}
+													disabled={
+														loanApproveStatus === "A" ||
+														loanApproveStatus === "R"
+													}
 												/>
 												{errors.l_loan_amount && touched.l_loan_amount ? (
 													<VError title={errors.l_loan_amount} />
@@ -869,6 +891,10 @@ function EditLoanFormBr() {
 													handleChange={handleChange}
 													handleBlur={handleBlur}
 													mode={1}
+													disabled={
+														loanApproveStatus === "A" ||
+														loanApproveStatus === "R"
+													}
 												/>
 												{errors.l_duration && touched.l_duration ? (
 													<VError title={errors.l_duration} />
@@ -886,7 +912,7 @@ function EditLoanFormBr() {
 												<div className="text-lg font-bold">Uploaded Files</div>
 												<div className="grid grid-cols-4 gap-4 place-items-start mt-3">
 													{fetchedFileDetails?.map((item, i) => (
-														<div>
+														<div key={i}>
 															<TDInputTemplateBr
 																placeholder="Entered File Name..."
 																type="text"
@@ -929,7 +955,10 @@ function EditLoanFormBr() {
 																		},
 																	}}
 																>
-																	<DeleteOutlined className="text-[#5f49cc] text-xl ml-40 hover:animate-pulse hover:text-black delay-50 duration-50" />
+																	{loanApproveStatus !== "A" &&
+																		loanApproveStatus !== "R" && (
+																			<DeleteOutlined className="text-[#5f49cc] text-xl ml-40 hover:animate-pulse hover:text-black delay-50 duration-50" />
+																		)}
 																</Popconfirm>
 															</div>
 														</div>
@@ -938,7 +967,7 @@ function EditLoanFormBr() {
 											</div>
 										</Spin>
 
-										{loanApproveStatus !== "A" && (
+										{loanApproveStatus !== "A" && loanApproveStatus !== "R" && (
 											<FieldArray name="l_documents">
 												{({ push, remove, insert, unshift }) => (
 													<>
@@ -1017,18 +1046,21 @@ function EditLoanFormBr() {
 										)}
 
 										{rejectReasonsArray?.length > 0 && (
-											<div className="mt-8">
-												<div className="text-lg font-bold text-red-800 mb-4">
-													Comments/Rejection Remarks
+											<div className="mt-14">
+												<div className="text-lg font-bold text-blue-800 mb-4">
+													Comments / Rejection Remarks
 												</div>
 												<Timeline
 													mode="alternate"
 													items={rejectReasonsArray?.map((item, i) => ({
 														key: i,
-														color: "purple",
+														color:
+															item?.application_status === "P"
+																? "red"
+																: "green",
 														children: (
-															<>
-																<p>
+															<div className="bg-gray-100 p-5 rounded-xl">
+																<p className="pb-4">
 																	{new Date(item?.forwarded_dt).toLocaleString(
 																		"en-GB"
 																	)}
@@ -1043,8 +1075,10 @@ function EditLoanFormBr() {
 																		To: {item?.fwd_to_name}
 																	</Tag>
 																</p>
-																<p className="text-base">{item?.remarks}</p>
-															</>
+																<p className="text-base pt-4">
+																	{item?.remarks}
+																</p>
+															</div>
 														),
 													}))}
 												/>
@@ -1071,28 +1105,30 @@ function EditLoanFormBr() {
 											</div>
 										</div> */}
 
-										<div className="mt-7">
-											<TDInputTemplateBr
-												placeholder="Write comments..."
-												type="text"
-												label={`Comments`}
-												name="comments"
-												formControlName={commentsBranchManager}
-												handleChange={(e) =>
-													setCommentsBranchManager(e.target.value)
-												}
-												mode={3}
-											/>
-											{!commentsBranchManager ? (
-												<VError
-													title={
-														"Please Enter Comments Before Forwarding or Rejecting"
+										{loanApproveStatus !== "A" && loanApproveStatus !== "R" && (
+											<div className="mt-7">
+												<TDInputTemplateBr
+													placeholder="Write comments..."
+													type="text"
+													label={`Comments`}
+													name="comments"
+													formControlName={commentsBranchManager}
+													handleChange={(e) =>
+														setCommentsBranchManager(e.target.value)
 													}
+													mode={3}
 												/>
-											) : null}
-										</div>
+												{!commentsBranchManager ? (
+													<VError
+														title={
+															"Please Enter Comments Before Forwarding or Rejecting"
+														}
+													/>
+												) : null}
+											</div>
+										)}
 
-										{loanApproveStatus !== "A" ? (
+										{loanApproveStatus !== "A" && loanApproveStatus !== "R" ? (
 											<div className="mt-10">
 												<BtnComp
 													mode="S"
@@ -1106,12 +1142,26 @@ function EditLoanFormBr() {
 													showSave
 												/>
 											</div>
-										) : (
+										) : loanApproveStatus === "A" ? (
 											<Tag
 												color="purple"
 												className="mt-10 p-5 rounded-lg text-xl font-bold self-center"
 											>
 												E-Files forwarded to Credit Manager.
+											</Tag>
+										) : loanApproveStatus === "R" ? (
+											<Tag
+												color="orange"
+												className="mt-10 p-5 rounded-lg text-xl font-bold self-center"
+											>
+												E-Files rejected and sent to Loan Appraiser.
+											</Tag>
+										) : (
+											<Tag
+												color="red"
+												className="mt-10 p-5 rounded-lg text-xl font-bold self-center"
+											>
+												Some error occurred.
 											</Tag>
 										)}
 									</div>
