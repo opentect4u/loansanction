@@ -34,7 +34,7 @@ function HomeBr() {
 							console.error(error)
 						}}
 					>
-						<ScrollTop style={{ backgroundColor: "#92140C" }} />
+						<ScrollTop className="bg-blue-800" />
 
 						<Outlet />
 					</ErrorBoundary>

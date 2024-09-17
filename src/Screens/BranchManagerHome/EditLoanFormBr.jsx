@@ -27,6 +27,7 @@ import { useLocation } from "react-router"
 import Sidebar from "../../Components/Sidebar"
 import DialogBox from "../../Components/DialogBox"
 import TDInputTemplateBr from "../../Components/TDInputTemplateBr"
+import TimelineComp from "../../Components/TimelineComp"
 
 const MAX_FILE_SIZE = 200000
 
@@ -1046,42 +1047,11 @@ function EditLoanFormBr() {
 										)}
 
 										{rejectReasonsArray?.length > 0 && (
-											<div className="mt-14">
+											<div className="mt-14 bg-blue-50 rounded-xl p-10">
 												<div className="text-lg font-bold text-blue-800 mb-4">
 													Comments / Rejection Remarks
 												</div>
-												<Timeline
-													mode="alternate"
-													items={rejectReasonsArray?.map((item, i) => ({
-														key: i,
-														color:
-															item?.application_status === "P"
-																? "red"
-																: "green",
-														children: (
-															<div className="bg-gray-100 p-5 rounded-xl">
-																<p className="pb-4">
-																	{new Date(item?.forwarded_dt).toLocaleString(
-																		"en-GB"
-																	)}
-																</p>
-																<p>
-																	<Tag color="green" className="rounded-full">
-																		From: {item?.fwd_name}
-																	</Tag>
-																</p>
-																<p>
-																	<Tag color="red" className="rounded-full">
-																		To: {item?.fwd_to_name}
-																	</Tag>
-																</p>
-																<p className="text-base pt-4">
-																	{item?.remarks}
-																</p>
-															</div>
-														),
-													}))}
-												/>
+												<TimelineComp data={rejectReasonsArray} />
 											</div>
 										)}
 
