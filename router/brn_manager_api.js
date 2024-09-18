@@ -178,6 +178,12 @@ var res_dt = await db_Select(select, table_name, whr, order)
     var data = req.body;
     console.log(data,'dd');
     datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+
+    var select = "a.sl_no",
+    table_name = "td_forward a",
+    where = `a.application_no = '${data.application_no}' AND a.forwarded_to = '${data.user_id}' AND a.forwarded_dt = (SELECT MAX(b.forwarded_dt) FROM td_forward b WHERE b.application_no = a.application_no AND b.forwarded_to = a.forwarded_to)`,
+    order = null;
+    var branch_data = await db_Select(select,table_name,where,order);
     
     var table_name = "td_forward",
     fields = "(application_no, forwarded_dt, forwarded_by, by_brn, forwarded_to, to_brn, application_status, remarks, created_by, created_dt)",
@@ -187,9 +193,9 @@ var res_dt = await db_Select(select, table_name, whr, order)
   var branch = await db_Insert(table_name, fields, values, whr, flag);
 
   var table_name = "td_forward",
-    fields = `application_status = '${data.application_status}'`,
+    fields = `application_status = '${data.application_status}',modified_by = '${data.user_id}', modified_dt = '${datetime}'`,
     values = null;
-    whr =`application_no=${data.application_no} AND forwarded_to = '${data.user_id}'`,
+    whr =`sl_no=${branch_data.suc > 0 ? branch_data.msg[0].sl_no : 0}`,
     flag = 1; 
     var track_dt = await db_Insert(table_name,fields,values,whr,flag);
 
@@ -243,37 +249,43 @@ var res_dt = await db_Select(select, table_name, whr, order)
     // console.log(data,'dd');
     datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
   
-    var select = "id,branch_code,user_type",
-    table_name = "md_users",
-    where = `user_type = '3' AND branch_code = '${data.brn_code}' AND user_approve = '1'`,
-    order = null;
-    var manager_data = await db_Select(select,table_name,where,order);
+    // var select = "id,branch_code,user_type",
+    // table_name = "md_users",
+    // where = `user_type = '3' AND branch_code = '${data.brn_code}' AND user_approve = '1'`,
+    // order = null;
+    // var manager_data = await db_Select(select,table_name,where,order);
     // console.log(manager_data,'user');
+
+    var select = "a.sl_no",
+    table_name = "td_forward a",
+    where = `a.application_no = '${data.application_no}' AND a.forwarded_to = '${data.mng_user_id}' AND a.forwarded_dt = (SELECT MAX(b.forwarded_dt) FROM td_forward b WHERE b.application_no = a.application_no AND b.forwarded_to = a.forwarded_to)`,
+    order = null;
+    var branch_data = await db_Select(select,table_name,where,order);
     
     var table_name = "td_forward",
     fields = "(application_no, forwarded_dt, forwarded_by, by_brn, forwarded_to, to_brn, application_status, remarks, created_by, created_dt)",
     values =  `('${data.application_no}', '${datetime}', '${data.mng_user_id}', '${data.mng_brn_code}', '${data.credit_mgr_id}', '${data.credit_brn_code}', 'P', '${data.remarks}', '${data.mng_user_id}', '${datetime}')`,
     whr = null,
     flag = 0;
-  var fwd_brn_dt = await db_Insert(table_name, fields, values, whr, flag);
+    var fwd_brn_dt = await db_Insert(table_name, fields, values, whr, flag);
   
-  var table_name = "td_forward",
-  fields = `application_status = '${data.application_status}'`,
-  values =  null,
-  whr = `application_no=${data.application_no} and forwarded_to = '${data.mng_user_id}'`,
-  flag = 1;
-  var final_dt_1 = await db_Insert(table_name, fields, values, whr, flag);
-  res.send(final_dt_1)
+    var table_name = "td_forward",
+    fields = `application_status = '${data.application_status}',modified_by = '${data.mng_user_id}', modified_dt = '${datetime}'`,
+    values =  null,
+    whr = `sl_no=${branch_data.suc > 0 ? branch_data.msg[0].sl_no : 0}`,
+    flag = 1;
+    var final_dt_1 = await db_Insert(table_name, fields, values, whr, flag);
+    res.send(final_dt_1)
 
-//   if(final_dt_1.suc > 0){
-//     if (final_dt_1.msg.length > 0) {
-//     res.send({ suc: 1, msg: "Branch Manager forwarded to Credit Manager", user_dtls: final_dt_1.msg[0] });
-//     }else {
-//      res.send({ suc: 0, msg: "Something Went Wrong"});
-//     }
-// }else {
-//     res.send({ suc: 2, msg: "No data found"})
-// }
+    //   if(final_dt_1.suc > 0){
+    //     if (final_dt_1.msg.length > 0) {
+    //     res.send({ suc: 1, msg: "Branch Manager forwarded to Credit Manager", user_dtls: final_dt_1.msg[0] });
+    //     }else {
+    //      res.send({ suc: 0, msg: "Something Went Wrong"});
+    //     }
+    // }else {
+    //     res.send({ suc: 2, msg: "No data found"})
+    // }
   });
 
 

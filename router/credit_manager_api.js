@@ -85,6 +85,12 @@ credit_managerRouter.post("/credit_manager_reject", async (req, res) =>{
   var data = req.body;
   console.log(data,'dd');
   datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+
+  var select = "a.sl_no",
+  table_name = "td_forward a",
+  where = `a.application_no = '${data.application_no}' AND a.forwarded_to = '${data.user_id}' AND a.forwarded_dt = (SELECT MAX(b.forwarded_dt) FROM td_forward b WHERE b.application_no = a.application_no AND b.forwarded_to = a.forwarded_to)`,
+  order = null;
+  var branch_data = await db_Select(select,table_name,where,order);
   
   var table_name = "td_forward",
   fields = "(application_no, forwarded_dt, forwarded_by, by_brn, forwarded_to, to_brn, application_status, remarks, created_by, created_dt)",
@@ -94,9 +100,9 @@ credit_managerRouter.post("/credit_manager_reject", async (req, res) =>{
 var branch = await db_Insert(table_name, fields, values, whr, flag);
 
 var table_name = "td_forward",
-  fields = `application_status = '${data.application_status}'`,
+  fields = `application_status = '${data.application_status}',modified_by = '${data.user_id}', modified_dt = '${datetime}'`,
   values = null;
-  whr =`application_no=${data.application_no} AND forwarded_to = '${data.user_id}'`,
+  whr =`sl_no=${branch_data.suc > 0 ? branch_data.msg[0].sl_no : 0}`,
   flag = 1; 
   var track_dt = await db_Insert(table_name,fields,values,whr,flag);
 
@@ -118,6 +124,12 @@ credit_managerRouter.post("/forward_ceo", async (req, res) =>{
   // console.log(data,'dd');
   datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
 
+  var select = "a.sl_no",
+  table_name = "td_forward a",
+  where = `a.application_no = '${data.application_no}' AND a.forwarded_to = '${data.credit_user_id}' AND a.forwarded_dt = (SELECT MAX(b.forwarded_dt) FROM td_forward b WHERE b.application_no = a.application_no AND b.forwarded_to = a.forwarded_to)`,
+  order = null;
+  var branch_data = await db_Select(select,table_name,where,order);
+
   var select = "id,branch_code,user_type",
   table_name = "md_users",
   where = `user_type = '2' AND branch_code = '${data.brn_code}' AND user_approve = '1'`,
@@ -133,9 +145,9 @@ credit_managerRouter.post("/forward_ceo", async (req, res) =>{
 var fwd_credit_dt = await db_Insert(table_name, fields, values, whr, flag);
 
 var table_name = "td_forward",
-fields = `application_status = '${data.application_status}'`,
+fields = `application_status = '${data.application_status}',modified_by = '${data.credit_user_id}', modified_dt = '${datetime}'`,
 values =  null,
-whr = `application_no=${data.application_no} and forwarded_to = '${data.credit_user_id}'`,
+whr = `sl_no=${branch_data.suc > 0 ? branch_data.msg[0].sl_no : 0}`,
 flag = 1;
 var final_dt_ceo = await db_Insert(table_name, fields, values, whr, flag);
 res.send(final_dt_ceo)

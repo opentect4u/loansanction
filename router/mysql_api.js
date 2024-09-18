@@ -494,12 +494,19 @@ sqlRouter.post("/forward_brn_manager", async (req, res) =>{
   console.log(data,'dd');
   datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
 
-  var select = "id,branch_code,user_type",
-  table_name = "md_users",
-  where = `user_type = '4' AND branch_code = '${data.brn_code}' AND user_approve = '1'`,
+  // var select = "id,branch_code,user_type",
+  // table_name = "md_users",
+  // where = `user_type = '4' AND branch_code = '${data.brn_code}' AND user_approve = '1'`,
+  // order = null;
+  // var branch_data = await db_Select(select,table_name,where,order);
+  // console.log(branch_data,'user');
+
+  var select = "a.sl_no",
+  table_name = "td_forward a",
+  where = `a.application_no = '${data.application_no}' AND a.forwarded_to = '${data.user_id}' AND a.forwarded_dt = (SELECT MAX(b.forwarded_dt) FROM td_forward b WHERE b.application_no = a.application_no AND b.forwarded_to = a.forwarded_to)`,
   order = null;
   var branch_data = await db_Select(select,table_name,where,order);
-  console.log(branch_data,'user');
+  // console.log(branch_data.msg,'user');
   
   var table_name = "td_forward",
   fields = "(application_no, forwarded_dt, forwarded_by, by_brn, forwarded_to, to_brn, application_status, remarks, created_by, created_dt)",
@@ -509,9 +516,9 @@ sqlRouter.post("/forward_brn_manager", async (req, res) =>{
 var fwd_brn_dt = await db_Insert(table_name, fields, values, whr, flag);
 
 var table_name = "td_forward",
-fields = `application_status = '${data.application_status}'`,
+fields = `application_status = '${data.application_status}',modified_by = '${data.user_id}', modified_dt = '${datetime}'`,
 values =  null,
-whr = `application_no=${data.application_no} and forwarded_to = '${data.user_id}'`,
+whr = `sl_no=${branch_data.suc > 0 ? branch_data.msg[0].sl_no : 0}`,
 flag = 1;
 var final_dt_1 = await db_Insert(table_name, fields, values, whr, flag);
 
