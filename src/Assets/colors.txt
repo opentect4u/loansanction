@@ -26,3 +26,6 @@ New palette -
 
 #F4EF88
 
+
+Slate
+#98B9F2

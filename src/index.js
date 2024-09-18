@@ -28,6 +28,13 @@ import ForgotPassCr from "./Screens/CreditManager/ForgotPassCr"
 import HomeCr from "./Screens/CreditManagerHome/HomeCr"
 import HomeScreenCr from "./Screens/CreditManagerHome/HomeScreenCr"
 import EditLoanFormCr from "./Screens/CreditManagerHome/EditLoanFormCr"
+import AuthCeo from "./Screens/CEO/AuthCeo"
+import SigninCeo from "./Screens/CEO/SigninCeo"
+import SignupCeo from "./Screens/CEO/SignupCeo"
+import ForgotPassCeo from "./Screens/CEO/ForgotPassCeo"
+import HomeCeo from "./Screens/CEOHome/HomeCeo"
+import HomeScreenCeo from "./Screens/CEOHome/HomeScreenCeo"
+import EditLoanFormCeo from "./Screens/CEOHome/EditLoanFormCeo"
 // import FwdLoanApplicationsBr from "./Screens/BranchManagerHome/FwdLoanApplicationsBr"
 // import EditLoanFormFwdBr from "./Screens/BranchManagerHome/EditLoanFormFwdBr"
 // import RejectLoanApplicationsBr from "./Screens/BranchManagerHome/RejectLoanApplicationsBr"
@@ -194,6 +201,38 @@ const router = createBrowserRouter([
 									{
 										path: "editloanform/:id",
 										element: <EditLoanFormCr />,
+									},
+								],
+							},
+						],
+					},
+					{
+						path: "ceo",
+						element: <AuthCeo />,
+						children: [
+							{
+								path: "",
+								element: <SigninCeo />,
+							},
+							{
+								path: "signup",
+								element: <SignupCeo />,
+							},
+							{
+								path: "forgotpassword",
+								element: <ForgotPassCeo />,
+							},
+							{
+								path: "homeceo",
+								element: <HomeCeo />,
+								children: [
+									{
+										path: "",
+										element: <HomeScreenCeo />,
+									},
+									{
+										path: "editloanform/:id",
+										element: <EditLoanFormCeo />,
 									},
 								],
 							},

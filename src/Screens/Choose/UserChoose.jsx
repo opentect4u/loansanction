@@ -125,6 +125,23 @@ function UserChoose() {
 							</div>
 						</Link>
 					</div>
+					<div>
+						<Link to={routePaths.CEO_LOGIN}>
+							<div
+								className="h-48 w-48 self-center bg-[#173753] rounded-full p-1 text-white text-center text-wrap text-xl"
+								style={{
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									flexDirection: "column",
+									gap: 10,
+								}}
+							>
+								<UserOutlined className="text-3xl self-center" />
+								<div>CEO Login</div>
+							</div>
+						</Link>
+					</div>
 				</div>
 			</motion.div>
 
