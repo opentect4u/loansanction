@@ -47,7 +47,7 @@ function App() {
 							itemMarginInline: 15,
 							itemHoverBg: "white",
 							itemSelectedColor: "#FBEC21",
-							itemHoverColor: "#A31E21",
+							itemHoverColor: "#FFFFFF",
 							// lineWidth: 0,
 							// lineWidthFocus: 0,
 							colorPrimaryBorder: "#A31E21",

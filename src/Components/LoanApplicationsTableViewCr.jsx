@@ -48,7 +48,7 @@ function LoanApplicationsTableViewCr({
 				animate={{ opacity: 1 }}
 				transition={{ delay: 0.5, type: "spring", stiffness: 30 }}
 			>
-				<div className="flex flex-col p-1 bg-teal-800 rounded-2xl my-3 dark:bg-teal-800 md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 ">
+				<div className="flex flex-col p-1 bg-teal-800 rounded-lg my-3 dark:bg-teal-800 md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 ">
 					<div className="w-full">
 						<div className="flex items-center justify-between">
 							<motion.h2
@@ -85,7 +85,7 @@ function LoanApplicationsTableViewCr({
 									initial={{ opacity: 0, width: 0 }}
 									animate={{ opacity: 1, width: "95%" }}
 									transition={{ delay: 1.1, type: "just" }}
-									className="bg-white border rounded-2xl border-teal-700 text-gray-800 block w-full h-12 pl-10 dark:bg-gray-800 md:ml-4 duration-300 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white text-lg focus:border-teal-600"
+									className="bg-white border rounded-lg border-teal-700 text-gray-800 block w-full h-12 pl-10 dark:bg-gray-800 md:ml-4 duration-300 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white text-lg focus:border-teal-600"
 									placeholder="Search"
 									required=""
 									onChange={(text) => setSearch(text.target.value)}

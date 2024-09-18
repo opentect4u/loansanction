@@ -82,7 +82,7 @@ function LoanApplicationsTableView({
 									type="text"
 									id="simple-search"
 									initial={{ opacity: 0, width: 0 }}
-									animate={{ opacity: 1, width: "91%" }}
+									animate={{ opacity: 1, width: "95%" }}
 									transition={{ delay: 1.1, type: "just" }}
 									className="bg-white border rounded-lg border-red-700 text-gray-800 block w-full h-12 pl-10 dark:bg-gray-800 md:ml-4 duration-300 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white text-lg focus:border-red-600"
 									placeholder="Search"
@@ -102,9 +102,9 @@ function LoanApplicationsTableView({
 				<table className="w-full text-sm text-left rtl:text-right shadow-lg text-green-900dark:text-gray-400">
 					<thead className=" text-md  text-gray-700 capitalize   bg-red-100 dark:bg-gray-700 dark:text-gray-400">
 						<tr>
-							<th scope="col" className="p-4">
+							{/* <th scope="col" className="p-4">
 								#
-							</th>
+							</th> */}
 							<th scope="col" className="p-4">
 								Application No.
 							</th>
@@ -137,12 +137,12 @@ function LoanApplicationsTableView({
 									}
 									key={i}
 								>
-									<th
+									{/* <th
 										scope="row"
 										className="px-3 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
 									>
 										{item.sl_no}
-									</th>
+									</th> */}
 									<td className="px-6 py-4">
 										{item.application_no || "-----"}
 									</td>
