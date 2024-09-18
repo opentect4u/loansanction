@@ -21,6 +21,13 @@ import ForgotPassBr from "./Screens/BranchManager/ForgotPassBr"
 import HomeBr from "./Screens/BranchManagerHome/HomeBr"
 import HomeScreenBr from "./Screens/BranchManagerHome/HomeScreenBr"
 import EditLoanFormBr from "./Screens/BranchManagerHome/EditLoanFormBr"
+import AuthCr from "./Screens/CreditManager/AuthCr"
+import SigninCr from "./Screens/CreditManager/SigninCr"
+import SignupCr from "./Screens/CreditManager/SignupCr"
+import ForgotPassCr from "./Screens/CreditManager/ForgotPassCr"
+import HomeCr from "./Screens/CreditManagerHome/HomeCr"
+import HomeScreenCr from "./Screens/CreditManagerHome/HomeScreenCr"
+import EditLoanFormCr from "./Screens/CreditManagerHome/EditLoanFormCr"
 // import FwdLoanApplicationsBr from "./Screens/BranchManagerHome/FwdLoanApplicationsBr"
 // import EditLoanFormFwdBr from "./Screens/BranchManagerHome/EditLoanFormFwdBr"
 // import RejectLoanApplicationsBr from "./Screens/BranchManagerHome/RejectLoanApplicationsBr"
@@ -156,6 +163,38 @@ const router = createBrowserRouter([
 									// 	path: "rejectapplication/editloanform/:id",
 									// 	element: <EditRejectLoanApplicationBr />,
 									// },
+								],
+							},
+						],
+					},
+					{
+						path: "creditmanager",
+						element: <AuthCr />,
+						children: [
+							{
+								path: "",
+								element: <SigninCr />,
+							},
+							{
+								path: "signup",
+								element: <SignupCr />,
+							},
+							{
+								path: "forgotpassword",
+								element: <ForgotPassCr />,
+							},
+							{
+								path: "homecr",
+								element: <HomeCr />,
+								children: [
+									{
+										path: "",
+										element: <HomeScreenCr />,
+									},
+									{
+										path: "editloanform/:id",
+										element: <EditLoanFormCr />,
+									},
 								],
 							},
 						],

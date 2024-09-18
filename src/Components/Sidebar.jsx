@@ -6,6 +6,7 @@ import { Divider } from "@mui/material"
 import { Drawer } from "antd"
 import { motion } from "framer-motion"
 import MenusBr from "./MenusBr"
+import MenusCr from "./MenusCr"
 
 function Sidebar({ mode = 0 }) {
 	const location = useLocation()
@@ -73,7 +74,7 @@ function Sidebar({ mode = 0 }) {
 						? "fixed top-0 z-10 left-0 w-full h-auto transition-transform -translate-x-full sm:translate-x-0 p-4 justify-center bg-red-800"
 						: mode === 1
 						? "fixed top-0 z-10 left-0 w-full h-auto transition-transform -translate-x-full sm:translate-x-0 p-4 justify-center bg-blue-800"
-						: "fixed top-0 z-10 left-0 w-full h-auto transition-transform -translate-x-full sm:translate-x-0 p-4 justify-center bg-purple-800"
+						: "fixed top-0 z-10 left-0 w-full h-auto transition-transform -translate-x-full sm:translate-x-0 p-4 justify-center bg-teal-800"
 				}
 				aria-label="Sidebar"
 			>
@@ -88,7 +89,7 @@ function Sidebar({ mode = 0 }) {
 							alt="Flowbite Logo"
 						/>
 					</div> */}
-					{mode === 0 ? <Menus /> : mode === 1 ? <MenusBr /> : ""}
+					{mode === 0 ? <Menus /> : mode === 1 ? <MenusBr /> : <MenusCr />}
 					{/* <img className='absolute bottom-0 h-40 blur-1' src={sidebar2} alt="Flowbite Logo" /> */}
 				</div>
 				{/* <motion.img initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.5, type:'spring'

@@ -15,8 +15,9 @@ import { url } from "../../Address/BaseUrl"
 import { Message } from "../../Components/Message"
 import { motion } from "framer-motion"
 import TDInputTemplateBr from "../../Components/TDInputTemplateBr"
+import TDInputTemplateCr from "../../Components/TDInputTemplateCr"
 
-function SigninBr() {
+function SigninCr() {
 	const navigate = useNavigate()
 	const [loading, setLoading] = useState(false)
 	// const [loginUserDetails, setLoginUserDetails] = useState(() => "")
@@ -36,18 +37,18 @@ function SigninBr() {
 		}
 
 		await axios
-			.post(`${url}/brn/brn_manager_login`, creds)
+			.post(`${url}/credit/credit_manager_login`, creds)
 			.then((res) => {
 				if (res?.data?.suc === 1) {
 					Message("success", res?.data?.msg)
 					// setLoginUserDetails()
 
 					localStorage.setItem(
-						"br_mgr_details",
+						"cr_mgr_details",
 						JSON.stringify(res?.data?.user_dtls)
 					)
 
-					navigate(routePaths.BRANCH_MANAGER_HOME)
+					navigate(routePaths.CREDIT_MANAGER_HOME)
 				} else if (res?.data?.suc === 0) {
 					Message("error", res?.data?.msg)
 				} else {
@@ -75,7 +76,7 @@ function SigninBr() {
 	})
 
 	return (
-		<div className="bg-blue-800 p-20 flex justify-center min-h-screen min-w-screen">
+		<div className="bg-teal-700 p-20 flex justify-center min-h-screen min-w-screen">
 			<motion.div
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
@@ -98,12 +99,12 @@ function SigninBr() {
 					>
 						<div className="flex-col items-center justify-center ml-7 2xl:ml-36 2xl:mt-44">
 							<motion.h2
-								className="text-blue-800 text-4xl mt-14 ml-24 font-bold"
+								className="text-teal-800 text-4xl mt-14 ml-24 font-bold"
 								initial={{ opacity: 1 }}
 								animate={{ opacity: 0, y: -20 }}
 								transition={{ delay: 4, type: "tween" }}
 							>
-								Welcome Back Branch Manager!
+								Welcome Back Credit Manager!
 							</motion.h2>
 							<motion.img
 								initial={{ opacity: 0 }}
@@ -120,7 +121,7 @@ function SigninBr() {
 							className="w-full py-6 sm:ml-10 2xl:space-y-2 2xl:px-8"
 						>
 							<div className="pt-1 block ">
-								<TDInputTemplateBr
+								<TDInputTemplateCr
 									placeholder="youremail@gmail.com"
 									type="email"
 									label="Your email"
@@ -136,7 +137,7 @@ function SigninBr() {
 								) : null}
 							</div>
 							<div className="pt-6 block">
-								<TDInputTemplateBr
+								<TDInputTemplateCr
 									placeholder="*****"
 									type="password"
 									label="Your password"
@@ -153,7 +154,7 @@ function SigninBr() {
 							</div>
 							<div className="pt-2">
 								<Link to={routePaths.FORGOTPASS}>
-									<p className="text-xs text-blue-800 hover:underline py-2 cursor-pointer">
+									<p className="text-xs text-teal-800 hover:underline py-2 cursor-pointer">
 										Forgot password?
 									</p>
 								</Link>
@@ -161,14 +162,14 @@ function SigninBr() {
 							<Spin
 								indicator={<LoadingOutlined spin />}
 								size={5}
-								className="text-blue-800 w-52 dark:text-gray-400"
+								className="text-teal-800 w-52 dark:text-gray-400"
 								spinning={loading}
 							>
 								<div className="pt-4 pb-4 flex justify-center text-sm">
 									<button
 										disabled={!formik.isValid}
 										type="submit"
-										className="bg-blue-800 hover:duration-500 w-full hover:scale-105  text-white p-3 rounded-full"
+										className="bg-teal-800 hover:duration-500 w-full hover:scale-105  text-white p-3 rounded-full"
 									>
 										Login to your account
 									</button>
@@ -191,7 +192,7 @@ function SigninBr() {
 				>
 					<div className="flex-col items-center justify-center">
 						<motion.h2
-							className="text-blue-800 text-4xl mt-14 mx-24 font-bold"
+							className="text-teal-800 text-4xl mt-14 mx-24 font-bold"
 							initial={{ opacity: 1 }}
 							animate={{ opacity: 0, y: -20 }}
 							transition={{ delay: 4, type: "tween" }}
@@ -213,7 +214,7 @@ function SigninBr() {
 						className="w-full py-6 sm:ml-10 2xl:space-y-2 2xl:px-8"
 					>
 						<div className="pt-1 block ">
-							<TDInputTemplate
+							<TDInputTemplateCr
 								placeholder="youremail@gmail.com"
 								type="email"
 								label="Your email"
@@ -229,7 +230,7 @@ function SigninBr() {
 							) : null}
 						</div>
 						<div className="pt-6 block">
-							<TDInputTemplate
+							<TDInputTemplateCr
 								placeholder="*****"
 								type="password"
 								label="Your password"
@@ -246,7 +247,7 @@ function SigninBr() {
 						</div>
 						<div className="pt-2">
 							<Link to={routePaths.FORGOTPASS}>
-								<p className="text-xs text-green-900 hover:underline py-2 cursor-pointer">
+								<p className="text-xs text-teal-900 hover:underline py-2 cursor-pointer">
 									Forgot password?
 								</p>
 							</Link>
@@ -254,14 +255,14 @@ function SigninBr() {
 						<Spin
 							indicator={<LoadingOutlined spin />}
 							size={5}
-							className="text-blue-800 w-52 dark:text-gray-400"
+							className="text-teal-800 w-52 dark:text-gray-400"
 							spinning={loading}
 						>
 							<div className="pt-4 pb-4 flex justify-center text-sm">
 								<button
 									disabled={!formik.isValid}
 									type="submit"
-									className="bg-blue-800 hover:duration-500 w-full hover:scale-105  text-white p-3 rounded-full"
+									className="bg-teal-800 hover:duration-500 w-full hover:scale-105  text-white p-3 rounded-full"
 								>
 									Login to your account
 								</button>
@@ -274,4 +275,4 @@ function SigninBr() {
 	)
 }
 
-export default SigninBr
+export default SigninCr
