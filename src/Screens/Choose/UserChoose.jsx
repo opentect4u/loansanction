@@ -77,7 +77,7 @@ function UserChoose() {
 					<div>
 						<Link to={routePaths.APPRAISER_LOGIN}>
 							<div
-								className="h-48 w-48 self-center bg-[#586BA4] rounded-full p-1 text-white text-wrap text-xl"
+								className="h-48 w-48 self-center bg-red-800 rounded-full p-1 text-white text-wrap text-xl"
 								style={{
 									display: "flex",
 									justifyContent: "center",
@@ -94,7 +94,7 @@ function UserChoose() {
 					<div>
 						<Link to={routePaths.BRANCH_MANAGER_LOGIN}>
 							<div
-								className="h-48 w-48 self-center bg-[#1b3c96] rounded-full p-1 text-white text-center text-wrap text-xl"
+								className="h-48 w-48 self-center bg-blue-800 rounded-full p-1 text-white text-center text-wrap text-xl"
 								style={{
 									display: "flex",
 									justifyContent: "center",
@@ -111,7 +111,7 @@ function UserChoose() {
 					<div>
 						<Link to={routePaths.CREDIT_MANAGER_LOGIN}>
 							<div
-								className="h-48 w-48 self-center bg-[#173753] rounded-full p-1 text-white text-center text-wrap text-xl"
+								className="h-48 w-48 self-center bg-teal-700 rounded-full p-1 text-white text-center text-wrap text-xl"
 								style={{
 									display: "flex",
 									justifyContent: "center",
@@ -128,7 +128,7 @@ function UserChoose() {
 					<div>
 						<Link to={routePaths.CEO_LOGIN}>
 							<div
-								className="h-48 w-48 self-center bg-[#173753] rounded-full p-1 text-white text-center text-wrap text-xl"
+								className="h-48 w-48 self-center bg-slate-700 rounded-full p-1 text-white text-center text-wrap text-xl"
 								style={{
 									display: "flex",
 									justifyContent: "center",
