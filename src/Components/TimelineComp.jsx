@@ -7,7 +7,7 @@ function TimelineComp({ data }) {
 			mode="alternate"
 			items={data?.map((item, i) => ({
 				key: i,
-				color: item?.application_status === "P" ? "red" : "green",
+				color: i % 2 !== 0 ? "red" : "green",
 				children: (
 					<div className="bg-gray-200 p-5 rounded-xl shadow-lg">
 						<p className="pb-4 text-gray-600 italic">

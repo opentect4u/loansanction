@@ -59,6 +59,10 @@ function EditLoanFormBr() {
 	const [commentsBranchManager, setCommentsBranchManager] = useState("")
 	const [rejectReasonsArray, setRejectReasonsArray] = useState(() => [])
 
+	const [creditManagers, setCreditManagers] = useState(() => [])
+	const [creditManagerId, setCreditManagerId] = useState()
+	const [creditManagerBranch, setCreditManagerBranch] = useState()
+
 	console.log(params, "params")
 	console.log(location, "location")
 
@@ -281,15 +285,36 @@ function EditLoanFormBr() {
 			})
 	}
 
+	const fetchCreditManagers = async () => {
+		await axios
+			.get(
+				`${url}/brn/get_credit_manager?brn_code=${+JSON.parse(
+					localStorage.getItem("br_mgr_details")
+				).branch_code}`
+			)
+			.then((res) => {
+				if (res?.data?.suc === 1) {
+					setCreditManagers(res?.data?.msg)
+					console.log("LLLLLLLLLL", res?.data?.msg)
+				} else {
+					Message("warning", "No Credit Managers Found!")
+				}
+			})
+			.catch((err) => {
+				Message("error", "Some error occurred while fetching Credit Managers.")
+			})
+	}
+
 	useEffect(() => {
 		fetchBranches()
 		fetchLoanTypes()
+		fetchCreditManagers()
 	}, [])
 
-	const handleReset = () => {
-		setPdfFiles(() => [])
-		setValues(initialValues)
-	}
+	// const handleReset = () => {
+	// 	setPdfFiles(() => [])
+	// 	setValues(initialValues)
+	// }
 
 	const onSubmit = async (values) => {
 		console.log("onsubmit called")
@@ -513,17 +538,15 @@ function EditLoanFormBr() {
 		// AppStatus -> A/R
 		setLoading(true)
 		const creds = {
-			brn_code: formik.values.l_loan_through_branch,
+			credit_brn_code: JSON.parse(localStorage.getItem("br_mgr_details"))
+				.branch_code,
 			application_no: +params.id,
-			user_id: JSON.parse(localStorage.getItem("br_mgr_details")).id,
-			fwd_brn: JSON.parse(localStorage.getItem("br_mgr_details")).branch_code,
-			remarks: fetchedRemarks,
+			mng_user_id: JSON.parse(localStorage.getItem("br_mgr_details")).id,
+			mng_brn_code: JSON.parse(localStorage.getItem("br_mgr_details"))
+				.branch_code,
+			credit_mgr_id: creditManagerId,
+			remarks: commentsBranchManager,
 			application_status: appStatus,
-			brn_mgr_id: JSON.parse(localStorage.getItem("br_mgr_details")).id,
-			created_by:
-				JSON.parse(localStorage.getItem("br_mgr_details")).first_name +
-				" " +
-				JSON.parse(localStorage.getItem("br_mgr_details")).last_name,
 		}
 
 		console.log(
@@ -531,19 +554,23 @@ function EditLoanFormBr() {
 			+JSON.parse(localStorage.getItem("br_mgr_details"))?.user_type
 		)
 
-		// await axios
-		// 	.post(`${url}/sql/forward_brn_manager`, creds)
-		// 	.then((res) => {
-		// 		Message("success", "E-Files moved to Branch Manager.")
-		// 		setVisibleModal(!visibleModal)
-		// 		navigate(routePaths.APPLICATION_FORWARD)
-		// 	})
-		// 	.catch((err) => {
-		// 		Message(
-		// 			"error",
-		// 			"Something went wrong while sending to Branch Manager!"
-		// 		)
-		// 	})
+		await axios
+			.post(`${url}/brn/forward_credit_manager`, creds)
+			.then((res) => {
+				// if (res?.data?.suc === 1) {
+				setVisibleModal(!visibleModal)
+				navigate(routePaths.BRANCH_MANAGER_HOME)
+				Message("success", "E-Files sent to Credit Manager.")
+				// } else {
+				// 	Message("error", "Some error occurred!")
+				// }
+			})
+			.catch((err) => {
+				Message(
+					"error",
+					"Something went wrong while sending to Credit Manager!"
+				)
+			})
 
 		setLoading(false)
 	}
@@ -1077,24 +1104,60 @@ function EditLoanFormBr() {
 
 										{loanApproveStatus !== "A" && loanApproveStatus !== "R" && (
 											<div className="mt-7">
-												<TDInputTemplateBr
-													placeholder="Write comments..."
-													type="text"
-													label={`Comments`}
-													name="comments"
-													formControlName={commentsBranchManager}
-													handleChange={(e) =>
-														setCommentsBranchManager(e.target.value)
-													}
-													mode={3}
-												/>
-												{!commentsBranchManager ? (
-													<VError
-														title={
-															"Please Enter Comments Before Forwarding or Rejecting"
-														}
+												<div>
+													<TDInputTemplateBr
+														placeholder="Credit Managers"
+														type="text"
+														label="Choose Credit Manager"
+														formControlName={creditManagerId}
+														handleChange={(e) => {
+															setCreditManagerId(e.target.value)
+															// setCreditManagerBranch(
+															// 	e.target.value?.branch_code
+															// )
+
+															console.log(
+																".................>>>",
+																// JSON.parse(e.target.value)?.id,
+																// JSON.parse(e.target.value)?.branch_code
+																e
+															)
+														}}
+														// handleBlur={handleBlur}
+														data={creditManagers?.map((c) => ({
+															code: c?.id,
+															name: c?.first_name + " " + c?.last_name,
+														}))}
+														mode={2}
+														// disabled={
+														// 	loanApproveStatus === "A" ||
+														// 	loanApproveStatus === "R"
+														// }
 													/>
-												) : null}
+													{/* {errors.l_applied_for && touched.l_applied_for ? (
+														<VError title={errors.l_applied_for} />
+													) : null} */}
+												</div>
+												<div className="mt-7">
+													<TDInputTemplateBr
+														placeholder="Write comments..."
+														type="text"
+														label={`Comments`}
+														name="comments"
+														formControlName={commentsBranchManager}
+														handleChange={(e) =>
+															setCommentsBranchManager(e.target.value)
+														}
+														mode={3}
+													/>
+													{!commentsBranchManager ? (
+														<VError
+															title={
+																"Please Enter Comments Before Forwarding or Rejecting"
+															}
+														/>
+													) : null}
+												</div>
 											</div>
 										)}
 
@@ -1131,7 +1194,7 @@ function EditLoanFormBr() {
 												color="red"
 												className="mt-10 p-5 rounded-lg text-xl font-bold self-center"
 											>
-												Some error occurred.
+												Some error occurred. [Status is not b/w P/A/R]
 											</Tag>
 										)}
 									</div>

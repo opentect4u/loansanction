@@ -39,6 +39,12 @@ const Signin = lazy(() => import("./Screens/Appraiser/Signin"))
 
 const root = ReactDOM.createRoot(document.getElementById("root"))
 
+// window.addEventListener("beforeunload", (ev) => {
+// 	ev.preventDefault()
+
+// 	localStorage.clear()
+// })
+
 const router = createBrowserRouter([
 	{
 		path: "/",
