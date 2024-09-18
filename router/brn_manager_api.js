@@ -260,7 +260,7 @@ var res_dt = await db_Select(select, table_name, whr, order)
   var table_name = "td_forward",
   fields = `application_status = '${data.application_status}'`,
   values =  null,
-  whr = `application_no=${data.application_no} and forwarded_to = '${data.user_id}'`,
+  whr = `application_no=${data.application_no} and forwarded_to = '${data.mng_user_id}'`,
   flag = 1;
   var final_dt_1 = await db_Insert(table_name, fields, values, whr, flag);
   res.send(final_dt_1)
