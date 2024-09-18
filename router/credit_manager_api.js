@@ -4,7 +4,7 @@ dateFormat = require('dateformat');
 const bcrypt = require("bcrypt");
 const fs = require('fs');
 const path = require('path');
-const { db_Select } = require('../model/mysqlModel');
+const { db_Select, db_Insert } = require('../model/mysqlModel');
 
 credit_managerRouter.post("/credit_manager_login", async (req, res) =>{
     var data = req.body;
