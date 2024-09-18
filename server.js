@@ -2,7 +2,8 @@ const express = require('express'),
 app = express(),
 fs = require("fs"),
 path = require("path"),
-port = process.env.PORT || 3000;
+port = process.env.PORT || 3012;
+// port = process.env.PORT || 3000;
 
 const cors = require('cors')
 // const options = {
@@ -31,6 +32,7 @@ app.use(fileUpload());
 const { appApiRouter } = require('./router/oracle_api');
 const { sqlRouter } = require('./router/mysql_api');
 const { brn_managerRouter } = require('./router/brn_manager_api');
+const { credit_managerRouter } = require('./router/credit_manager_api');
 
 // END
 
@@ -38,6 +40,7 @@ const { brn_managerRouter } = require('./router/brn_manager_api');
 app.use("/oracle", appApiRouter);
 app.use("/sql", sqlRouter);
 app.use("/brn",brn_managerRouter)
+app.use('/credit',credit_managerRouter)
 
 // END
 
