@@ -245,7 +245,7 @@ var res_dt = await db_Select(select, table_name, whr, order)
   
     var select = "id,branch_code,user_type",
     table_name = "md_users",
-    where = `user_type = '2' AND branch_code = '${data.brn_code}' AND user_approve = '1'`,
+    where = `user_type = '3' AND branch_code = '${data.brn_code}' AND user_approve = '1'`,
     order = null;
     var manager_data = await db_Select(select,table_name,where,order);
     // console.log(manager_data,'user');
@@ -282,7 +282,7 @@ var res_dt = await db_Select(select, table_name, whr, order)
    
     var select = "*",
     table_name = "md_users",
-    whr = `branch_code = '${data.brn_code}' AND user_type = '2'`,
+    whr = `branch_code = '${data.brn_code}' AND user_type = '3'`,
     order = null;
     var brn_dt = await db_Select(select, table_name, whr, order);
     res.send(brn_dt);

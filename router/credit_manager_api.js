@@ -78,3 +78,35 @@ dt.msg[0]["reject_dt"] = reject_dt.suc > 0 ? (reject_dt.msg.length > 0 ? reject_
 
 res.send(dt)
 });
+
+// ********************************************************************************************************
+
+credit_managerRouter.post("/credit_manager_reject", async (req, res) =>{
+  var data = req.body;
+  console.log(data,'dd');
+  datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+  
+  var table_name = "td_forward",
+  fields = "(application_no, forwarded_dt, forwarded_by, by_brn, forwarded_to, to_brn, application_status, remarks, created_by, created_dt)",
+  values =  `('${data.application_no}', '${datetime}', '${data.user_id}', '${data.fwd_brn}', '${data.loan_appr_id}', '${data.brn_code}', 'P', '${data.brn_remarks}', '${data.user_id}', '${datetime}')`,
+  whr = null,
+  flag = 0;
+var branch = await db_Insert(table_name, fields, values, whr, flag);
+
+var table_name = "td_forward",
+  fields = `application_status = '${data.application_status}'`,
+  values = null;
+  whr =`application_no=${data.application_no} AND forwarded_to = '${data.user_id}'`,
+  flag = 1; 
+  var track_dt = await db_Insert(table_name,fields,values,whr,flag);
+
+  if(track_dt.suc > 0){
+          if (track_dt.msg.length > 0) {
+          res.send({ suc: 1, msg: "Rejected Via Credit Manager", user_dtls: track_dt.msg[0] });
+          }else {
+           res.send({ suc: 0, msg: "Something Went Wrong"});
+          }
+      }else {
+          res.send({ suc: 2, msg: "No data found"})
+      }
+});
