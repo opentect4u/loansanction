@@ -252,7 +252,7 @@ var res_dt = await db_Select(select, table_name, whr, order)
     
     var table_name = "td_forward",
     fields = "(application_no, forwarded_dt, forwarded_by, by_brn, forwarded_to, to_brn, application_status, remarks, created_by, created_dt)",
-    values =  `('${data.application_no}', '${datetime}', '${data.mng_user_id}', '${data.mng_brn_code}', '${data.credit_mgr_id}', '${data.credit_brn_code}', 'P', '${data.remarks}', '${data.created_by}', '${datetime}')`,
+    values =  `('${data.application_no}', '${datetime}', '${data.mng_user_id}', '${data.mng_brn_code}', '${data.credit_mgr_id}', '${data.credit_brn_code}', 'P', '${data.remarks}', '${data.mng_user_id}', '${datetime}')`,
     whr = null,
     flag = 0;
   var fwd_brn_dt = await db_Insert(table_name, fields, values, whr, flag);
@@ -263,17 +263,17 @@ var res_dt = await db_Select(select, table_name, whr, order)
   whr = `application_no=${data.application_no} and forwarded_to = '${data.user_id}'`,
   flag = 1;
   var final_dt_1 = await db_Insert(table_name, fields, values, whr, flag);
-  // res.send(final_dt_1)
+  res.send(final_dt_1)
 
-  if(final_dt_1.suc > 0){
-    if (final_dt_1.msg.length > 0) {
-    res.send({ suc: 1, msg: "Branch Manager forwarded to Credit Manager", user_dtls: final_dt_1.msg[0] });
-    }else {
-     res.send({ suc: 0, msg: "Something Went Wrong"});
-    }
-}else {
-    res.send({ suc: 2, msg: "No data found"})
-}
+//   if(final_dt_1.suc > 0){
+//     if (final_dt_1.msg.length > 0) {
+//     res.send({ suc: 1, msg: "Branch Manager forwarded to Credit Manager", user_dtls: final_dt_1.msg[0] });
+//     }else {
+//      res.send({ suc: 0, msg: "Something Went Wrong"});
+//     }
+// }else {
+//     res.send({ suc: 2, msg: "No data found"})
+// }
   });
 
 
