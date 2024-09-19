@@ -24,6 +24,7 @@ function TDInputTemplate(props) {
 					min={props.min}
 					accept={props.accept}
 					max={props.max}
+					onKeyDown={(e) => props.type == "date" && e.preventDefault()}
 					className="bg-white border-gray-400 text-gray-800 text-sm rounded-md  focus:border-red-800 active:border-red-600 focus:ring-red-600 focus:border-1 duration-500 block w-full p-2 dark:bg-bg-white dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
 					placeholder={props.placeholder}
 					onChange={props.handleChange}
