@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkpurdcsloan=self.webpackChunkpurdcsloan||[]).push([[710],{7710:(s,n,u)=>{u.r(n),u.d(n,{default:()=>r});u(5043);var c=u(3216),e=u(579);const r=function(){return(0,e.jsx)("div",{children:(0,e.jsx)(c.sv,{})})}}}]);
+//# sourceMappingURL=710.28014789.chunk.js.map
