@@ -33,14 +33,17 @@ const { appApiRouter } = require('./router/oracle_api');
 const { sqlRouter } = require('./router/mysql_api');
 const { brn_managerRouter } = require('./router/brn_manager_api');
 const { credit_managerRouter } = require('./router/credit_manager_api');
+const { ceo_Router } = require('./router/ceo_api');
 
 // END
 
 // USE ROUER FOR SPECIFIC URL
 app.use("/oracle", appApiRouter);
 app.use("/sql", sqlRouter);
-app.use("/brn",brn_managerRouter)
-app.use('/credit',credit_managerRouter)
+app.use("/brn",brn_managerRouter);
+app.use('/credit',credit_managerRouter);
+app.use('/ceo', ceo_Router);
+
 
 // END
 
