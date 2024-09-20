@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkpurdcsloan=self.webpackChunkpurdcsloan||[]).push([[788],{5788:(n,s,u)=>{u.r(s),u.d(s,{default:()=>e});u(5043);var c=u(579);const e=function(){return console.log("signup Br"),(0,c.jsx)("div",{children:"Signup"})}}}]);
+//# sourceMappingURL=788.3ed56648.chunk.js.map
