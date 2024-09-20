@@ -48,11 +48,14 @@ function SigninCeo() {
 						"ceo_details",
 						JSON.stringify(res?.data?.user_dtls)
 					)
+					console.log("1111111111111111111", res?.data?.msg)
 
 					navigate(routePaths.CEO_HOME)
 				} else if (res?.data?.suc === 0) {
+					console.log("00000000000000000000", res?.data?.msg)
 					Message("error", res?.data?.msg)
 				} else {
+					console.log("EEEEEEEEEEEEEEEEEEE", res?.data?.msg)
 					Message("error", "No user found!")
 				}
 			})

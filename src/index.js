@@ -14,27 +14,61 @@ import CircularProgress from "@mui/material/CircularProgress"
 import CatchError from "./Screens/CatchError"
 // import FwdLoanApplications from "./Screens/AppraiserHome/FwdLoanApplications"
 // import EditLoanFormFwd from "./Screens/AppraiserHome/EditLoanFormFwd"
-import AuthBr from "./Screens/BranchManager/AuthBr"
-import SigninBr from "./Screens/BranchManager/SigninBr"
-import SignupBr from "./Screens/BranchManager/SignupBr"
-import ForgotPassBr from "./Screens/BranchManager/ForgotPassBr"
-import HomeBr from "./Screens/BranchManagerHome/HomeBr"
-import HomeScreenBr from "./Screens/BranchManagerHome/HomeScreenBr"
-import EditLoanFormBr from "./Screens/BranchManagerHome/EditLoanFormBr"
-import AuthCr from "./Screens/CreditManager/AuthCr"
-import SigninCr from "./Screens/CreditManager/SigninCr"
-import SignupCr from "./Screens/CreditManager/SignupCr"
-import ForgotPassCr from "./Screens/CreditManager/ForgotPassCr"
-import HomeCr from "./Screens/CreditManagerHome/HomeCr"
-import HomeScreenCr from "./Screens/CreditManagerHome/HomeScreenCr"
-import EditLoanFormCr from "./Screens/CreditManagerHome/EditLoanFormCr"
-import AuthCeo from "./Screens/CEO/AuthCeo"
-import SigninCeo from "./Screens/CEO/SigninCeo"
-import SignupCeo from "./Screens/CEO/SignupCeo"
-import ForgotPassCeo from "./Screens/CEO/ForgotPassCeo"
-import HomeCeo from "./Screens/CEOHome/HomeCeo"
-import HomeScreenCeo from "./Screens/CEOHome/HomeScreenCeo"
-import EditLoanFormCeo from "./Screens/CEOHome/EditLoanFormCeo"
+
+// import AuthBr from "./Screens/BranchManager/AuthBr"
+// import SigninBr from "./Screens/BranchManager/SigninBr"
+// import SignupBr from "./Screens/BranchManager/SignupBr"
+// import ForgotPassBr from "./Screens/BranchManager/ForgotPassBr"
+// import HomeBr from "./Screens/BranchManagerHome/HomeBr"
+// import HomeScreenBr from "./Screens/BranchManagerHome/HomeScreenBr"
+// import EditLoanFormBr from "./Screens/BranchManagerHome/EditLoanFormBr"
+// import AuthCr from "./Screens/CreditManager/AuthCr"
+// import SigninCr from "./Screens/CreditManager/SigninCr"
+// import SignupCr from "./Screens/CreditManager/SignupCr"
+// import ForgotPassCr from "./Screens/CreditManager/ForgotPassCr"
+// import HomeCr from "./Screens/CreditManagerHome/HomeCr"
+// import HomeScreenCr from "./Screens/CreditManagerHome/HomeScreenCr"
+// import EditLoanFormCr from "./Screens/CreditManagerHome/EditLoanFormCr"
+// import AuthCeo from "./Screens/CEO/AuthCeo"
+// import SigninCeo from "./Screens/CEO/SigninCeo"
+// import SignupCeo from "./Screens/CEO/SignupCeo"
+// import ForgotPassCeo from "./Screens/CEO/ForgotPassCeo"
+// import HomeCeo from "./Screens/CEOHome/HomeCeo"
+// import HomeScreenCeo from "./Screens/CEOHome/HomeScreenCeo"
+// import EditLoanFormCeo from "./Screens/CEOHome/EditLoanFormCeo"
+
+const AuthBr = lazy(() => import("./Screens/BranchManager/AuthBr"))
+const SigninBr = lazy(() => import("./Screens/BranchManager/SigninBr"))
+const SignupBr = lazy(() => import("./Screens/BranchManager/SignupBr"))
+const ForgotPassBr = lazy(() => import("./Screens/BranchManager/ForgotPassBr"))
+const HomeBr = lazy(() => import("./Screens/BranchManagerHome/HomeBr"))
+const HomeScreenBr = lazy(() =>
+	import("./Screens/BranchManagerHome/HomeScreenBr")
+)
+const EditLoanFormBr = lazy(() =>
+	import("./Screens/BranchManagerHome/EditLoanFormBr")
+)
+
+const AuthCr = lazy(() => import("./Screens/CreditManager/AuthCr"))
+const SigninCr = lazy(() => import("./Screens/CreditManager/SigninCr"))
+const SignupCr = lazy(() => import("./Screens/CreditManager/SignupCr"))
+const ForgotPassCr = lazy(() => import("./Screens/CreditManager/ForgotPassCr"))
+const HomeCr = lazy(() => import("./Screens/CreditManagerHome/HomeCr"))
+const HomeScreenCr = lazy(() =>
+	import("./Screens/CreditManagerHome/HomeScreenCr")
+)
+const EditLoanFormCr = lazy(() =>
+	import("./Screens/CreditManagerHome/EditLoanFormCr")
+)
+
+const AuthCeo = lazy(() => import("./Screens/CEO/AuthCeo"))
+const SigninCeo = lazy(() => import("./Screens/CEO/SigninCeo"))
+const SignupCeo = lazy(() => import("./Screens/CEO/SignupCeo"))
+const ForgotPassCeo = lazy(() => import("./Screens/CEO/ForgotPassCeo"))
+const HomeCeo = lazy(() => import("./Screens/CEOHome/HomeCeo"))
+const HomeScreenCeo = lazy(() => import("./Screens/CEOHome/HomeScreenCeo"))
+const EditLoanFormCeo = lazy(() => import("./Screens/CEOHome/EditLoanFormCeo"))
+
 // import FwdLoanApplicationsBr from "./Screens/BranchManagerHome/FwdLoanApplicationsBr"
 // import EditLoanFormFwdBr from "./Screens/BranchManagerHome/EditLoanFormFwdBr"
 // import RejectLoanApplicationsBr from "./Screens/BranchManagerHome/RejectLoanApplicationsBr"

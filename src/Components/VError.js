@@ -12,7 +12,7 @@ function VError({ title, color = "error" }) {
 			<Tag className="text-[12.6px] my-2" bordered={false} color={color}>
 				{title}.
 			</Tag>
-		</motion.div>
+		</motion.div> 
 		// <Alert message={title} type="error" showIcon className='my-2'/>
 	)
 }
